@@ -1,16 +1,19 @@
 class node:
     def __init__(self, identity, label, parents, children):
-        '''
-        identity: int; its unique id in the graph
-        label: string;
-        parents: int->int dict; maps a parent node's id to its multiplicity
-        children: int->int dict; maps a child node's id to its multiplicity
-        '''
+        """
+        A node.
+
+        Args:
+            identity (int): Its unique ID in the graph.
+            label (string): A string.
+            parents (int->int dict): Maps a parent node's id to its multiplicity
+            children (int->int dict): Maps a child node's id to its multiplicity
+        """
         self.id = identity
         self.label = label
         self.parents = parents
         self.children = children
-        
+
     def __str__(self):
         return "N({})".format(self.id)
 
@@ -18,54 +21,124 @@ class node:
         return str(self)
 
     def copy(self):
+        """
+        Copy the node.
+
+        Returns:
+            node: The copy of this node.
+        """
         return node(self.id, self.label, self.parents, self.children)
 
     def get_id(self):
+        """
+        Get the ID.
+
+        Returns:
+            int: The node ID.
+        """
         return self.id
 
     def get_label(self):
+        """
+        Get the label.
+
+        Returns:
+            string: The node label.
+        """
         return self.label
 
     def get_parents_ids(self):
+        """
+        Get the IDs of all the parents.
+
+        Returns:
+            list: A list containing the ids of all parents.
+        """
         return self.parents.keys()
 
     def get_children_ids(self):
+        """
+        Get the IDs of all the children.
+
+        Returns:
+            list: A list containing the ids of all children.
+        """
         return self.chlidren.keys()
 
     def set_id(self, id):
+        """
+        Set the node ID.
+
+        Args:
+            id (int): The node ID.
+        """
         self.id = id
 
     def set_label(self, label):
+        """
+        Set the node label.
+
+        Args:
+            label (string): The node label.
+        """
         self.label = label
 
     def set_parents_ids(self, parents_ids):
+        """
+        Set the parents of the node.
+
+        Args:
+            parents_ids (int->int dict): A dictionary containing the parents of the node.
+        """
         self.parents = parents_ids
 
     def set_children_ids(self, children_ids):
+        """
+        Set the children of the node.
+
+        Args:
+            children_ids (int->int dict): A dictionary containing the children of the node.
+        """
         self.children = children_ids
 
     def add_child_id(self, child):
+        """
+        Add a new child to the node.
+
+        Args:
+            child (int): The ID of the child node.
+        """
         if child not in self.children.keys():
             self.children[child] = 1
         else:
             self.children[child] += 1
 
     def add_parent_id(self, parent):
+        """
+        Add a new parent to the node.
+
+        Args:
+            parent (int): The ID of the parent node.
+        """
         if parent not in self.parents.keys():
             self.children[parent] = 1
         else:
             self.children[parent] += 1
 
-class open_digraph: # for open directed graph
+
+class open_digraph:  # for open directed graph
     def __init__(self, inputs, outputs, nodes):
-        '''
-        inputs: int list; the ids of the input nodes
-        outputs: int list; the ids of the output nodes
-        nodes: node iter;
-        '''
+        """
+        A graph composed of nodes.
+        Args:
+            inputs (int list): The IDs of the input nodes.
+            outputs (int list): The IDs of the output nodes.
+            nodes (iter): Node iter.
+        """
         self.inputs = inputs
         self.outputs = outputs
-        self.nodes = {node.id:node for node in nodes} # self.nodes: <int,node> dict
+        # self.nodes: <int,node> dict
+        self.nodes = {node.id: node for node in nodes}
 
     def __str__(self):
         return """Noeuds : {}
@@ -77,59 +150,157 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
 
     @classmethod
     def empty(self):
+        """Create an empty graph."""
         self.inputs = []
         self.outputs = []
         self.nodes = {}
 
     def copy(self):
+        """
+        Copy this graph.
+
+        Returns:
+            open_digraph: The copy of this graph.
+        """
         return open_digraph(self.inputs, self.outputs, self.nodes.values())
 
     def get_intputs_ids(self):
+        """
+        Get the inputs IDs.
+
+        Returns:
+            int list: The list of the inputs IDs
+        """
         return self.inputs
 
     def get_outputs(self):
+        """
+        Get the outputs IDs.
+
+        Returns:
+            int list: The list of the outputs IDs
+        """
         return self.outputs
 
     def get_id_node_map(self):
+        """
+        Get all nodes.
+
+        Returns:
+            <int, node> dict: A dictionary containing nodes.
+        """
         return self.nodes
 
     def get_nodes(self):
+        """
+        Get all nodes.
+
+        Returns:
+            int list: A list containing nodes.
+        """
         return self.nodes.values
 
     def get_nodes_ids(self):
+        """
+        Get all IDs of nodes.
+
+        Returns:
+            int list: A list containing the IDs of the nodes.
+        """
         return self.nodes.keys()
 
     def get_node_by_id(self, id):
+        """
+        Get the node with an ID.
+
+        Args:
+            id (int): The id of the node.
+
+        Returns:
+            node: The node with this id.
+        """
         return self.nodes[id]
 
     def get_nodes_by_ids(self, ids):
+        """
+        Get nodes corresponding to the IDs passed in parameter.
+
+        Args:
+            ids (int list): The list of node IDs to return.
+
+        Returns:
+            node list: A list containing nodes corresponding to the IDs.
+        """
         return [self.get_node_by_id(id) for id in ids]
 
-
     def set_input_ids(self, inputs):
+        """
+        Set the inputs IDs.
+
+        Args:
+            inputs (int list): The input list.
+        """
         self.inputs = inputs
 
     def set_output_ids(self, outputs):
+        """
+        Set the outputs IDs.
+
+        Args:
+            outputs (int list): The outputs list.
+        """
         self.outputs = outputs
 
     def add_input_id(self, id):
+        """
+        Add a new input ID.
+
+        Args:
+            id (int): The input ID to add.
+        """
         if id not in self.inputs:
             self.inputs.append(id)
 
     def add_output_id(self, id):
+        """
+        Add a new output ID.
+
+        Args:
+            id (int): The output ID to add.
+        """
         if id not in self.outputs:
             self.outputs.append(id)
 
     def new_id(self):
+        """
+        Generate a new ID.
+
+        Returns:
+            int: A new ID.
+        """
         # MAXINT erreur
         # O(n)
         return max(self.nodes.keys()) + 1
 
     def add_edge(self, src, tgt):
-        self.nodes[src].add_child(tgt)
-        self.nodes[tgt].add_parent(src)
+        """
+        Add a new edge from 'src' node to 'tgt' node.
+        Args:
+            src (int): The ID of the source node.
+            tgt (int): The ID of the target node.
+        """
+        self.nodes[src].add_child(tgt) # replace add_child with add_child_id ?
+        self.nodes[tgt].add_parent(src) # replace add_parent with add_parent_id ?
 
     def add_node(self, label='', parents=[], children=[]):
+        """
+        Add a new node in the graph. Then links it with parent and child nodes.
+
+        Args:
+            label (str, optional): The label of the new node. Defaults to ''.
+            parents (list, optional): The parents list of the new node. Defaults to [].
+            children (list, optional): The children list of the new node. Defaults to [].
+        """
         n0 = node(self.new_id(), label, parents, children)
         self.nodes[n0.get_id()] = n0
         for parent in parents:
