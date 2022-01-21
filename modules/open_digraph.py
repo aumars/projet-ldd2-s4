@@ -290,7 +290,8 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
             int: A new ID.
         """
         # https://stackoverflow.com/a/982100
-        return self.next_id
+        self.next_id += 1
+        return self.next_id - 1
 
     def add_edge(self, src, tgt):
         """
