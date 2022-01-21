@@ -47,14 +47,14 @@ class node:
         """
         return self.label
 
-    def get_parents_ids(self):
+    def get_parent_ids(self):
         """
         Get the IDs of all the parents.
 
         Returns:
             list: A list containing the ids of all parents.
         """
-        return self.parents.keys()
+        return list(self.parents.keys())
 
     def get_children_ids(self):
         """
@@ -63,7 +63,7 @@ class node:
         Returns:
             list: A list containing the ids of all children.
         """
-        return self.chlidren.keys()
+        return list(self.children.keys())
 
     def set_id(self, id):
         """
@@ -83,14 +83,16 @@ class node:
         """
         self.label = label
 
-    def set_parents_ids(self, parents_ids):
+    def set_parent_ids(self, parents_ids):
         """
         Set the parents of the node.
 
         Args:
             parents_ids (int->int dict): A dictionary containing the parents of the node.
         """
-        self.parents = parents_ids
+        self.parents.clear()
+        for parent in parents_ids:
+            self.parents[parent] = 1
 
     def set_children_ids(self, children_ids):
         """
@@ -99,7 +101,9 @@ class node:
         Args:
             children_ids (int->int dict): A dictionary containing the children of the node.
         """
-        self.children = children_ids
+        self.children.clear()
+        for child in children_ids:
+            self.children[child] = 1
 
     def add_child_id(self, child):
         """
@@ -121,9 +125,9 @@ class node:
             parent (int): The ID of the parent node.
         """
         if parent not in self.parents.keys():
-            self.children[parent] = 1
+            self.parents[parent] = 1
         else:
-            self.children[parent] += 1
+            self.parents[parent] += 1
 
 
 class open_digraph:  # for open directed graph
@@ -139,11 +143,14 @@ class open_digraph:  # for open directed graph
         self.outputs = outputs
         # self.nodes: <int,node> dict
         self.nodes = {node.id: node for node in nodes}
+        self.next_id = max(self.nodes.keys()) + 1
 
     def __str__(self):
         return """Noeuds : {}
 Arrêts : {}""".format([str(node) for node in self.nodes.values()],
-                      [str(node) + " -> " + str(child) for node in self.nodes.values() for child in node.children.keys()])
+                      [str(node) + " -> " + str(child)
+                       for node in self.nodes.values()
+                       for child in node.children.keys()])
 
     def __repr__(self):
         return str(self)
@@ -154,6 +161,7 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         self.inputs = []
         self.outputs = []
         self.nodes = {}
+        self.next_id = 0
 
     def copy(self):
         """
@@ -164,7 +172,7 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         """
         return open_digraph(self.inputs, self.outputs, self.nodes.values())
 
-    def get_intputs_ids(self):
+    def get_input_ids(self):
         """
         Get the inputs IDs.
 
@@ -173,7 +181,7 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         """
         return self.inputs
 
-    def get_outputs(self):
+    def get_output_ids(self):
         """
         Get the outputs IDs.
 
@@ -198,16 +206,16 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         Returns:
             int list: A list containing nodes.
         """
-        return self.nodes.values
+        return list(self.nodes.values())
 
-    def get_nodes_ids(self):
+    def get_node_ids(self):
         """
         Get all IDs of nodes.
 
         Returns:
             int list: A list containing the IDs of the nodes.
         """
-        return self.nodes.keys()
+        return list(self.nodes.keys())
 
     def get_node_by_id(self, id):
         """
@@ -219,7 +227,10 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         Returns:
             node: The node with this id.
         """
-        return self.nodes[id]
+        if id in self.nodes.keys():
+            return self.nodes[id]
+        else:
+            raise KeyError("id {} n'existe pas !".format(id))
 
     def get_nodes_by_ids(self, ids):
         """
@@ -278,9 +289,8 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         Returns:
             int: A new ID.
         """
-        # MAXINT erreur
-        # O(n)
-        return max(self.nodes.keys()) + 1
+        # https://stackoverflow.com/a/982100
+        return self.next_id
 
     def add_edge(self, src, tgt):
         """
@@ -289,8 +299,15 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
             src (int): The ID of the source node.
             tgt (int): The ID of the target node.
         """
-        self.nodes[src].add_child(tgt) # replace add_child with add_child_id ?
-        self.nodes[tgt].add_parent(src) # replace add_parent with add_parent_id ?
+        if src in self.get_output_ids():
+            raise ValueError("Noeud {} est un noeud sortant ! On peut pas "
+                             "ajouter une flèche à partir de ce "
+                             "noeud.".format(src))
+        if tgt in self.get_input_ids():
+            raise ValueError("Noeud {} est un noeud entrant ! On peut pas "
+                             "ajouter une flèche vers ce noeud.".format(src))
+        self.nodes[src].add_child_id(tgt)  # replace add_child with add_child_id ?
+        self.nodes[tgt].add_parent_id(src)  # replace add_parent with add_parent_id ?
 
     def add_node(self, label='', parents=[], children=[]):
         """
@@ -301,6 +318,14 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
             parents (list, optional): The parents list of the new node. Defaults to [].
             children (list, optional): The children list of the new node. Defaults to [].
         """
+        O = set(parents) & set(self.get_output_ids())
+        if O != set():
+            raise ValueError("Les noeuds suivants sont des noeuds sortants et "
+                             "ne peuvent pas être parents : {}".format(O))
+        I = set(children) & set(self.get_input_ids())
+        if I != set():
+            raise ValueError("Les noeuds suivants sont des noeuds entrants et "
+                             "ne peuvent pas être enfants : {}".format(I))
         n0 = node(self.new_id(), label, parents, children)
         self.nodes[n0.get_id()] = n0
         for parent in parents:
