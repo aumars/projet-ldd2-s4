@@ -129,6 +129,52 @@ class node:
         else:
             self.parents[parent] += 1
 
+    def remove_parent_once(self, id):
+        """
+        Remove one occurence of a parent node
+
+        Args:
+            id (int): The ID of the parent node.
+        """
+        if id not in self.get_parent_ids():
+            raise ValueError("faux")
+        else:
+            if self.parents[id] == 1:
+                del self.parents[id]
+            else:
+                self.parents[id] -= 1
+
+    def remove_child_once(self, id):
+        """
+        Remove one occurence of a parent node
+
+        Args:
+            id (int): The ID of the parent node.
+        """
+        if id not in self.get_children_ids():
+            raise ValueError("faux")
+        else:
+            if self.children[id] == 1:
+                del self.children[id]
+            else:
+                self.children[id] -= 1
+
+
+    def remove_child_id(self, id):
+        if id in self.get_children_ids():
+            del self.children[id]
+
+        else:
+            raise ValueError("Erreur id")
+
+
+    def remove_parent_id(self, id):
+        if id in self.get_parent_ids():
+            del self.parents[id]
+
+        else:
+            raise ValueError("Erreur id")
+                
 
 class open_digraph:  # for open directed graph
     def __init__(self, inputs, outputs, nodes):
@@ -307,8 +353,8 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
         if tgt in self.get_input_ids():
             raise ValueError("Noeud {} est un noeud entrant ! On peut pas "
                              "ajouter une flèche vers ce noeud.".format(src))
-        self.nodes[src].add_child_id(tgt)  # replace add_child with add_child_id ?
-        self.nodes[tgt].add_parent_id(src)  # replace add_parent with add_parent_id ?
+        self.nodes[src].add_child_id(tgt)
+        self.nodes[tgt].add_parent_id(src)
 
     def add_node(self, label='', parents=[], children=[]):
         """
@@ -333,3 +379,76 @@ Arrêts : {}""".format([str(node) for node in self.nodes.values()],
             self.nodes[parent].add_child_id(n0.get_id())
         for child in children:
             self.nodes[child].add_parent_id(n0.get_id())
+
+    def remove_edge(self, src, tgt):
+        self.remove_edges((src, tgt))
+
+    def remove_edges(self, *args):
+        for arg in args:
+            src, tgt = arg[0], arg[1]
+            s = self.get_node_by_id(src)
+            t = self.get_node_by_id(tgt)
+            if tgt not in s.get_children_ids():
+                raise ValueError("Tgt not in Src children ID")
+            elif src not in t.get_parent_ids():
+                raise ValueError("Src not in Tgt parent ID")
+        for arg in args:
+            src, tgt = arg[0], arg[1]
+            s = self.get_node_by_id(src) # accès constant
+            t = self.get_node_by_id(tgt)
+            s.remove_child_id(tgt)
+            t.remove_parent_id(src)
+
+    # def remove_parallel_edges(self, src, tgt):
+    #     self.remove_parallel_edges((src, tgt))
+
+    def remove_parallel_edges(self, *args):
+        for arg in args:
+            src, tgt = arg[0], arg[1]
+            s = self.get_node_by_id(src) # accès constant
+            t = self.get_node_by_id(tgt)
+            if not ((tgt in s.get_children_ids() and src in t.get_parent_ids()) or (src in t.get_children_ids() and tgt in s.get_parent_ids())):
+                raise ValueError("pas de parallel edges ici")
+        for arg in args:
+            src, tgt = arg[0], arg[1]
+            s = self.get_node_by_id(src) # accès constant
+            t = self.get_node_by_id(tgt)
+            if tgt in s.get_children_ids() and src in t.get_parent_ids():
+                s.remove_child_id(tgt)
+                t.remove_parent_id(src)
+            if src in t.get_children_ids() and tgt in s.get_parent_ids():
+                t.remove_child_id(src)
+                s.remove_parent_id(tgt)
+
+    def remove_node_by_id(self, id):
+        self.remove_nodes_by_id([id])
+
+    def remove_nodes_by_id(self, ids):
+        # A tester
+        if set(ids) & set(self.get_node_ids()) == {}:
+            raise ValueError("il y a un noeud qui n'existe pas")
+        else:
+            for id in ids:
+                n = self.get_node_by_id(id)
+                for parent in n.get_parent_ids():
+                    self.remove_parallel_edges((id, parent))
+                for child in n.get_children_ids():
+                    self.remove_parallel_edges((id, child))
+                self.next_fd = min(id, self.next_id)
+                del self.nodes[id]
+
+    def is_well_formed(self):
+        for input in self.get_input_ids():
+            if input not in self.get_node_ids():
+                raise ValueError
+            
+            i = self.get_node_by_id(input)
+
+            if len(i.get_children_ids()) == 1 and i.get :
+                
+
+        for output in self.get_ouput_by_ids():
+            if output not in self.get_node_ids():
+                raise ValueError
+
+        

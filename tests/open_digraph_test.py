@@ -76,6 +76,26 @@ class NodeTest(unittest.TestCase):
         self.assertIn(10, self.n0.get_parent_ids())
         self.assertIn(12, self.n0.get_parent_ids())
 
+    def test_remove_parent_once_node(self):
+        self.assertRaises(ValueError, self.n0.remove_parent_once, 1)
+        self.n0.remove_parent_once(0)
+        self.assertEqual(self.n0.get_parent_ids(), [])
+
+    def test_remove_child_once_node(self):
+        self.assertRaises(ValueError, self.n0.remove_child_once, 1)
+        self.n0.remove_child_once(2)
+        self.assertEqual(self.n0.get_children_ids(), [])
+
+    def test_remove_child_id(self):
+        self.assertRaises(ValueError, self.n0.remove_child_id, 1)
+        self.n0.remove_child_id(2)
+        self.assertEqual(self.n0.get_children_ids(), [])
+
+    def test_remove_parent_id(self):
+        self.assertRaises(ValueError, self.n0.remove_parent_id, 1)
+        self.n0.remove_parent_id(0)
+        self.assertEqual(self.n0.get_parent_ids(), [])
+        
 
 class Open_DigraphTest(unittest.TestCase):
 
@@ -180,6 +200,38 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertRaises(ValueError, self.G.add_node, parents=[5])
         # Un noeud ne peut pas avoir un noeud entrant comme enfant
         self.assertRaises(ValueError, self.G.add_node, children=[4])
+
+    def test_remove_edge_open_digraph(self):
+        self.assertRaises(ValueError, self.G.remove_edge, 1, 0)
+        self.G.remove_edge(0, 1)
+        self.assertRaises(ValueError, self.G.remove_edge, 0, 1)
+
+    def test_remove_edges_open_digraph(self):
+        self.G.remove_edges((0, 1), (1, 2), (2, 6))
+        self.assertRaises(ValueError, self.G.remove_edges, (1, 0))
+        self.assertRaises(ValueError, self.G.remove_edges, (3, 0), (4, 0), (1, 0))
+        self.assertIn(0, self.G.get_node_by_id(3).get_children_ids())
+        self.assertIn(0, self.G.get_node_by_id(4).get_children_ids())
+
+    def test_remove_parallel_edges_1_open_digraph(self):
+        self.assertRaises(ValueError, self.G.remove_parallel_edges, (0, 5))
+        self.G.remove_parallel_edges((1, 0))
+        self.assertRaises(ValueError, self.G.remove_parallel_edges, (1, 0))
+        self.G.remove_parallel_edges((1, 2))
+        self.assertRaises(ValueError, self.G.remove_parallel_edges, (1, 2))
+
+    def test_remove_parallel_edges_2_open_digraph(self):
+        self.G.remove_parallel_edges((0, 2), (1, 2))
+        self.assertNotIn(2, self.G.get_node_by_id(0).get_children_ids())
+        self.assertRaises(ValueError, self.G.remove_parallel_edges, (1, 2))
+
+    def test_remove_node_id_open_digraph(self):
+        self.G.remove_node_by_id(2)
+        self.assertNotIn(2, self.G.get_node_by_id(0).get_children_ids())
+        self.assertNotIn(2, self.G.get_node_by_id(1).get_children_ids())
+        self.assertNotIn(2, self.G.get_node_by_id(6).get_parent_ids())
+        self.G.remove_node_by_id(6)
+        self.assertNotIn(6, self.G.get_node_ids())
 
 if __name__ == '__main__':  # the following code is called only when
     unittest.main()
