@@ -286,7 +286,7 @@ class node:
         ValueError
             If [id] is not recognised as the ID of a parent node.
         """
-        if id not in self.get_parents_ids():
+        if id not in self.get_parent_ids():
             raise ValueError("{} does not have a parent with the ID {}"
                              ".".format(self, id))
         else:
@@ -434,7 +434,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         list of node
             A list containing nodes corresponding to the IDs.
         """
-        return [self.get_node_by_id(id) for id in ids
+        return [self.get_node_by_id(id) for id in ids]
 
     def set_input_ids(self, inputs):
         """
@@ -675,10 +675,11 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         ValueError
             If an ID in [ids] does not correspond to an ID of an existing node.
         """
-        S =  set(self.get_node_ids()) - set(ids)
-        if S != set():
-            raise ValueError("The following IDs do not correspond to"
-                             "existing nodes: {}.".format(S))
+        S, N = set(ids), set(self.get_node_ids())
+        R = S - S & N
+        if R != set():
+            raise ValueError("The following IDs do not correspond to "
+                             "existing nodes: {}.".format(R))
         else:
             for id in ids:
                 n = self.get_node_by_id(id)
@@ -724,7 +725,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
                 return False
 
             o = self.get_node_by_id(output)
-            o_parents = i.get_parents_ids()
+            o_parents = i.get_parent_ids()
 
             if not (len(o_parents) == 1
                     and o.get_parent_multiplicity(o_parents[0]) == 1
@@ -755,14 +756,14 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         ValueError
             If [id] is the ID of an input node.
         """
-        if id is in self.get_input_ids():
+        if id in self.get_input_ids():
             raise ValueError("{} is an input node and thus cannot be the "
                              "child of another input "
                              "node.".format(self.get_node_by_id(id)))
         new_id = self.add_node(children=[id])
         self.add_input_id(new_id)
 
-    def add_output_node(self, id)
+    def add_output_node(self, id):
         """
         Adds an output node.
 
@@ -776,7 +777,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         ValueError
             If [id] is the ID of an output node.
         """
-        if id is in self.get_output_ids():
+        if id in self.get_output_ids():
             raise ValueError("{} is an output node and thus cannot be the "
                              "parent of another input "
                              "node.".format(self.get_node_by_id(id)))
