@@ -560,7 +560,9 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
                              "and cannot be children: {}".format(I))
 
         id = self.new_id()
-        self.nodes[id] = node(id, label, parents, children)
+        self.nodes[id] = node(id, label,
+                              {parent: 1 for parent in parents},
+                              {child: 1 for child in children})
         for parent in parents:
             self.nodes[parent].add_child_id(id)
         for child in children:
@@ -637,7 +639,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
             if not ((tgt in s.get_children_ids()
                      and src in t.get_parent_ids())
                     or (src in t.get_children_ids()
-                     and tgt in s.get_parent_ids())):
+                        and tgt in s.get_parent_ids())):
                 raise ValueError("Parallel edges do not exist between"
                                  "{} and {}".format(s, t))
         for src, tgt in args:
@@ -720,12 +722,12 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
                     and i.get_parent_ids() == []):
                 return False
 
-        for output in self.get_ouput_by_ids():
+        for output in self.get_output_ids():
             if output not in self.get_node_ids():
                 return False
 
             o = self.get_node_by_id(output)
-            o_parents = i.get_parent_ids()
+            o_parents = o.get_parent_ids()
 
             if not (len(o_parents) == 1
                     and o.get_parent_multiplicity(o_parents[0]) == 1
@@ -760,6 +762,12 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
             raise ValueError("{} is an input node and thus cannot be the "
                              "child of another input "
                              "node.".format(self.get_node_by_id(id)))
+
+        if (id in self.get_output_ids() and
+                len(self.get_node_by_id(id).get_parent_ids()) > 0):
+            raise ValueError("{} is an output that already has a parent.".format(
+                self.get_node_by_id(id)))
+
         new_id = self.add_node(children=[id])
         self.add_input_id(new_id)
 
@@ -781,5 +789,11 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
             raise ValueError("{} is an output node and thus cannot be the "
                              "parent of another input "
                              "node.".format(self.get_node_by_id(id)))
+
+        if (id in self.get_input_ids() and
+                len(self.get_node_by_id(id).get_children_ids()) > 0):
+            raise ValueError("{} is an input that already has a child.".format(
+                self.get_node_by_id(id)))
+
         new_id = self.add_node(parents=[id])
         self.add_output_id(new_id)
