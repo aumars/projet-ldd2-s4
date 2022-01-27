@@ -95,7 +95,7 @@ class NodeTest(unittest.TestCase):
         self.assertRaises(ValueError, self.n0.remove_parent_id, 1)
         self.n0.remove_parent_id(0)
         self.assertEqual(self.n0.get_parent_ids(), [])
-        
+
 
 class Open_DigraphTest(unittest.TestCase):
 
@@ -209,7 +209,8 @@ class Open_DigraphTest(unittest.TestCase):
     def test_remove_edges_open_digraph(self):
         self.G.remove_edges((0, 1), (1, 2), (2, 6))
         self.assertRaises(ValueError, self.G.remove_edges, (1, 0))
-        self.assertRaises(ValueError, self.G.remove_edges, (3, 0), (4, 0), (1, 0))
+        self.assertRaises(ValueError, self.G.remove_edges,
+                          (3, 0), (4, 0), (1, 0))
         self.assertIn(0, self.G.get_node_by_id(3).get_children_ids())
         self.assertIn(0, self.G.get_node_by_id(4).get_children_ids())
 
@@ -232,6 +233,24 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertNotIn(2, self.G.get_node_by_id(6).get_parent_ids())
         self.G.remove_node_by_id(6)
         self.assertNotIn(6, self.G.get_node_ids())
+
+    def test_remove_nodes_by_id_open_digraph(self):
+        self.assertRaises(ValueError, self.G.remove_nodes_by_id, [])
+        self.assertRaises(ValueError, self.G.remove_nodes_by_id, [19])
+        self.G.remove_nodes_by_id([1, 2])
+        self.assertNotIn(1, self.G.get_node_by_id(0).get_children_ids())
+        self.assertNotIn(2, self.G.get_node_by_id(0).get_children_ids())
+
+    def test_is_well_formed_open_digraph(self):
+        self.assertEqual(self.G.is_well_formed())
+        self.assertEqual(open_digraph([], [], []).is_well_formed())
+        G2 = open_digraph([0, 4], [1, 2], [self.n0, self.n1])
+        self.assertFalse(G2.is_well_formed())
+        self.G.remove_node_by_id(2)
+        self.G.add_node(parents=[3], children=[1])
+        self.G.remove_edge(0, 2)
+        self.assertEqual(self.G.is_well_formed())
+
 
 if __name__ == '__main__':  # the following code is called only when
     unittest.main()
