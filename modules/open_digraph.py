@@ -586,65 +586,41 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
     def remove_edges(self, *args):
         """
-        Removes edges between pairs of nodes.
+        Removes an edge between pairs of nodes. If no edges exist between a
+        pair of nodes, no error is returned.
 
         Parameters
         ----------
         *args : tuple of int * int
             Pairs of nodes with the ID of the source node in first and the ID
             of the target node in second.
-
-        Raises
-        ------
-        ValueError
-            If the ID of a target node does not exist as the ID of a child of
-            its source node.
-        ValueError
-            If the ID of a source node does not exist as the ID of a parent of
-            its child node.
         """
         for src, tgt in args:
-            s = self.get_node_by_id(src)
-            t = self.get_node_by_id(tgt)
-            if tgt not in s.get_children_ids():
-                raise ValueError("ID {} does not exist as a"
-                                 "child of source node {}".format(tgt, s))
-            elif src not in t.get_parent_ids():
-                raise ValueError("ID {} does not exist as a"
-                                 "parent of target node {}".format(src, t))
-        for src, tgt in args:
-            s = self.get_node_by_id(src)
-            t = self.get_node_by_id(tgt)
-            s.remove_child_id(tgt)
-            t.remove_parent_id(src)
+            try:
+                s = self.get_node_by_id(src)
+                t = self.get_node_by_id(tgt)
+            except ValueError:
+                continue
+            s.remove_child_once(tgt)
+            t.remove_parent_once(src)
 
     def remove_parallel_edges(self, *args):
         """
-        Removes parallel edges between pairs of nodes.
+        Removes parallel edges between pairs of nodes. If no parallel edges
+        exist between a pair of nodes, no error is returned.
 
         Parameters
         ----------
         *args : tuple of int * int
             Pairs of nodes with the ID of the source node in first and the ID
             of the target node in second.
-
-        Raises
-        ------
-        ValueError
-            If no parallel edges exist between a pair of nodes.
         """
         for src, tgt in args:
-            s = self.get_node_by_id(src)
-            t = self.get_node_by_id(tgt)
-            if not ((tgt in s.get_children_ids()
-                     and src in t.get_parent_ids())
-                    or (src in t.get_children_ids()
-                        and tgt in s.get_parent_ids())):
-                raise ValueError("Parallel edges do not exist between"
-                                 "{} and {}".format(s, t))
-        for src, tgt in args:
-            s = self.get_node_by_id(src)
-            t = self.get_node_by_id(tgt)
+            try:
+                s = self.get_node_by_id(src)
+                t = self.get_node_by_id(tgt)
+            except ValueError:
+                continue
             if tgt in s.get_children_ids() and src in t.get_parent_ids():
                 s.remove_child_id(tgt)
                 t.remove_parent_id(src)
@@ -665,32 +641,35 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
     def remove_nodes_by_id(self, ids):
         """
-        Remove nodes.
+        Remove nodes. If an ID in [ids] does not correspond to an ID of an
+        existing node, no error is thrown.
 
         Parameters
         ----------
         ids : list of int
             List of IDs of nodes.
-
-        Raises
-        ------
-        ValueError
-            If an ID in [ids] does not correspond to an ID of an existing node.
         """
-        S, N = set(ids), set(self.get_node_ids())
-        R = S - S & N
-        if R != set():
-            raise ValueError("The following IDs do not correspond to "
-                             "existing nodes: {}.".format(R))
-        else:
-            for id in ids:
+        for id in ids:
+            try:
                 n = self.get_node_by_id(id)
-                for parent in n.get_parent_ids():
-                    self.remove_parallel_edges((id, parent))
-                for child in n.get_children_ids():
-                    self.remove_parallel_edges((id, child))
-                self.next_fd = min(id, self.next_id)
-                del self.nodes[id]
+            except ValueError:
+                continue
+            for parent in n.get_parent_ids():
+                self.remove_parallel_edges((id, parent))
+            for child in n.get_children_ids():
+                self.remove_parallel_edges((id, child))
+            self.next_fd = min(id, self.next_id)
+            del self.nodes[id]
+            try:
+                input_index = self.get_input_ids().index(id)
+                del self.inputs[input_index]
+            except ValueError:
+                pass
+            try:
+                output_index = self.get_output_ids().index(id)
+                del self.inputs[output_index]
+            except ValueError:
+                pass
 
     def is_well_formed(self):
         """
