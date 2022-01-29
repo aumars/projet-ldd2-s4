@@ -1,296 +1,4 @@
-class node:
-    def __init__(self, identity, label, parents, children):
-        """
-        A graph node.
-
-        Parameters
-        ----------
-        identity : int
-            Its unique ID in the graph. The ID must be a positive integer.
-        label : str
-            A string.
-        parents : int->int dict
-            Maps a parent node's id to its multiplicity
-        children : int->int dict
-            Maps a child node's id to its multiplicity
-        """
-        self.id = identity
-        self.label = label
-        self.parents = parents
-        self.children = children
-
-    def __str__(self):
-        return "N({})".format(self.id)
-
-    def __repr__(self):
-        return str(self)
-
-    def copy(self):
-        """
-        Copy the node.
-
-        Returns
-        -------
-        node
-            The copy of this node.
-        """
-        return node(self.id, self.label, self.parents, self.children)
-
-    def get_id(self):
-        """
-        Get the ID.
-
-        Returns
-        -------
-        int
-            The node ID.
-        """
-        return self.id
-
-    def get_label(self):
-        """
-        Get the label.
-
-        Returns
-        -------
-        string
-            The node label.
-        """
-        return self.label
-
-    def get_parent_ids(self):
-        """
-        Get the IDs of all the parents.
-
-        Returns
-        -------
-        list of int
-            A list containing the IDs of all parents.
-        """
-        return list(self.parents.keys())
-
-    def get_parent_multiplicity(self, id):
-        """
-        Get the multiplicity of a parent
-
-        Parameters
-        ----------
-        id : int
-            The ID of the parent node.
-
-        Returns
-        -------
-        int
-            The multiplicity of the parent node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a parent node.
-        """
-        if id not in self.get_parent_ids():
-            raise ValueError("{} does not have a parent with the ID {}"
-                             ".".format(self, id))
-        else:
-            return self.parents[id]
-
-    def get_children_ids(self):
-        """
-        Get the IDs of all the children.
-
-        Returns
-        -------
-        list of int
-            A list containing the IDs of all children.
-        """
-        return list(self.children.keys())
-
-    def get_child_multiplicity(self, id):
-        """
-        Get the multiplicity of a child
-
-        Parameters
-        ----------
-        id : int
-            The ID of the child node.
-
-        Returns
-        -------
-        int
-            The multiplicity of the child node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a child node.
-        """
-        if id not in self.get_children_ids():
-            raise ValueError("{} does not have a child with the ID {}"
-                             ".".format(self, id))
-        else:
-            return self.children[id]
-
-    def set_id(self, id):
-        """
-        Set the node ID.
-
-        Parameters
-        ----------
-        id : int
-            The node ID.
-        """
-        self.id = id
-
-    def set_label(self, label):
-        """
-        Set the node label.
-
-        Parameters
-        ----------
-        label : str
-            The node label.
-        """
-        self.label = label
-
-    def set_parent_ids(self, parents_ids):
-        """
-        Set the parents of the node.
-
-        Parameters
-        ----------
-        parents_ids : int->int dict
-            A dictionary containing the parents of the node.
-        """
-        self.parents.clear()
-        for parent in parents_ids:
-            self.parents[parent] = 1
-
-    def set_children_ids(self, children_ids):
-        """
-        Set the children of the node.
-
-        Parameters
-        ----------
-        children_ids : int->int dict
-            A dictionary containing the children of the node.
-        """
-        self.children.clear()
-        for child in children_ids:
-            self.children[child] = 1
-
-    def add_child_id(self, child):
-        """
-        Add a new child to the node.
-
-        Parameters
-        ----------
-        child : int
-            The ID of the child node.
-        """
-        if child not in self.children.keys():
-            self.children[child] = 1
-        else:
-            self.children[child] += 1
-
-    def add_parent_id(self, parent):
-        """
-        Add a new parent to the node.
-
-        Parameters
-        ----------
-        parent : int
-            The ID of the parent node.
-        """
-        if parent not in self.parents.keys():
-            self.parents[parent] = 1
-        else:
-            self.parents[parent] += 1
-
-    def remove_parent_once(self, id):
-        """
-        Remove one occurence of a parent node.
-
-        Parameters
-        ----------
-        id : int
-            The ID of the parent node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a parent node.
-        """
-        if id not in self.get_parent_ids():
-            raise ValueError("{} does not have a parent with the ID {}"
-                             ".".format(self, id))
-        else:
-            if self.parents[id] == 1:
-                del self.parents[id]
-            else:
-                self.parents[id] -= 1
-
-    def remove_child_once(self, id):
-        """
-        Remove one occurence of a child node.
-
-        Parameters
-        ----------
-        id : int
-            The ID of the child node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a child node.
-        """
-        if id not in self.get_children_ids():
-            raise ValueError("{} does not have a child with the ID {}"
-                             ".".format(self, id))
-        else:
-            if self.children[id] == 1:
-                del self.children[id]
-            else:
-                self.children[id] -= 1
-
-    def remove_child_id(self, id):
-        """
-        Remove all occurences of a child node.
-
-        Parameters
-        ----------
-        id : int
-            The ID of the child node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a child node.
-        """
-        if id not in self.get_children_ids():
-            raise ValueError("{} does not have a child with the ID {}"
-                             ".".format(self, id))
-        else:
-            del self.children[id]
-
-    def remove_parent_id(self, id):
-        """
-        Remove all occurences of a parent node.
-
-        Parameters
-        ----------
-        id : int
-            The ID of the parent node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a parent node.
-        """
-        if id not in self.get_parent_ids():
-            raise ValueError("{} does not have a parent with the ID {}"
-                             ".".format(self, id))
-        else:
-            del self.parents[id]
+from .node import node
 
 
 class open_digraph:
@@ -300,16 +8,16 @@ class open_digraph:
 
         Parameters
         ----------
-        inputs : list of int
+        inputs : int list
             The IDs of the input nodes.
-        outputs : list of int
+        outputs : int list
             The IDs of the output nodes.
-        nodes : iterable object
+        nodes : node iter
             The nodes of the graph.
         """
         self.inputs = inputs
         self.outputs = outputs
-        self.nodes = {node.id: node for node in nodes}
+        self.nodes = {node.get_id(): node for node in nodes}
         self.next_id = max(self.nodes.keys()) + 1
 
     def __str__(self):
@@ -347,7 +55,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Returns
         -------
-        list of int
+        int list
             The list of the inputs IDs
         """
         return self.inputs
@@ -358,7 +66,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Returns
         -------
-        list of int
+        int list
             The list of the outputs IDs
         """
         return self.outputs
@@ -380,7 +88,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Returns
         -------
-        list of int
+        int list
             A list containing nodes.
         """
         return list(self.nodes.values())
@@ -391,7 +99,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Returns
         -------
-        list of int
+        int list
             A list containing the IDs of the nodes.
         """
         return list(self.nodes.keys())
@@ -412,11 +120,12 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Raises
         ------
-        KeyError
+        ValueError
             If [id] is not recognised as the ID of an existing node.
         """
         if id not in self.nodes.keys():
-            raise KeyError("A node with the ID {} does not exist.".format(id))
+            raise ValueError("A node with the ID {} does not exist."
+                           .format(id))
         else:
             return self.nodes[id]
 
@@ -442,10 +151,10 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Parameters
         ----------
-        inputs : list of int
-            The input list.
+        inputs : int list
+            The input list. Duplicates are removed.
         """
-        self.inputs = inputs
+        self.inputs = list(dict.fromkeys(inputs))
 
     def set_output_ids(self, outputs):
         """
@@ -453,33 +162,54 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Parameters
         ----------
-        outputs : list of int
-            The outputs list.
+            The input list. Duplicates are removed.
         """
-        self.outputs = outputs
+        self.outputs = list(dict.fromkeys(outputs))
 
     def add_input_id(self, id):
         """
-        Add a new input ID.
+        Add a new input ID. If the ID already exists as an input node,
+        do nothing.
 
         Parameters
         ----------
         id : int
             The input ID to add.
+
+        Raises
+        ------
+        ValueError
+            If [id] already exists as a output node or an internal node.
         """
-        if id not in self.inputs:
+        if id in self.get_output_ids() or (id in self.get_node_ids() and id
+                                           not in self.get_input_ids()):
+            raise ValueError("ID {} already exists as a output node "
+                             "or an internal node."
+                             .format(id))
+        elif id not in self.inputs:
             self.inputs.append(id)
 
     def add_output_id(self, id):
         """
-        Add a new output ID.
+        Add a new output ID. If the ID already exists as an output node,
+        do nothing.
 
         Parameters
         ----------
         id : int
             The output ID to add.
+
+        Raises
+        ------
+        ValueError
+            If [id] already exists as a input node or an internal node.
         """
-        if id not in self.outputs:
+        if id in self.get_input_ids() or (id in self.get_node_ids() and id
+                                          not in self.get_output_ids()):
+            raise ValueError("ID {} already exists as a input node "
+                             "or an internal node."
+                             .format(id))
+        elif id not in self.outputs:
             self.outputs.append(id)
 
     def new_id(self):
@@ -508,18 +238,31 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         Raises
         ------
         ValueError
+            If [src] does not exist as a node.
+        ValueError
+            If [tgt] does not exist as a node.
+        ValueError
             If [src] is the ID of an output node.
         ValueError
             If [tgt] is the ID of an input node.
         """
-        if src in self.get_output_ids():
+        if src not in self.get_node_ids():
+            raise ValueError("{} does not correspond to an existing node."
+                             .format(src))
+        elif tgt not in self.get_node_ids():
+            raise ValueError("{} does not correspond to an existing node."
+                             .format(tgt))
+        elif src in self.get_output_ids():
             raise ValueError("{} is an output node! We cannot"
-                             "add an edge from this node".format(src))
-        if tgt in self.get_input_ids():
+                             "add an edge from this node"
+                             .format(src))
+        elif tgt in self.get_input_ids():
             raise ValueError("{} is an input node! We cannot"
-                             "add an edge from this node".format(src))
-        self.nodes[src].add_child_id(tgt)
-        self.nodes[tgt].add_parent_id(src)
+                             "add an edge from this node"
+                             .format(src))
+        else:
+            self.get_node_by_id(src).add_child_id(tgt)
+            self.get_node_by_id(tgt).add_parent_id(src)
 
     def add_node(self, label='', parents=[], children=[]):
         """
@@ -530,9 +273,9 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         ----------
         label : str, optional
             The label of the new node.
-        parents : list of int, optional
+        parents : int list, optional
             The list of the IDs of parent nodes.
-        children : list of int, optional
+        children : int list, optional
             The list of the IDs of child nodes.
 
         Returns
@@ -543,21 +286,31 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         Raises
         ------
         ValueError
+            If one of the IDs in [parents] or [children] does not correspond to
+            an ID.
+        ValueError
             If one of the IDs in [parents] correspond to an ID of an
             output node.
         ValueError
             If one of the IDs in [children] correspond to an ID of an
-            input node.
+            input node or does not correspond to a node.
         """
+        S = set(parents).union(set(children)) - set(self.get_node_ids())
+        if S != set():
+            raise ValueError("The following IDs do not correspond "
+                             "to existing nodes : {}."
+                             .format(S))
         O = set(parents) & set(self.get_output_ids())
         if O != set():
-            raise ValueError("The following nodes are output nodes"
-                             "and cannot be parents: {}".format(O))
+            raise ValueError("The following nodes are output nodes "
+                             "and cannot be parents: {}."
+                             .format(O))
 
         I = set(children) & set(self.get_input_ids())
         if I != set():
-            raise ValueError("The following nodes are input nodes"
-                             "and cannot be children: {}".format(I))
+            raise ValueError("The following nodes are input nodes "
+                             "and cannot be children: {}."
+                             .format(I))
 
         id = self.new_id()
         self.nodes[id] = node(id, label,
@@ -569,20 +322,6 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
             self.nodes[child].add_parent_id(id)
 
         return id
-
-    def remove_edge(self, src, tgt):
-        """
-        Remove an edge between two nodes. This is a special case of
-        remove_edges.
-
-        Parameters
-        ----------
-        src : int
-            The ID of the source node.
-        target : int
-            The ID of the target node.
-        """
-        self.remove_edges((src, tgt))
 
     def remove_edges(self, *args):
         """
@@ -599,10 +338,24 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
             try:
                 s = self.get_node_by_id(src)
                 t = self.get_node_by_id(tgt)
+                s.remove_child_once(tgt)
+                t.remove_parent_once(src)
             except ValueError:
                 continue
-            s.remove_child_once(tgt)
-            t.remove_parent_once(src)
+
+    def remove_edge(self, src, tgt):
+        """
+        Remove an edge between two nodes. This is a special case of
+        remove_edges.
+
+        Parameters
+        ----------
+        src : int
+            The ID of the source node.
+        target : int
+            The ID of the target node.
+        """
+        self.remove_edges((src, tgt))
 
     def remove_parallel_edges(self, *args):
         """
@@ -628,17 +381,6 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
                 t.remove_child_id(src)
                 s.remove_parent_id(tgt)
 
-    def remove_node_by_id(self, id):
-        """
-        Remove a node. This is a special case of remove_nodes_by_id.
-
-        Parameters
-        ----------
-        id : int
-            The ID of a node.
-        """
-        self.remove_nodes_by_id([id])
-
     def remove_nodes_by_id(self, ids):
         """
         Remove nodes. If an ID in [ids] does not correspond to an ID of an
@@ -646,7 +388,7 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
 
         Parameters
         ----------
-        ids : list of int
+        ids : int list
             List of IDs of nodes.
         """
         for id in ids:
@@ -667,9 +409,20 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
                 pass
             try:
                 output_index = self.get_output_ids().index(id)
-                del self.inputs[output_index]
+                del self.outputs[output_index]
             except ValueError:
                 pass
+
+    def remove_node_by_id(self, id):
+        """
+        Remove a node. This is a special case of remove_nodes_by_id.
+
+        Parameters
+        ----------
+        id : int
+            The ID of a node.
+        """
+        self.remove_nodes_by_id([id])
 
     def is_well_formed(self):
         """
@@ -731,24 +484,35 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         ----------
         id : int
             The ID of the input node's child.
-
+        
+        Returns
+        -------
+        int
+            The ID of the new input node.
+        
         Raises
         ------
         ValueError
+            If [id] does not correspond to an existing node.
+        ValueError
             If [id] is the ID of an input node.
         """
-        if id in self.get_input_ids():
+        if id not in self.get_node_ids():
+            raise ValueError("{} does not correspond to an existing node."
+                             .format(id))
+        elif id in self.get_input_ids():
             raise ValueError("{} is an input node and thus cannot be the "
-                             "child of another input "
-                             "node.".format(self.get_node_by_id(id)))
+                             "child of another input node."
+                             .format(self.get_node_by_id(id)))
 
-        if (id in self.get_output_ids() and
-                len(self.get_node_by_id(id).get_parent_ids()) > 0):
-            raise ValueError("{} is an output that already has a parent.".format(
-                self.get_node_by_id(id)))
-
-        new_id = self.add_node(children=[id])
-        self.add_input_id(new_id)
+        elif (id in self.get_output_ids() and
+            len(self.get_node_by_id(id).get_parent_ids()) > 0):
+            raise ValueError("{} is an output that already has a parent."
+                             .format(self.get_node_by_id(id)))
+        else:
+            new_id = self.add_node(children=[id])
+            self.inputs.append(new_id)
+            return new_id
 
     def add_output_node(self, id):
         """
@@ -758,21 +522,32 @@ Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
         ----------
         id : int
             The ID of the output node's parent.
+        
+        Returns
+        -------
+        int
+            The ID of the new output node.
 
         Raises
         ------
         ValueError
+            If [id] does not correspond to an existing node.
+        ValueError
             If [id] is the ID of an output node.
         """
-        if id in self.get_output_ids():
+        if id not in self.get_node_ids():
+            raise ValueError("{} does not correspond to an existing node."
+                             .format(id))
+        elif id in self.get_output_ids():
             raise ValueError("{} is an output node and thus cannot be the "
-                             "parent of another input "
-                             "node.".format(self.get_node_by_id(id)))
+                             "parent of another input node."
+                             .format(self.get_node_by_id(id)))
 
-        if (id in self.get_input_ids() and
-                len(self.get_node_by_id(id).get_children_ids()) > 0):
-            raise ValueError("{} is an input that already has a child.".format(
-                self.get_node_by_id(id)))
-
-        new_id = self.add_node(parents=[id])
-        self.add_output_id(new_id)
+        elif (id in self.get_input_ids() and
+            len(self.get_node_by_id(id).get_children_ids()) > 0):
+            raise ValueError("{} is an input that already has a child."
+                             .format(self.get_node_by_id(id)))
+        else:
+            new_id = self.add_node(parents=[id])
+            self.outputs.append(new_id)
+            return new_id
