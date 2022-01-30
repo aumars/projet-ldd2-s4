@@ -22,8 +22,8 @@ class open_digraph:
 
     def __str__(self):
         return """Noeuds : {}
-Arrêts : {}""".format(", ".join([node for node in self.nodes.values()]),
-                      ", ".join([node + " -> " + self.get.node_by_id(child)
+Arrêts : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
+                      ", ".join([str(node) + " -> " + str(self.get_node_by_id(child))
                                  for node in self.nodes.values()
                                  for child in node.children.keys()]))
 
