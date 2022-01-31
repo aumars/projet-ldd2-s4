@@ -176,14 +176,18 @@ Arrêts : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         Raises
         ------
         ValueError
-            If [id] already exists as a output node or an internal node.
+            If [id] already exists as a output node.
+        ValueError
+            If [id] points to a node that has parents.
         """
-        if id in self.get_output_ids() or (id in self.get_node_ids() and id
-                                           not in self.get_input_ids()):
+        if id in self.get_output_ids():
             raise ValueError("ID {} already exists as a output node "
                              "or an internal node."
                              .format(id))
-        elif id not in self.inputs:
+        elif id in self.get_node_ids() and self.get_node_by_id(id).get_parent_ids() != []:
+            raise ValueError("{} has parents and cannot be an input node."
+                             .format(self.get_node_by_id(id)))
+        elif id not in self.get_input_ids():
             self.inputs.append(id)
 
     def add_output_id(self, id):
@@ -199,14 +203,18 @@ Arrêts : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         Raises
         ------
         ValueError
-            If [id] already exists as a input node or an internal node.
+            If [id] already exists as a input node.
+        ValueError
+            If [id] points to a node that has children.
         """
-        if id in self.get_input_ids() or (id in self.get_node_ids() and id
-                                          not in self.get_output_ids()):
+        if id in self.get_input_ids():
             raise ValueError("ID {} already exists as a input node "
                              "or an internal node."
                              .format(id))
-        elif id not in self.outputs:
+        elif id in self.get_node_ids() and self.get_node_by_id(id).get_children_ids() != []:
+            raise ValueError("{} has children and cannot be an output node."
+                             .format(self.get_node_by_id(id)))
+        elif id not in self.get_output_ids():
             self.outputs.append(id)
 
     def new_id(self):
@@ -508,7 +516,7 @@ Arrêts : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                              .format(self.get_node_by_id(id)))
         else:
             new_id = self.add_node(children=[id])
-            self.inputs.append(new_id)
+            self.add_input_id(new_id)
             return new_id
 
     def add_output_node(self, id):
@@ -546,5 +554,5 @@ Arrêts : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                              .format(self.get_node_by_id(id)))
         else:
             new_id = self.add_node(parents=[id])
-            self.outputs.append(new_id)
+            self.add_output_id(new_id)
             return new_id
