@@ -18,7 +18,7 @@ class open_digraph:
         self.inputs = inputs
         self.outputs = outputs
         self.nodes = {node.get_id(): node for node in nodes}
-        self.next_id = max(self.nodes.keys()) + 1
+        self.next_id = 0 if self.nodes == {} else max(self.nodes.keys()) + 1
 
     def __str__(self):
         return """Noeuds : {}
@@ -33,10 +33,7 @@ Arrêts : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
     @classmethod
     def empty(self):
         """Create an empty graph."""
-        self.inputs = []
-        self.outputs = []
-        self.nodes = {}
-        self.next_id = 0
+        return open_digraph([], [], {})
 
     def copy(self):
         """
