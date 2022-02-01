@@ -15,7 +15,7 @@ def get_random_int(bound, number_generator=random):
     number_generator is [0,1] only
     anything else is modulo'ed by 1
     """
-    return int(abs((number_generator % 1) * (bound + 1)))
+    return int(abs((number_generator() % 1) * (bound + 1)))
 
 def random_int_list(n, bound, number_generator=random):
     """

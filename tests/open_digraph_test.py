@@ -24,6 +24,22 @@ class Open_DigraphTest(unittest.TestCase):
                                                self.i0, self.i1, self.o0,
                                                self.o1])
 
+        self.id_list = list(range(5))
+        self.n0_2 = node(self.id_list[0], "v0", {3: 1}, {1: 1, 2: 1})
+        self.n1_2 = node(self.id_list[1], "v1", {0: 1}, {3: 1, 4: 2})
+        self.n2_2 = node(self.id_list[2], "v2", {0: 1}, {3: 2})
+        self.n3_2 = node(self.id_list[3], "v3", {1: 1, 2: 2}, {0: 1, 4: 1})
+        self.n4_2 = node(self.id_list[4], "v4", {}, {1: 2, 3: 1})
+
+        self.G2 = open_digraph([], [],
+                               [self.n0_2, self.n1_2, self.n2_2, self.n3_2, self.n4_2])
+
+        self.M_G2 = [[0, 1, 1, 0, 0],
+                   [0, 0, 0, 1, 2],
+                   [0, 0, 0, 2, 0],
+                   [1, 0, 0, 0, 1],
+                   [0]*5]
+
     def test_init_open_digraph(self):
         """Test the constructor."""
         self.assertIsInstance(self.G, open_digraph)
@@ -148,7 +164,8 @@ class Open_DigraphTest(unittest.TestCase):
         """Test add_edge method between two valid nodes."""
         self.G.add_edge(2, 0)
         self.assertEqual(self.G.get_node_by_id(2).get_child_multiplicity(0), 1)
-        self.assertEqual(self.G.get_node_by_id(0).get_parent_multiplicity(2), 1)
+        self.assertEqual(self.G.get_node_by_id(
+            0).get_parent_multiplicity(2), 1)
 
     def test_add_edge_from_valid_node_to_input_node_open_digraph(self):
         """Test add_edge method from valid node to input node."""
@@ -169,22 +186,29 @@ class Open_DigraphTest(unittest.TestCase):
         id = self.G.add_node(parents=[3], children=[1])
         self.assertEqual(len(self.G.get_nodes()), node_cpt + 1)
         self.assertIn(id, self.G.get_node_ids())
-        self.assertEqual(self.G.get_node_by_id(id).get_parent_multiplicity(3), 1)
-        self.assertEqual(self.G.get_node_by_id(3).get_child_multiplicity(id), 1)
-        self.assertEqual(self.G.get_node_by_id(id).get_child_multiplicity(1), 1)
-        self.assertEqual(self.G.get_node_by_id(1).get_parent_multiplicity(id), 1)
+        self.assertEqual(self.G.get_node_by_id(
+            id).get_parent_multiplicity(3), 1)
+        self.assertEqual(self.G.get_node_by_id(
+            3).get_child_multiplicity(id), 1)
+        self.assertEqual(self.G.get_node_by_id(
+            id).get_child_multiplicity(1), 1)
+        self.assertEqual(self.G.get_node_by_id(
+            1).get_parent_multiplicity(id), 1)
 
     def test_add_node_nonexistant_parent_open_digraph(self):
         """Test add_node method with a nonexistant parent."""
-        self.assertRaises(ValueError, self.G.add_node, parents=[-1], children=[1])
+        self.assertRaises(ValueError, self.G.add_node,
+                          parents=[-1], children=[1])
 
     def test_add_node_output_parent_open_digraph(self):
         """Test add_node method with a output parent."""
-        self.assertRaises(ValueError, self.G.add_node, parents=[5], children=[1])
+        self.assertRaises(ValueError, self.G.add_node,
+                          parents=[5], children=[1])
 
     def test_add_node_input_child_open_digraph(self):
         """Test add_node method with a input child."""
-        self.assertRaises(ValueError, self.G.add_node, parents=[0], children=[3])
+        self.assertRaises(ValueError, self.G.add_node,
+                          parents=[0], children=[3])
 
     def test_remove_edges_existing_edges_open_digraph(self):
         """Test remove_edges method with existing edges."""
@@ -192,7 +216,8 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertNotIn(1, self.G.get_node_by_id(0).get_children_ids())
         self.assertNotIn(0, self.G.get_node_by_id(1).get_parent_ids())
         self.assertEqual(self.G.get_node_by_id(1).get_child_multiplicity(2), 1)
-        self.assertEqual(self.G.get_node_by_id(2).get_parent_multiplicity(1), 1)
+        self.assertEqual(self.G.get_node_by_id(
+            2).get_parent_multiplicity(1), 1)
         self.assertNotIn(6, self.G.get_node_by_id(2).get_children_ids())
         self.assertNotIn(2, self.G.get_node_by_id(6).get_parent_ids())
 
@@ -331,3 +356,13 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertIn(id, self.G.get_output_ids())
         self.assertRaises(ValueError, self.G.add_output_node, 3)
         self.assertRaises(ValueError, self.G.add_output_node, 5)
+
+    def test_graph_from_adjacency_matrix(self):
+        G = open_digraph.graph_from_adjacency_matrix(self.M_G2)
+        print("\nAffichage Graphe G2 original :\n",self.G2)
+        print("\nAffichage Graphe G construit :\n",G)
+
+    def test_node_dict(self):
+        id_set = set(self.id_list)
+        values_set = set(open_digraph.node_dict(self.G2).values())
+        self.assertEqual(len(id_set), len(values_set))

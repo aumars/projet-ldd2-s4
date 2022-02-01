@@ -563,7 +563,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             return new_id
 
     @classmethod
-    def graph_from_adjacency_matrix(A):
+    def graph_from_adjacency_matrix(self, A):
         G = open_digraph.empty()
         nodes = [G.add_node() for _ in range(len(A))]
         for i in range(len(A)):
@@ -573,7 +573,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         return G
 
     @classmethod
-    def random(cls, n, bound, inputs=0, outputs=0, form="free", number_generator=random):
+    def random(self, n, bound, cls=None, inputs=0, outputs=0, form="free", number_generator=random):
         if form == "free":
             A = random_int_matrix(n, bound, null_diag=False, number_generator=number_generator)
         elif form == "loop-free":
