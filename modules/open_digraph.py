@@ -1,3 +1,8 @@
+from random import random
+from .utils import (random_int_matrix,
+                    random_triangular_int_matrix,
+                    random_oriented_int_matrix,
+                    random_symetric_int_matrix)
 from .node import node
 
 
@@ -556,3 +561,48 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             new_id = self.add_node(parents=[id])
             self.add_output_id(new_id)
             return new_id
+
+    @classmethod
+    def graph_from_adjacency_matrix(A):
+        G = open_digraph.empty()
+        nodes = [G.add_node() for _ in range(len(A))]
+        for i in range(len(A)):
+            for j in range(len(A)):
+                for k in range(A[i][j]):
+                    G.add_edge(nodes[i], nodes[j])
+        return G
+
+    @classmethod
+    def random(cls, n, bound, inputs=0, outputs=0, form="free", number_generator=random):
+        if form == "free":
+            A = random_int_matrix(n, bound, null_diag=False, number_generator=number_generator)
+        elif form == "loop-free":
+            A = random_int_matrix(n, bound, number_generator=number_generator)
+        elif form == "DAG":
+            A = random_triangular_int_matrix(n, bound, number_generator=number_generator)
+        elif form == "oriented":
+            A = random_oriented_int_matrix(n, bound, number_generator=number_generator)
+        elif form == "undirected":
+            A = random_symetric_int_matrix(n, bound, null_diag=False, number_generator=number_generator)
+        elif form == "loop-free undirected":
+            A = random_symetric_int_matrix(n, bound, number_generator=number_generator)
+        else:
+            return ValueError("{} n'est pas un option."
+                              .format(form))
+        return open_digraph.graph_from_adjacency_matrix(A)
+
+    def node_dict(self):
+        N = self.get_node_ids()
+        return {N[i]: i for i in range(len(N))}
+
+    def adjacency_matrix(self):
+        dict = self.node_dict()
+        n = len(dict)
+        A = [[0] * n] * n
+        for entry in dict:
+            id = entry.key()
+            i = entry.value()
+            for child in id.get_children_ids():
+                j = dict[child]
+                A[i][j] = id.get_child_multiplicity(child)
+        return A
