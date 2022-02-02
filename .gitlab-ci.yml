@@ -3,7 +3,7 @@ run tests:
   image: python:latest
   script:
     - pip install coverage
-    - coverage run python3 -m unittest discover tests "*_test.py"
+    - coverage run -m unittest discover tests "*_test.py"
     - coverage report
     - coverage xml
   artifacts:
