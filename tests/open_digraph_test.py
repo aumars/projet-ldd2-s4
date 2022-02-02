@@ -24,21 +24,20 @@ class Open_DigraphTest(unittest.TestCase):
                                                self.i0, self.i1, self.o0,
                                                self.o1])
 
-        self.id_list = list(range(5))
-        self.n0_2 = node(self.id_list[0], "v0", {3: 1}, {1: 1, 2: 1})
-        self.n1_2 = node(self.id_list[1], "v1", {0: 1}, {3: 1, 4: 2})
-        self.n2_2 = node(self.id_list[2], "v2", {0: 1}, {3: 2})
-        self.n3_2 = node(self.id_list[3], "v3", {1: 1, 2: 2}, {0: 1, 4: 1})
-        self.n4_2 = node(self.id_list[4], "v4", {}, {1: 2, 3: 1})
+        self.n0_2 = node(0, "v0", {3: 1}, {1: 1, 2: 1})
+        self.n1_2 = node(1, "v1", {0: 1}, {3: 1, 4: 2})
+        self.n2_2 = node(2, "v2", {0: 1}, {3: 2})
+        self.n3_2 = node(3, "v3", {1: 1, 2: 2}, {0: 1, 4: 1})
+        self.n4_2 = node(4, "v4", {}, {1: 2, 3: 1})
 
         self.G2 = open_digraph([], [],
                                [self.n0_2, self.n1_2, self.n2_2, self.n3_2, self.n4_2])
 
         self.M_G2 = [[0, 1, 1, 0, 0],
-                   [0, 0, 0, 1, 2],
-                   [0, 0, 0, 2, 0],
-                   [1, 0, 0, 0, 1],
-                   [0]*5]
+                     [0, 0, 0, 1, 2],
+                     [0, 0, 0, 2, 0],
+                     [1, 0, 0, 0, 1],
+                     [0]*5]
 
     def test_init_open_digraph(self):
         """Test the constructor."""
@@ -359,10 +358,14 @@ class Open_DigraphTest(unittest.TestCase):
 
     def test_graph_from_adjacency_matrix(self):
         G = open_digraph.graph_from_adjacency_matrix(self.M_G2)
-        print("\nAffichage Graphe G2 original :\n",self.G2)
-        print("\nAffichage Graphe G construit :\n",G)
+        print("\nAffichage Graphe G2 original :\n", self.G2)
+        print("\nAffichage Graphe G construit :\n", G)
+
+    def test_adjacency_matrix(self):
+        self.assertListEqual(self.G2.adjacency_matrix(), self.M_G2)
 
     def test_node_dict(self):
-        id_set = set(self.id_list)
-        values_set = set(open_digraph.node_dict(self.G2).values())
-        self.assertEqual(len(id_set), len(values_set))
+        uniq_dict_1 = open_digraph.node_dict(self.G)
+        uniq_dict_2 = open_digraph.node_dict(self.G2)
+        self.assertEqual(len(uniq_dict_1), len(set(uniq_dict_1.values())))
+        self.assertEqual(len(uniq_dict_2), len(set(uniq_dict_2.values())))

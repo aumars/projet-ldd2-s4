@@ -1,7 +1,9 @@
+from random import randrange
 from modules.utils import *
 from modules.node import node
 from modules.open_digraph import open_digraph
 import unittest
+import numpy as np
 import sys
 import os
 root = os.path.normpath(os.path.join(__file__, './../..'))
@@ -10,90 +12,99 @@ sys.path.append(root)
 
 class UtilsTest(unittest.TestCase):
     def setUp(self):
-        self.id = list(range(5))
-        self.n0 = node(self.id[0], "v0", {3: 1}, {1: 1, 2: 1})
-        self.n1 = node(self.id[1], "v1", {0: 1}, {3: 1, 4: 2})
-        self.n2 = node(self.id[2], "v2", {0: 1}, {3: 2})
-        self.n3 = node(self.id[3], "v3", {1: 1, 2: 2}, {0: 1, 4: 1})
-        self.n4 = node(self.id[4], "v4", {}, {1: 2, 3: 1})
-
-        self.g = open_digraph(
-            [], [], [self.n0, self.n1, self.n2, self.n3, self.n4])
-
-        self.Ag = [[0, 1, 1, 0, 0],
-                   [0, 0, 0, 1, 2],
-                   [0, 0, 0, 2, 0],
-                   [1, 0, 0, 0, 1],
-                   [0]*5]
+        pass
 
     def test_random_int_list(self):
-        l1 = random_int_list(5, 10)
-        self.assertEqual(5, len(l1))
+        n, bound = randrange(100), randrange(100)
+        arr = np.asarray(random_int_list(n, bound))
+        self.assertEqual(n, arr.shape[0])
+        self.assertTrue((arr <= bound).all())
+
+        arr_empty = np.asarray(random_int_list(0, 10))
+        self.assertEqual(0, arr_empty.shape[0])
 
     def test_random_int_matrix(self):
-        n = 3
-        m = random_int_matrix(n, 10, null_diag=True)
-        self.assertEqual(n, len(m))
-        self.assertEqual(n, len(m[0]))
-        self.assertListEqual([0] * n, [m[i][i] for i in range(n)])
+        n, bound = randrange(1, 100), randrange(100)
+
+        m_no_diag_null = random_int_matrix(n, bound, null_diag=False)
+        m_diag_null = random_int_matrix(n, bound, null_diag=True)
+        m_no_diag_null = np.asarray(m_no_diag_null)
+        m_diag_null = np.asarray(m_diag_null)
+
+        self.assertEqual((n, n, ), m_no_diag_null.shape)
+        self.assertEqual((n, n, ), m_diag_null.shape)
+
+        self.assertTrue(
+            np.asarray([m_no_diag_null[i] <= bound for i in range(n)]).all())
+
+        self.assertTrue(
+            np.asarray([m_diag_null[i] <= bound for i in range(n)]).all())
+
+        self.assertTrue((m_diag_null.diagonal() == 0).all())
 
     def test_random_symetric_int_matrix(self):
-        n = 10
-        m_no_diag = random_symetric_int_matrix(n, 10, null_diag=False)
-        self.assertListEqual([m_no_diag[i][j] for i in range(n) for j in range(n)],
-                             [m_no_diag[j][i] for i in range(n) for j in range(n)])
+        n, bound = randrange(1, 100), randrange(100)
 
-        m_diag = random_symetric_int_matrix(n, 10, null_diag=True)
-        self.assertListEqual([0] * n, [m_diag[i][i] for i in range(n)])
+        m_no_diag_null = random_symetric_int_matrix(n, bound, null_diag=False)
+        m_diag_null = random_symetric_int_matrix(n, bound, null_diag=False)
+        m_no_diag_null = np.asarray(m_no_diag_null)
+        m_diag_null = np.asarray(m_diag_null)
+
+        self.assertEqual((n, n, ), m_no_diag_null.shape)
+        self.assertEqual((n, n, ), m_diag_null.shape)
+
+        self.assertTrue(
+            np.asarray([m_no_diag_null[i] <= bound for i in range(n)]).all())
+
+        self.assertTrue(
+            np.asarray([m_diag_null[i] <= bound for i in range(n)]).all())
+
+        self.assertTrue((m_no_diag_null == m_no_diag_null.T).all())
+        self.assertTrue((m_diag_null == m_diag_null.T).all())
+
+        self.assertTrue((m_diag_null.diagonal() == 0).all())
 
     def test_random_oriented_int_matrix(self):
-        n1 = 5
-        m1 = random_oriented_int_matrix(n1, 10, null_diag=True)
-        self.assertListEqual([0] * n1, [m1[i][i] for i in range(n1)])
+        n, bound = randrange(1, 100), randrange(100)
 
-        n2 = 5
-        m2 = random_oriented_int_matrix(n2, 10, null_diag=False)
+        m_no_diag_null = random_oriented_int_matrix(n, bound, null_diag=False)
+        m_diag_null = random_oriented_int_matrix(n, bound, null_diag=True)
+        m_no_diag_null = np.asarray(m_no_diag_null)
+        m_diag_null = np.asarray(m_diag_null)
 
-        self.assertListEqual([0]*n2,
-                             [m2[j][i] for i in range(n2) for j in range(i, n2)])
+        self.assertEqual((n, n, ), m_no_diag_null.shape)
+        self.assertEqual((n, n, ), m_diag_null.shape)
+
+        self.assertTrue(
+            np.asarray([m_no_diag_null[i] <= bound for i in range(n)]).all())
+
+        self.assertTrue(
+            np.asarray([m_diag_null[i] <= bound for i in range(n)]).all())
+
+        m_diag_is_oriented = [m_no_diag_null[j][i] == 0 if m_no_diag_null[i][j] != 0
+                              else m_no_diag_null[j][i] != 0
+                              for i in range(n) for j in range(i, n)]
+
+        m_no_diag_is_oriented = [m_diag_null[j][i] == 0 if m_diag_null[i][j] != 0
+                                 else m_diag_null[j][i] != 0
+                                 for i in range(n) for j in range(i, n)]
+
+        self.assertTrue(np.asarray(m_no_diag_is_oriented).all())
+        self.assertTrue(np.asarray(m_diag_is_oriented).all())
+
+        self.assertTrue((m_diag_null.diagonal() == 0).all())
 
     def test_random_triangular_int_matrix(self):
-        n = 6
-        m = random_triangular_int_matrix(n, 5, True)
-        self.assertListEqual([0] * n, [m[i][i] for i in range(n)])
-        self.assertListEqual([0]*n,
-                             [m[i][j] for i in range(n) for j in range(i, n)])
+        n, bound = randrange(1, 100), randrange(100)
+        m_trian_sup = np.triu_indices(n, 1)
 
-    def test_random(self):
-        n = 7
+        m_no_diag_null = random_triangular_int_matrix(
+            n, bound, null_diag=False)
+        m_diag_null = random_triangular_int_matrix(n, bound, null_diag=True)
+        m_no_diag_null = np.asarray(m_no_diag_null)
+        m_diag_null = np.asarray(m_diag_null)
 
-        m_dag = open_digraph.random(
-            n=n, bound=3, inputs=2, outputs=1, form="DAG").adjacency_matrix()
-        m_oriented = open_digraph.random(
-            n=n, bound=3, inputs=2, outputs=1, form="oriented").adjacency_matrix()
-        m_loop_free = open_digraph.random(
-            n=n, bound=3, inputs=2, outputs=1, form="loop-free").adjacency_matrix()
-        m_undirect = open_digraph.random(
-            n=n, bound=3, inputs=2, outputs=1, form="undirect").adjacency_matrix()
-        m_loop_free_undirect = open_digraph.random(
-            n=n, bound=3, inputs=2, outputs=1, form="loop-free undirect").adjacency_matrix()
+        self.assertTrue((m_no_diag_null[m_trian_sup] == 0).all())
+        self.assertTrue((m_diag_null[m_trian_sup] == 0).all())
 
-        self.assertListEqual([0]*n,
-                             [m_dag[i][j] for i in range(n) for j in range(i, n)])
-
-        for i in range(n):
-            for j in range(n):
-                if m_oriented[i][j] != 0:
-                    self.assertEqual(0, m_oriented[i][j])
-
-        self.assertListEqual([0]*n, [m_loop_free[i][i] for i in range(n)])
-
-        self.assertListEqual([0]*n, [m_undirect[i][i] for i in range(n)])
-
-        for i in range(n):
-            for j in range(n):
-                if m_loop_free_undirect[i][j] != 0:
-                    self.assertEqual(0, m_loop_free_undirect[i][j])
-
-        self.assertListEqual([0]*n, [m_loop_free_undirect[i][i]
-                             for i in range(n)])
+        self.assertTrue((m_diag_null.diagonal() == 0).all())
