@@ -599,10 +599,10 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         dict = self.node_dict()
         n = len(dict)
         A = [[0] * n] * n
-        for entry in dict:
-            id = entry.key()
-            i = entry.value()
-            for child in id.get_children_ids():
+        for id in dict:
+            i = dict[id]
+            node = self.get_node_by_id(id)
+            for child in node.get_children_ids():
                 j = dict[child]
-                A[i][j] = id.get_child_multiplicity(child)
+                A[i][j] = node.get_child_multiplicity(child)
         return A
