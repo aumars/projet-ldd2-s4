@@ -598,7 +598,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
     def adjacency_matrix(self):
         dict = self.node_dict()
         n = len(dict)
-        A = [[0] * n] * n
+        A = [[0 for _ in range(n)] for _ in range(n)]
         for id in dict:
             i = dict[id]
             node = self.get_node_by_id(id)
