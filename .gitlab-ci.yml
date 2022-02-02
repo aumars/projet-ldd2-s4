@@ -2,7 +2,7 @@ run tests:
   stage: test
   image: python:latest
   script:
-    - pip install coverage
+    - pip install coverage numpy
     - coverage run -m unittest discover tests "*_test.py"
     - coverage report
     - coverage xml
