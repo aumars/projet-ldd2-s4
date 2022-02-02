@@ -15,7 +15,7 @@ def get_random_int(bound, number_generator=random):
     number_generator is [0,1] only
     anything else is modulo'ed by 1
     """
-    return int(abs((number_generator() % 1) * (bound + 1)))
+    return int((number_generator() % 1) * (bound + 1))
 
 def random_int_list(n, bound, number_generator=random):
     """
@@ -33,7 +33,7 @@ def random_int_matrix(n, bound, null_diag=True, number_generator=random):
 
 
 def random_symetric_int_matrix(n, bound, null_diag=True, number_generator=random):
-    A = [[0] * n] * n
+    A = [[0 for _ in range(n)] for _ in range(n)]
     for i in range(1, n):
         for j in range(i):
             A[i][j] = get_random_int(bound, number_generator=number_generator)
@@ -45,7 +45,7 @@ def random_symetric_int_matrix(n, bound, null_diag=True, number_generator=random
 
 
 def random_oriented_int_matrix(n, bound, null_diag=True, number_generator=random):
-    A = [[0] * n] * n
+    A = [[0 for _ in range(n)] for _ in range(n)]
     for i in range(1, n):
         for j in range(i):
             r = get_random_int(bound, number_generator=number_generator)
@@ -60,7 +60,7 @@ def random_oriented_int_matrix(n, bound, null_diag=True, number_generator=random
 
 
 def random_triangular_int_matrix(n, bound, null_diag=True, number_generator=random):
-    A = [[0] * n] * n
+    A = [[0 for _ in range(n)] for _ in range(n)]
     for j in range(n):
         for i in range(j + 1):
             A[i][j] = get_random_int(bound, number_generator=number_generator)
