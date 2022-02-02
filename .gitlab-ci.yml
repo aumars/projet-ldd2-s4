@@ -1,5 +1,11 @@
-image: python:latest
-
-test:
+run tests:
+  stage: test
+  image: python:latest
   script:
-  - python3 -m unittest discover tests "*_test.py"
+    - pip install coverage
+    - coverage run python3 -m unittest discover tests "*_test.py"
+    - coverage report
+    - coverage xml
+  artifacts:
+    reports:
+      cobertura: coverage.xml
