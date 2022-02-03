@@ -1,4 +1,4 @@
-from random import random
+from random import random, sample
 from .utils import (random_int_matrix,
                     random_triangular_int_matrix,
                     random_oriented_int_matrix,
@@ -629,33 +629,67 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         ValueError
             If [value] is not recognised as a supported option.
         """
-        if inputs + outputs > 0:
-            raise NotImplementedError
-        elif inputs + outputs > n * n:
-            raise ValueError("There are fewer nodes={} than inputs={} and "
-                             "outputs={} combined."
-                             .format(n * n, inputs, outputs))
-        elif form == "free":
-            A = random_int_matrix(n, bound, null_diag=False,
-                                  number_generator=number_generator)
-        elif form == "loop-free":
-            A = random_int_matrix(n, bound, number_generator=number_generator)
-        elif form == "undirected":
-            A = random_symetric_int_matrix(n, bound, null_diag=False,
-                                           number_generator=number_generator)
-        elif form == "loop-free undirected":
-            A = random_symetric_int_matrix(n, bound,
-                                           number_generator=number_generator)
-        elif form == "oriented":
-            A = random_oriented_int_matrix(n, bound,
-                                           number_generator=number_generator)
-        elif form == "DAG":
-            A = random_triangular_int_matrix(n, bound,
-                                             number_generator=number_generator)
+        if inputs > n/2 or outputs > n/2:
+            raise ValueError("There are fewer available nodes={} than "
+                             "inputs={} and outputs={} combined."
+                             .format(n, inputs, outputs))
         else:
-            return ValueError("{} is not a supported option."
-                              .format(form))
-        return cls.graph_from_adjacency_matrix(A)
+            open_nodes_num = inputs + outputs
+            open_nodes = sample(range(n), k=open_nodes_num)
+            input_nodes = open_nodes[:inputs]
+            output_nodes = open_nodes[outputs+1:]
+            input_nodes_children = sample(list(set(range(n)) - set(input_nodes)), k=inputs)
+            output_nodes_parents = sample(list(set(range(n)) - set(output_nodes)), k=outputs)
+            if form == "free" or "loop-free":
+                if form == "free":
+                    A = random_int_matrix(n, bound, null_diag=False,
+                                          number_generator=number_generator)
+                else:
+                    A = random_int_matrix(n, bound,
+                                          number_generator=number_generator)
+            elif form == "undirected" or "loop-free undirected":
+                if form == "undirected":
+                    A = random_symetric_int_matrix(n, bound, null_diag=False,
+                                                   number_generator=number_generator)
+                else:
+                    A = random_symetric_int_matrix(n, bound,
+                                                   number_generator=number_generator)
+            elif form == "oriented":
+                A = random_oriented_int_matrix(n, bound,
+                                               number_generator=number_generator)
+            elif form == "DAG":
+                A = random_triangular_int_matrix(n, bound,
+                                                 number_generator=number_generator)
+            else:
+                return ValueError("{} is not a supported option."
+                                  .format(form))
+            for i in input_nodes:
+                child = input_nodes_children[i]
+                # Input node has only 1 child
+                for j in range(n):
+                    if j == child:
+                        A[i][j] = 1
+                    else:
+                        A[i][j] = 0
+                # Input node has 0 parents
+                for k in range(n):
+                    A[k][i] = 0
+            for i in output_nodes:
+                parent = output_nodes_parents[i]
+                # Output node has only 1 parent
+                for k in range(n):
+                    if j == parent:
+                        A[k][i] = 1
+                    else:
+                        A[k][i] = 0
+                # Output node has 0 children
+                for j in range(n):
+                    A[i][j] = 0
+            G = cls.graph_from_adjacency_matrix(A)
+            for i in input_nodes:
+                G.add_input_id(i)
+            for i in output_nodes:
+                G.add_output_id(i)
 
     def node_dict(self):
         """
