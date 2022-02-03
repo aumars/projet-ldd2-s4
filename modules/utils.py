@@ -266,8 +266,8 @@ def random_triangular_int_matrix(n, bound, null_diag=True,
                          .format(bound))
     else:
         A = [[0 for _ in range(n)] for _ in range(n)]
-        for j in range(n):
-            for i in range(j + 1):
+        for i in range(1, n):
+            for j in range(i):
                 A[i][j] = get_random_int(bound,
                                          number_generator=number_generator)
         if not null_diag:
