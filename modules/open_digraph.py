@@ -563,39 +563,122 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             return new_id
 
     @classmethod
-    def graph_from_adjacency_matrix(self, A):
-        G = open_digraph.empty()
-        nodes = [G.add_node() for _ in range(len(A))]
-        for i in range(len(A)):
-            for j in range(len(A)):
+    def graph_from_adjacency_matrix(cls, A):
+        """
+        Generate graph from adjacency matrix.
+
+        Parameters
+        ----------
+        A : list list int
+            Adjacency matrix
+
+        Returns
+        -------
+        open_digraph
+           Graph
+        """
+        G = cls.empty()
+        n = len(A)
+        node_ids = [G.add_node() for _ in range(n)]
+        for i in range(n):
+            for j in range(n):
                 for k in range(A[i][j]):
-                    G.add_edge(nodes[i], nodes[j])
+                    G.add_edge(node_ids[i], node_ids[j])
         return G
 
     @classmethod
-    def random(self, n, bound, cls=None, inputs=0, outputs=0, form="free", number_generator=random):
-        if form == "free":
-            A = random_int_matrix(n, bound, null_diag=False, number_generator=number_generator)
+    def random(cls, n, bound, inputs=0, outputs=0, form="free",
+               number_generator=random):
+        """
+        Generate random graph.
+
+        Parameters
+        ----------
+        n : int
+            Length of list
+        bound : int
+            Upper bound of our random positive integers.
+        inputs : int, optional
+            Number of input nodes.
+        outputs : int, optional
+            Number of output nodes.
+        form : str, optional
+            Type of graph, here are the available options:
+            - free : Completely random graph.
+            - loop-free : Random graph with no edge between the same node.
+            - undirected : Undirected graph
+            - loop-free undirected : Undirected graph with no edge between the
+                                     same node.
+            - oriented : Directed graph with the edges of each pair of nodes
+                         pointing only towards one end.
+            - DAG : Directed acyclic graph.
+        number_generator : callable, optional
+            Random number generator that generates real numbers between 0 and 1
+            (included or excluded). If [number_generator] generates real
+            positive numbers, only the non-integer part is kept.
+
+        Returns
+        -------
+        open_digraph
+           Graph
+
+        Raises
+        ------
+        ValueError
+            If there are more inputs and outputs than available nodes.
+        ValueError
+            If [value] is not recognised as a supported option.
+        """
+        if inputs + outputs > 0:
+            raise NotImplementedError
+        elif inputs + outputs > n * n:
+            raise ValueError("There are fewer nodes={} than inputs={} and "
+                             "outputs={} combined."
+                             .format(n * n, inputs, outputs))
+        elif form == "free":
+            A = random_int_matrix(n, bound, null_diag=False,
+                                  number_generator=number_generator)
         elif form == "loop-free":
             A = random_int_matrix(n, bound, number_generator=number_generator)
-        elif form == "DAG":
-            A = random_triangular_int_matrix(n, bound, number_generator=number_generator)
-        elif form == "oriented":
-            A = random_oriented_int_matrix(n, bound, number_generator=number_generator)
         elif form == "undirected":
-            A = random_symetric_int_matrix(n, bound, null_diag=False, number_generator=number_generator)
+            A = random_symetric_int_matrix(n, bound, null_diag=False,
+                                           number_generator=number_generator)
         elif form == "loop-free undirected":
-            A = random_symetric_int_matrix(n, bound, number_generator=number_generator)
+            A = random_symetric_int_matrix(n, bound,
+                                           number_generator=number_generator)
+        elif form == "oriented":
+            A = random_oriented_int_matrix(n, bound,
+                                           number_generator=number_generator)
+        elif form == "DAG":
+            A = random_triangular_int_matrix(n, bound,
+                                             number_generator=number_generator)
         else:
-            return ValueError("{} n'est pas un option."
+            return ValueError("{} is not a supported option."
                               .format(form))
-        return open_digraph.graph_from_adjacency_matrix(A)
+        return cls.graph_from_adjacency_matrix(A)
 
     def node_dict(self):
+        """
+        Generate dictionary of a graph of n associating each ID of a node to a
+        unique integer between 0 and n excluded.
+
+        Returns
+        -------
+        dict int->int
+            Dictionary associating a node ID to a unique integer
+        """
         N = self.get_node_ids()
         return {N[i]: i for i in range(len(N))}
 
     def adjacency_matrix(self):
+        """
+        Generate the adjacency matrix of a graph.
+
+        Returns
+        ------
+        list list int
+           Adjacency matrix
+        """
         dict = self.node_dict()
         n = len(dict)
         A = [[0 for _ in range(n)] for _ in range(n)]
