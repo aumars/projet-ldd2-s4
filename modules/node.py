@@ -46,6 +46,15 @@ class node:
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, __o):
+        return (self.get_id() == __o.get_id() and
+                self.get_label() == __o.get_label() and
+                self.parents == __o.parents and
+                self.children and __o.children)
+
+    def __ne__(self, __o):
+        return not self == __o
+
     def copy(self):
         """
         Copy the node.
