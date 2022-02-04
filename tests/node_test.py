@@ -11,8 +11,6 @@ class NodeTest(unittest.TestCase):
 
     def setUp(self):
         self.n0 = node(1, '1', {0: 1}, {2: 1})
-        self.n1 = self.n0.copy()
-        self.n2 = node(3, '5', {2: 1}, {})
 
     def test_init_node(self):
         """Test the constructor."""
@@ -21,12 +19,6 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(self.n0.parents, {0: 1})
         self.assertEqual(self.n0.children, {2: 1})
         self.assertIsInstance(self.n0, node)
-
-    def test_equal_operator(self):
-        """Test the equal operator"""
-        self.assertTrue(self.n0 == self.n0)
-        self.assertTrue(self.n0 == self.n1)
-        self.assertTrue(self.n0 != self.n2)
 
     def test_copy_node(self):
         """Test the copy method."""

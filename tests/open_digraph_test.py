@@ -39,17 +39,9 @@ class Open_DigraphTest(unittest.TestCase):
                      [1, 0, 0, 0, 1],
                      [0]*5]
 
-        self.G3 = self.G.copy()
-
     def test_init_open_digraph(self):
         """Test the constructor."""
         self.assertIsInstance(self.G, open_digraph)
-
-    def test_equal_operator(self):
-        """Test the equal operator"""
-        self.assertTrue(self.G == self.G)
-        self.assertTrue(self.G == self.G3)
-        self.assertTrue(self.G != self.G2)
 
     def test_copy_open_digraph(self):
         """Test the copy method of open_digraph class."""

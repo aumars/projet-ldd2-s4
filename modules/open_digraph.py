@@ -35,14 +35,6 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
     def __repr__(self):
         return str(self)
 
-    def __eq__(self, __o):
-        return (self.get_input_ids() == __o.get_input_ids() and
-                self.get_output_ids() == __o.get_output_ids() and
-                self.get_nodes() == __o.get_nodes())
-
-    def __ne__(self, __o) -> bool:
-        return not self == __o
-
     @classmethod
     def empty(self):
         """Create an empty graph."""
@@ -135,7 +127,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         """
         if id not in self.nodes.keys():
             raise ValueError("A node with the ID {} does not exist."
-                             .format(id))
+                           .format(id))
         else:
             return self.nodes[id]
 
@@ -502,12 +494,12 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         ----------
         id : int
             The ID of the input node's child.
-
+        
         Returns
         -------
         int
             The ID of the new input node.
-
+        
         Raises
         ------
         ValueError
@@ -524,7 +516,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                              .format(self.get_node_by_id(id)))
 
         elif (id in self.get_output_ids() and
-              len(self.get_node_by_id(id).get_parent_ids()) > 0):
+            len(self.get_node_by_id(id).get_parent_ids()) > 0):
             raise ValueError("{} is an output that already has a parent."
                              .format(self.get_node_by_id(id)))
         else:
@@ -540,7 +532,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         ----------
         id : int
             The ID of the output node's parent.
-
+        
         Returns
         -------
         int
@@ -562,7 +554,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                              .format(self.get_node_by_id(id)))
 
         elif (id in self.get_input_ids() and
-              len(self.get_node_by_id(id).get_children_ids()) > 0):
+            len(self.get_node_by_id(id).get_children_ids()) > 0):
             raise ValueError("{} is an input that already has a child."
                              .format(self.get_node_by_id(id)))
         else:
@@ -646,10 +638,8 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             open_nodes = sample(range(n), k=open_nodes_num)
             input_nodes = open_nodes[:inputs]
             output_nodes = open_nodes[outputs+1:]
-            input_nodes_children = sample(
-                list(set(range(n)) - set(input_nodes)), k=inputs)
-            output_nodes_parents = sample(
-                list(set(range(n)) - set(output_nodes)), k=outputs)
+            input_nodes_children = sample(list(set(range(n)) - set(input_nodes)), k=inputs)
+            output_nodes_parents = sample(list(set(range(n)) - set(output_nodes)), k=outputs)
             if form == "free" or "loop-free":
                 if form == "free":
                     A = random_int_matrix(n, bound, null_diag=False,
