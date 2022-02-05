@@ -647,6 +647,28 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                 else:
                     A = random_int_matrix(n, bound,
                                           number_generator=number_generator)
+                for i in input_nodes:
+                    child = input_nodes_children[i]
+                    # Input node has only 1 child
+                    for j in range(n):
+                        if j == child:
+                            A[i][j] = 1
+                        else:
+                            A[i][j] = 0
+                    # Input node has 0 parents
+                    for k in range(n):
+                        A[k][i] = 0
+                for i in output_nodes:
+                    parent = output_nodes_parents[i]
+                    # Output node has only 1 parent
+                    for k in range(n):
+                        if j == parent:
+                            A[k][i] = 1
+                        else:
+                            A[k][i] = 0
+                    # Output node has 0 children
+                    for j in range(n):
+                        A[i][j] = 0
             elif form == "undirected" or "loop-free undirected":
                 if form == "undirected":
                     A = random_symetric_int_matrix(n, bound, null_diag=False,
@@ -654,37 +676,70 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                 else:
                     A = random_symetric_int_matrix(n, bound,
                                                    number_generator=number_generator)
+                for i in input_nodes:
+                    child = input_nodes_children[i]
+                    # Input node has only 1 child
+                    for j in range(n):
+                        if j == child:
+                            A[i][j] = 1
+                            A[j][i] = 1
+                        else:
+                            A[i][j] = 0
+                            A[j][i] = 0
+                    # Input node has 0 parents
+                    for k in range(n):
+                        A[k][i] = 0
+                        A[i][k] = 0
+                for i in output_nodes:
+                    parent = output_nodes_parents[i]
+                    # Output node has only 1 parent
+                    for k in range(n):
+                        if j == parent:
+                            A[k][i] = 1
+                            A[i][k] = 1
+                        else:
+                            A[k][i] = 0
+                            A[i][k] = 0
+                    # Output node has 0 children
+                    for j in range(n):
+                        A[i][j] = 0
+                        A[j][i] = 0
             elif form == "oriented":
                 A = random_oriented_int_matrix(n, bound,
                                                number_generator=number_generator)
+                for i in input_nodes:
+                    child = input_nodes_children[i]
+                    # Input node has only 1 child
+                    for j in range(n):
+                        if j == child:
+                            A[i][j] = 1
+                            A[j][i] = 0
+                        else:
+                            A[i][j] = 0
+                    # Input node has 0 parents
+                    for k in range(n):
+                        A[k][i] = 0
+                for i in output_nodes:
+                    parent = output_nodes_parents[i]
+                    # Output node has only 1 parent
+                    for k in range(n):
+                        if j == parent:
+                            A[k][i] = 1
+                            A[i][k] = 0
+                        else:
+                            A[k][i] = 0
+                    # Output node has 0 children
+                    for j in range(n):
+                        A[i][j] = 0
             elif form == "DAG":
                 A = random_triangular_int_matrix(n, bound,
                                                  number_generator=number_generator)
+                if inputs > 0 or outputs > 0:
+                    # trop dur
+                    raise NotImplementedError
             else:
                 return ValueError("{} is not a supported option."
                                   .format(form))
-            for i in input_nodes:
-                child = input_nodes_children[i]
-                # Input node has only 1 child
-                for j in range(n):
-                    if j == child:
-                        A[i][j] = 1
-                    else:
-                        A[i][j] = 0
-                # Input node has 0 parents
-                for k in range(n):
-                    A[k][i] = 0
-            for i in output_nodes:
-                parent = output_nodes_parents[i]
-                # Output node has only 1 parent
-                for k in range(n):
-                    if j == parent:
-                        A[k][i] = 1
-                    else:
-                        A[k][i] = 0
-                # Output node has 0 children
-                for j in range(n):
-                    A[i][j] = 0
             G = cls.graph_from_adjacency_matrix(A)
             for i in input_nodes:
                 G.add_input_id(i)
