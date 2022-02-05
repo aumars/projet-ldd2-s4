@@ -356,10 +356,10 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertRaises(ValueError, self.G.add_output_node, 3)
         self.assertRaises(ValueError, self.G.add_output_node, 5)
 
-    def test_graph_from_adjacency_matrix(self):
-        G = open_digraph.graph_from_adjacency_matrix(self.M_G2)
-        print("\nAffichage Graphe G2 original :\n", self.G2)
-        print("\nAffichage Graphe G construit :\n", G)
+    # def test_graph_from_adjacency_matrix(self):
+    #     G = open_digraph.graph_from_adjacency_matrix(self.M_G2)
+    #     print("\nAffichage Graphe G2 original :\n", self.G2)
+    #     print("\nAffichage Graphe G construit :\n", G)
 
     def test_adjacency_matrix(self):
         self.assertListEqual(self.G2.adjacency_matrix(), self.M_G2)
