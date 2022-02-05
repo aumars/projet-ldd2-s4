@@ -627,6 +627,10 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         ValueError
             If [value] is not recognised as a supported option.
         """
+        if inputs > n or outputs > n:
+            raise ValueError("More inputs and outputs than available.")
+        input_children = sample(range(n), k=inputs)
+        output_parents = sample(range(n), k=outputs)
         if form == "free" or "loop-free":
             if form == "free":
                 A = random_int_matrix(n, bound, null_diag=False,
@@ -634,6 +638,12 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             else:
                 A = random_int_matrix(n, bound,
                                       number_generator=number_generator)
+            for i in input_children:
+                for j in range(n):
+                    A[j][i] = 0
+            for i in output_parents:
+                for j in range(n):
+                    A[i][j] = 0
         elif form == "undirected" or "loop-free undirected":
             if form == "undirected":
                 A = random_symetric_int_matrix(n, bound, null_diag=False,
@@ -641,18 +651,36 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             else:
                 A = random_symetric_int_matrix(n, bound,
                                                number_generator=number_generator)
+            for i in input_children:
+                for j in range(n):
+                    A[j][i] = 0
+                    A[i][j] = 0
+            for i in output_parents:
+                for j in range(n):
+                    A[i][j] = 0
+                    A[j][i] = 0
         elif form == "oriented":
             A = random_oriented_int_matrix(n, bound,
                                            number_generator=number_generator)
+            for i in input_children:
+                for j in range(n):
+                    A[j][i] = 0
+            for i in output_parents:
+                for j in range(n):
+                    A[i][j] = 0
         elif form == "DAG":
             A = random_triangular_int_matrix(n, bound,
                                              number_generator=number_generator)
+            for i in input_children:
+                for j in range(n):
+                    A[j][i] = 0
+            for i in output_parents:
+                for j in range(n):
+                    A[i][j] = 0
         else:
             return ValueError("{} is not a supported option."
                               .format(form))
         G = cls.graph_from_adjacency_matrix(A)
-        input_children = sample(range(n), k=inputs)
-        output_parents = sample(range(n), k=outputs)
         for i in input_children:
             G.add_input_node(i)
         for o in output_parents:
