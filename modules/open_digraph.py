@@ -757,7 +757,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             Dictionary associating a node ID to a unique integer
         """
         N = self.get_node_ids()
-        return {N[i]: i for i in range(len(N))}
+        return dict(zip(N, sample(range(len(N)), k=len(N))))
 
     def adjacency_matrix(self):
         """
