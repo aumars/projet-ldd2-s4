@@ -37,7 +37,7 @@ class Open_DigraphTest(unittest.TestCase):
                      [0, 0, 0, 1, 2],
                      [0, 0, 0, 2, 0],
                      [1, 0, 0, 0, 1],
-                     [0]*5]
+                     [0, 2, 0, 1, 0]]
 
     def test_init_open_digraph(self):
         """Test the constructor."""
