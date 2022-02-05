@@ -83,7 +83,7 @@ class UtilsTest(unittest.TestCase):
                               else True
                               for i in range(n) for j in range(n)]
 
-        m_no_diag_is_oriented = [m_no_diag_null[j][i] == 0 if m_no_diag_null[i][j] != 0
+        m_no_diag_is_oriented = [m_no_diag_null[j][i] == 0 or i == j if m_no_diag_null[i][j] != 0
                                  else True
                                  for i in range(n) for j in range(n)]
 
