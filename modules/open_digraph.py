@@ -1,4 +1,4 @@
-from random import random, sample
+from random import random, sample, choice
 from .utils import (random_int_matrix,
                     random_triangular_int_matrix,
                     random_oriented_int_matrix,
@@ -734,9 +734,28 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             elif form == "DAG":
                 A = random_triangular_int_matrix(n, bound,
                                                  number_generator=number_generator)
-                if inputs > 0 or outputs > 0:
-                    # trop dur
-                    raise NotImplementedError
+                for i in input_nodes:
+                    child = choice(range(i))
+                    # Input node has only 1 child
+                    for j in range(n):
+                        if j == child:
+                            A[i][j] = 1
+                        else:
+                            A[i][j] = 0
+                    # Input node has 0 parents
+                    for k in range(n):
+                        A[k][i] = 0
+                for i in output_nodes:
+                    parent = choice(range(i))
+                    # Output node has only 1 parent
+                    for k in range(n):
+                        if j == parent:
+                            A[k][i] = 1
+                        else:
+                            A[k][i] = 0
+                    # Output node has 0 children
+                    for j in range(n):
+                        A[i][j] = 0
             else:
                 return ValueError("{} is not a supported option."
                                   .format(form))
