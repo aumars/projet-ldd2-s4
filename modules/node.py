@@ -15,26 +15,7 @@ class node:
         children : int->int dict
             Maps a child node's id to its multiplicity. All values must be
             strictly positive integers.
-
-        Raises
-        ------
-        TypeError
-            If either a key in [parents] not positive or a value is not
-            strictly positive.
-        TypeError
-            If either a key in [children] not positive or a value is not
-            strictly positive.
         """
-        for id in parents.keys():
-            if not (parents[id] > 0):
-                raise TypeError("Parent ID {} value {} must be strictly "
-                                "positive."
-                                .format(id, parents[id]))
-        for id in children.keys():
-            if not (children[id] > 0):
-                raise TypeError("Child ID {} value {} must be strictly "
-                                "positive."
-                                .format(id, children[id]))
         self.id = identity
         self.label = label
         self.parents = parents
