@@ -1,5 +1,6 @@
 from modules.node import node
 from modules.open_digraph import open_digraph
+import numpy as np
 import unittest
 import sys
 import os
@@ -38,6 +39,25 @@ class Open_DigraphTest(unittest.TestCase):
                      [0, 0, 0, 2, 0],
                      [1, 0, 0, 0, 1],
                      [0, 2, 0, 1, 0]]
+
+        self.n, self.bound = 10, 15
+        self.free_graph = open_digraph.random(self.n, self.bound, form="free")
+        self.loop_free_graph = open_digraph.random(self.n, self.bound, form="loop-free")
+        self.undirect_graph = open_digraph.random(self.n, self.bound, form="undirect")
+        self.loop_free_undirect_graph = open_digraph.random(self.n, self.bound, form="loop-free unidirect")
+        self.oriented_graph = open_digraph.random(self.n, self.bound, form="oriented")
+        self.dag_graph = open_digraph.random(self.n, self.bound, form="DAG")
+
+        self.free_graph = np.asarray(self.free_graph.adjacency_matrix())
+        self.loop_free_graph = np.asarray(
+            self.loop_free_graph.adjacency_matrix())
+        self.undirect_graph = np.asarray(
+            self.undirect_graph.adjacency_matrix())
+        self.loop_free_undirect_graph = np.asarray(
+            self.loop_free_undirect_graph.adjacency_matrix())
+        self.oriented_graph = np.asarray(
+            self.oriented_graph.adjacency_matrix())
+        self.dag_graph = np.asarray(self.dag_graph.adjacency_matrix())
 
     def test_init_open_digraph(self):
         """Test the constructor."""
@@ -366,8 +386,53 @@ class Open_DigraphTest(unittest.TestCase):
     def test_adjacency_matrix(self):
         self.assertListEqual(self.G2.adjacency_matrix(), self.M_G2)
 
-    def test_node_dict(self):
+    def test_node_dict_open_digraph(self):
         uniq_dict_1 = open_digraph.node_dict(self.G)
         uniq_dict_2 = open_digraph.node_dict(self.G2)
         self.assertEqual(len(uniq_dict_1), len(set(uniq_dict_1.values())))
         self.assertEqual(len(uniq_dict_2), len(set(uniq_dict_2.values())))
+
+    def test_random_shape_open_digraph(self):
+        self.assertEqual((self.n, self.n, ), self.free_graph.shape)
+        self.assertEqual((self.n, self.n, ), self.loop_free_graph.shape)
+        self.assertEqual((self.n, self.n, ), self.undirect_graph.shape)
+        self.assertEqual((self.n, self.n, ),
+                         self.loop_free_undirect_graph.shape)
+        self.assertEqual((self.n, self.n, ), self.oriented_graph.shape)
+        self.assertEqual((self.n, self.n, ), self.dag_graph.shape)
+
+    def test_random_bound_open_digraph(self):
+        self.assertTrue(np.asarray(
+            [self.free_graph[i] <= self.bound for i in range(self.n)]).all())
+
+        self.assertTrue(np.asarray(
+            [self.loop_free_graph[i] <= self.bound for i in range(self.n)]).all())
+
+        self.assertTrue(np.asarray(
+            [self.undirect_graph[i] <= self.bound for i in range(self.n)]).all())
+
+        self.assertTrue(np.asarray(
+            [self.loop_free_undirect_graph[i] <= self.bound for i in range(self.n)]).all())
+
+        self.assertTrue(np.asarray(
+            [self.oriented_graph[i] <= self.bound for i in range(self.n)]).all())
+
+        self.assertTrue(np.asarray(
+            [self.dag_graph[i] <= self.bound for i in range(self.n)]).all())
+    
+    def test_random_loop(self):
+        self.assertTrue((self.loop_free_graph.diagonal() == 0).all())
+        self.assertTrue((self.loop_free_undirect_graph.diagonal() == 0).all())
+
+    def test_random_undirect(self):
+        self.assertTrue((self.undirect_graph == self.undirect_graph.T).all())
+
+    def test_random_oriented(self):
+        is_oriented = [self.oriented_graph[j][i] == 0 or i == j if self.oriented_graph[i][j] != 0
+                        else True
+                        for i in range(self.n) for j in range(self.n)]
+        self.assertTrue(np.asarray(is_oriented).all())
+
+    def test_random_DAG_open_digraph(self):
+        m_trian_sup = np.triu_indices(self.n, 1)
+        self.assertTrue((self.dag_graph[m_trian_sup] == 0).all())
