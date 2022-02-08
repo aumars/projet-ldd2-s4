@@ -459,7 +459,7 @@ class Open_DigraphTest(unittest.TestCase):
         test if .DOT standards are correct (mostly)
         
         """
-        node_labels = [node.get_label() in node in self.G.get_nodes()]
+        node_labels = [node.get_label() for node in self.G.get_nodes()]
         graph_labels, graph_ids = [], []
         
         dot_file_path = "test_as_save_dot_file.dot"
