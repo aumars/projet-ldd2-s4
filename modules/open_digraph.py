@@ -1,4 +1,7 @@
 from random import random, sample
+import re
+from tkinter import N
+
 from .utils import (random_int_matrix,
                     random_triangular_int_matrix,
                     random_oriented_int_matrix,
@@ -724,16 +727,16 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         f = open(path, "w")
         f.write("digraph G {\n")
         for node in self.get_nodes():
-            form = ("shape=house, " if node.get_id() in self.get_input_ids() else 
-                       "shape=invhouse, " if node.get_id() in self.get_output_ids() else "")
+            form = ("shape=invhouse, " if node.get_id() in self.get_input_ids() else 
+                       "shape=house, " if node.get_id() in self.get_output_ids() else "")
             
             id_str = f"\nid: {node.get_id()}" if verbose else ""
 
-            f.write(f"v{ node.get_id() } [{form} label=\"{ node.get_label() }{ repr(id_str)[1:-1] }\"];\n")
+            f.write(f"v{ node.get_id() } [{form}label=\"{ node.get_label() }{ repr(id_str)[1:-1] }\"];\n")
         
         for node in self.get_nodes():  
             for child in node.get_children_ids():
-                line = f"v{node.get_id()} -> v{child}\n"
+                line = f"v{node.get_id()} -> v{child};\n"
                 f.write(line * node.get_child_multiplicity(child))
                 
         f.write("\n}")
@@ -742,11 +745,37 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
     @classmethod
     def from_dot_file(self, path):
         file = open(path, "r")
-        header = file.readline()
-        
-        for line in file:
-            print(repr(line[0]))
+        f = file.read()
+        f = f.split("{")[1].split("}")[0].replace(" ", "").replace("\n", "").split(";")
+        f = [l for l in f if l != ""]
+
+        graph = open_digraph.empty()
+        dict_node = {}
+        # nodes = set()
+        for line in f:
+            lbl_re = re.search(r".*\[label=\"(.*?)\"\]", line)
+            lbl_node = lbl_re.group(1) if lbl_re != None else ""
+
+            line = line.strip().split("[")[0]
+
+            n_node = len(line.split("->"))
+            l = line.split("->")
+            for i in range(n_node):
+                str_node = line.split("->")[i]
+                
+                    
+                if not str_node in dict_node.keys():
+                    dict_node[str_node] = {"id": graph.add_node(lbl_node), "parents":set(), "children": set()}
+
+                else:
+                    dict_node[str_node]["parents"] = dict_node[str_node]["parents"].union([dict_node[parent]["id"] for parent in l[:i]])
+                    dict_node[str_node]["children"] = dict_node[str_node]["children"].union([dict_node[child]["id"] for child in l[i+1:]])
+
+        for str_node in dict_node:
+            graph.get_node_by_id(dict_node[str_node]["id"]).set_parent_ids(dict_node[str_node]["parents"])
+            graph.get_node_by_id(dict_node[str_node]["id"]).set_children_ids(dict_node[str_node]["children"])
         
         file.close()
-
+        return graph
+        
     
