@@ -719,3 +719,34 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                 j = dict[child]
                 A[i][j] = node.get_child_multiplicity(child)
         return A
+
+    def save_as_dot_file(self, path, verbose=False):
+        f = open(path, "w")
+        f.write("digraph G {\n")
+        for node in self.get_nodes():
+            form = ("shape=house, " if node.get_id() in self.get_input_ids() else 
+                       "shape=invhouse, " if node.get_id() in self.get_output_ids() else "")
+            
+            id_str = f"\nid: {node.get_id()}" if verbose else ""
+
+            f.write(f"v{ node.get_id() } [{form} label=\"{ node.get_label() }{ repr(id_str)[1:-1] }\"];\n")
+        
+        for node in self.get_nodes():  
+            for child in node.get_children_ids():
+                line = f"v{node.get_id()} -> v{child}\n"
+                f.write(line * node.get_child_multiplicity(child))
+                
+        f.write("\n}")
+        f.close()
+
+    @classmethod
+    def from_dot_file(self, path):
+        file = open(path, "r")
+        header = file.readline()
+        
+        for line in file:
+            print(repr(line[0]))
+        
+        file.close()
+
+    
