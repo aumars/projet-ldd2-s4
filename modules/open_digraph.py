@@ -1,6 +1,8 @@
+import os
 from random import random, sample
 import re
 from tkinter import N
+from urllib.parse import quote
 
 from .utils import (random_int_matrix,
                     random_triangular_int_matrix,
@@ -722,6 +724,22 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                 j = dict[child]
                 A[i][j] = node.get_child_multiplicity(child)
         return A
+    
+    # def dot_format(self, verbose=False, for_web=False):
+    #     digraph = ""
+
+    #     for node in self.get_nodes():
+    #         form = ("shape=invhouse, " if node.get_id() in self.get_input_ids() else 
+    #                    "shape=house, " if node.get_id() in self.get_output_ids() else "")
+            
+    #         id_str = f"\nid: {node.get_id()}" if verbose else ""
+
+    #         f.write(f"v{ node.get_id() } [{form}label=\"{ node.get_label() }{ repr(id_str)[1:-1] }\"];\n")
+        
+    #     for node in self.get_nodes():  
+    #         for child in node.get_children_ids():
+    #             line = f"v{node.get_id()} -> v{child};\n"
+    #             f.write(line * node.get_child_multiplicity(child))
 
     def save_as_dot_file(self, path, verbose=False):
         f = open(path, "w")
@@ -777,5 +795,25 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         
         file.close()
         return graph
+
+    def display(self, verbose=False):
+        digraph = "digraph%7B"
+
+        for node in self.get_nodes():
+            form = ("shape%3Dinvhouse%2C " if node.get_id() in self.get_input_ids() else 
+                       "shape%3Dhouse%2C " if node.get_id() in self.get_output_ids() else "")
+            
+            id_str = f"%0A%09id%3A {node.get_id()}" if verbose else ""
+
+            digraph += f"v{ node.get_id() } %5B{form}label%3D%22{ node.get_label() }{ repr(id_str)[1:-1] }%22%5D%3B"
         
-    
+        for node in self.get_nodes():  
+            for child in node.get_children_ids():
+                line = f"v{node.get_id()} -%3E v{child}%3B"
+                digraph += line * node.get_child_multiplicity(child)
+        
+        digraph += "%7D"
+        
+        url = f"https://dreampuf.github.io/GraphvizOnline/#\"{digraph}\""
+
+        os.system(f"firefox {url}")
