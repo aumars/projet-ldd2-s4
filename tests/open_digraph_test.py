@@ -373,16 +373,6 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertRaises(ValueError, self.G.add_output_node, 3)
         self.assertRaises(ValueError, self.G.add_output_node, 5)
 
-    @unittest.skip("Impossible de comparer des graphes.")
-    def test_graph_from_adjacency_matrix(self):
-        G = open_digraph.graph_from_adjacency_matrix(self.M_G2)
-        print("\nAffichage Graphe G2 original :\n", self.G2)
-        print("\nAffichage Graphe G construit :\n", G)
-
-    @unittest.skip("Impossible de comparer des matrices d'adjacence.")
-    def test_adjacency_matrix(self):
-        self.assertListEqual(self.G2.adjacency_matrix(), self.M_G2)
-
     def test_node_dict_open_digraph(self):
         uniq_dict_1 = open_digraph.node_dict(self.G)
         uniq_dict_2 = open_digraph.node_dict(self.G2)
