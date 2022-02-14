@@ -1,10 +1,18 @@
 from modules.open_digraph import *
-import inspect
-n0 = node(0, "0", {}, {1: 1})
-n1 = node(1, "1", {0: 1}, {2: 1})
-n2 = node(2, "2", {1: 1}, {3: 1})
-n3 = node(3, "3", {3: 1}, {})
-g = open_digraph([0], [3], [n0, n1, n2, n3])
-print(inspect.getsource(open_digraph))
-print(inspect.getdoc(open_digraph))
-print(inspect.getsourcefile(open_digraph))
+n0 = node(0, 'a', {3: 1, 4: 1}, {1: 1, 2: 1})
+n1 = node(1, 'b', {0: 1}, {2: 2, 5: 1})
+n2 = node(2, 'c', {0: 1, 1: 2}, {6: 1})
+
+i0 = node(3, 'i0', {}, {0: 1})
+i1 = node(4, 'i1', {}, {0: 1})
+
+o0 = node(5, 'o0', {1: 1}, {})
+o1 = node(6, 'o1', {2: 1}, {})
+
+G = open_digraph([3, 4], [5, 6], [n0, n1, n2,
+                                  i0, i1, 
+                                  o0, o1])
+
+G.save_as_dot_file("graph.dot")
+G2 = open_digraph.from_dot_file(path="graph.dot")
+G2.display()
