@@ -8,6 +8,10 @@ class bool_circ(open_digraph):
         if self.is_cyclic():
             raise ValueError("The graph is cyclic.")
 
+    @classmethod
+    def bool_circ(cls, g):
+        return cls(g.get_inputs(), g.get_outputs, g.get_nodes())
+
     def is_well_formed(self):
         """
         Verifies if the graph is well formed. By definition, a graph is well
