@@ -373,16 +373,6 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertRaises(ValueError, self.G.add_output_node, 3)
         self.assertRaises(ValueError, self.G.add_output_node, 5)
 
-    @unittest.skip("Impossible de comparer des graphes.")
-    def test_graph_from_adjacency_matrix(self):
-        G = open_digraph.graph_from_adjacency_matrix(self.M_G2)
-        print("\nAffichage Graphe G2 original :\n", self.G2)
-        print("\nAffichage Graphe G construit :\n", G)
-
-    @unittest.skip("Impossible de comparer des matrices d'adjacence.")
-    def test_adjacency_matrix(self):
-        self.assertListEqual(self.G2.adjacency_matrix(), self.M_G2)
-
     def test_node_dict_open_digraph(self):
         uniq_dict_1 = open_digraph.node_dict(self.G)
         uniq_dict_2 = open_digraph.node_dict(self.G2)
@@ -416,11 +406,11 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertTrue(np.asarray(
             [self.dag_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
     
-    def test_random_loop(self):
-        self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
-        self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
 
-    @unittest.skip("broken.")
+        def test_random_loop(self):
+            self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
+            self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
+
     def test_random_loop_free_undirect(self):
         graph = self.loop_free_undirect_graph
         for node_id in graph.get_node_ids():
@@ -429,7 +419,7 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
-    @unittest.skip("broken.")
+    
     def test_random_undirect(self):
         graph = self.undirect_graph
         for node_id in graph.get_node_ids():
@@ -438,7 +428,7 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
-    @unittest.skip("broken.")
+    
     def test_random_oriented(self):
         graph = self.oriented_graph
         for node_id in graph.get_node_ids():
@@ -447,11 +437,18 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertNotIn(node_id, child.get_children_ids())
 
-    @unittest.skip("broken.")
     def test_random_DAG_open_digraph(self):
-        m_trian_sup = np.triu_indices(self.n, 1)
-        self.assertTrue((self.dag_graph_matrix[m_trian_sup] == 0).all())
+        """
+        Pas suffisant
+        """
+        graph = self.dag_graph
+        for node_id in graph.get_node_ids():
+            node = graph.get_node_by_id(node_id)
+            for child_id in node.get_children_ids():
+                child = graph.get_node_by_id(child_id)
+                self.assertNotIn(node_id, child.get_children_ids())
 
+    @unittest.skip("broken.")
     def test_save_as_dot_file(self):
         """
         test if all labels are present
@@ -465,19 +462,15 @@ class Open_DigraphTest(unittest.TestCase):
         dot_file_path = "test_as_save_dot_file.dot"
         self.G.save_as_dot_file(dot_file_path)
         dot_file = open(dot_file_path)
-        dot_file_content = ''
-        for line in dot_file.readlines():
-            dot_file_content += line
-        dot_file.close()
-        dot_file_array = dot_file_content.split()
+        dot_file_array = dot_file.readlines()
 
-        self.assertEqual(dot_file_array[0], "digraph G {")
-        self.assertEqual(dot_file_array(len(dot_file_array)), "}")
+        self.assertEqual(dot_file_array[0][:-1], "digraph G {")
+        self.assertEqual(dot_file_array[len(dot_file_array) - 1][:-1], "}")
 
         dot_file_array = dot_file_array[1:-1]
 
         for line in dot_file_array:
-            self.assertEqual(line[-1], ';')
+            self.assertEqual(line[-1][:-1], ';')
             s = line.split()
             # Empty line
             if len(s) == 0:

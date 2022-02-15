@@ -636,7 +636,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             raise ValueError("More inputs and outputs than available.")
         input_children = sample(range(n), k=inputs)
         output_parents = sample(range(n), k=outputs)
-        if form == "free" or "loop-free":
+        if form == "free" or form == "loop-free":
             if form == "free":
                 A = random_int_matrix(n, bound, null_diag=False,
                                       number_generator=number_generator)
@@ -649,7 +649,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             for i in output_parents:
                 for j in range(n):
                     A[i][j] = 0
-        elif form == "undirected" or "loop-free undirected":
+        elif form == "undirected" or form == "loop-free undirected":
             if form == "undirected":
                 A = random_symetric_int_matrix(n, bound, null_diag=False,
                                                number_generator=number_generator)
