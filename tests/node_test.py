@@ -234,3 +234,12 @@ class NodeTest(unittest.TestCase):
     def test_remove_child_id_nonexistant_id_node(self):
         """Test the remove_child_once with an nonexistant ID"""
         self.assertRaises(ValueError, self.n0.remove_child_id, 1)
+
+    def test_indegree_node(self):
+        self.assertEqual(self.n0.indegree(), 1)
+
+    def test_outdegree_node(self):
+        self.assertEqual(self.n0.outdegree(), 1)
+
+    def test_degree_node(self):
+        self.assertEqual(self.n0.degree(), 2)

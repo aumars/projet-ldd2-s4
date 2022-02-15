@@ -528,4 +528,9 @@ v2 -> v4;
         print(dot_file_content, file=dot_file)
         dot_file.close()
         graph = open_digraph.from_dot_file(dot_file_path)
-        
+
+    def test_cyclic_graphs_are_cyclic_open_digraph(self):
+        self.assertTrue(self.G.is_cyclic())
+
+    def test_acyclic_graphs_are_acyclic_open_digraph(self):
+        self.assertFalse(self.dag_graph.is_cyclic())
