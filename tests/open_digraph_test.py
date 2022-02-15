@@ -467,9 +467,8 @@ v2 -> v4;
 }
 """
         dot_file_path = "test_from_dot_file.dot"
-        dot_file = open(dot_file_path, 'w')
-        print(dot_file_content, file=dot_file)
-        dot_file.close()
+        with open(dot_file_path, 'w') as dot_file:
+            print(dot_file_content, file=dot_file)
         graph = open_digraph.from_dot_file(dot_file_path)
         self.assertTrue(graph.is_well_formed())
 
