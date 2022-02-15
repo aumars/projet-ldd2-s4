@@ -726,6 +726,19 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         return A
     
     def to_str_dot_format(self, verbose=False):
+        """
+        Generate a string of the dot format.
+        
+        Parameters
+        ----------
+        verbose : boolean, optional
+            Set to True to display the nodes IDs. 
+
+        Returns
+        ------
+        string
+           The string of the graph in dot format.
+        """
         digraph = "digraph G{\n"
 
         for node in self.get_nodes():
@@ -747,12 +760,36 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
                 
 
     def save_as_dot_file(self, path, verbose=False):
+        """
+        Save the graph as dot file.
+        
+        Parameters
+        ----------
+        path:
+            The path where the file will be saved. Must be in '.dot' format.
+
+        verbose : boolean, optional
+            Set to True to display the nodes IDs. 
+        """
         f = open(path, "w")
         f.write(self.to_str_dot_format(verbose))
         f.close()
 
     @classmethod
     def from_dot_file(self, path):
+        """
+        Create a graph from dot file.
+        
+        Parameters
+        ----------
+        path:
+            The path where the dot file is saved.
+
+        Returns
+        ------
+        open_digraph
+           The graph corresponds to the file.        
+        """
         file = open(path, "r")
         f = file.read()
         f = f.split("{")[1].split("}")[0].replace(" ", "").replace("\n", "").split(";")
@@ -788,6 +825,14 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         return graph
 
     def display(self, verbose=False):
+        """
+        Display the graph in the following website : dreampuf.github.io/GraphvizOnline.
+        
+        Parameters
+        ----------
+        verbose : boolean, optional
+            Set to True to display the nodes IDs. 
+        """
         digraph = quote(self.to_str_dot_format(verbose))
         url = f'https://dreampuf.github.io/GraphvizOnline/#"{digraph}"'
         os.system(f"firefox {url}")

@@ -291,3 +291,36 @@ class node:
                              ".".format(self, id))
         else:
             del self.children[id]
+
+    def indegree(self):
+        """
+        Get the degree of input.
+
+        Returns
+        -------
+        int
+            The degree of input.
+        """
+        return len(self.get_parent_ids())
+    
+    def outdegree(self):
+        """
+        Get the degree of output.
+
+        Returns
+        -------
+        int
+            The degree of output.
+        """
+        return len(self.get_children_ids())
+    
+    def degree(self):
+        """
+        Get the total degree.
+
+        Returns
+        -------
+        int
+            The total degree.
+        """
+        return self.outdegree() + self.indegree()
