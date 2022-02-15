@@ -1,10 +1,10 @@
 from modules.node import node
 from modules.open_digraph import open_digraph
 import numpy as np
+import pydot
 import unittest
 import sys
 import os
-import re
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
 
@@ -448,68 +448,11 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertNotIn(node_id, child.get_children_ids())
 
-    @unittest.skip("broken.")
     def test_save_as_dot_file(self):
-        """
-        test if all labels are present
-        test if correct number of nodes
-        test if .DOT standards are correct (mostly)
-        
-        """
-        node_labels = [node.get_label() for node in self.G.get_nodes()]
-        graph_labels, graph_ids = [], []
-        
         dot_file_path = "test_as_save_dot_file.dot"
         self.G.save_as_dot_file(dot_file_path)
-        dot_file = open(dot_file_path)
-        dot_file_array = dot_file.readlines()
+        pydot.graph_from_dot_file(dot_file_path)
 
-        self.assertEqual(dot_file_array[0][:-1], "digraph G {")
-        self.assertEqual(dot_file_array[len(dot_file_array) - 1][:-1], "}")
-
-        dot_file_array = dot_file_array[1:-1]
-
-        for line in dot_file_array:
-            self.assertEqual(line[-1][:-1], ';')
-            s = line.split()
-            # Empty line
-            if len(s) == 0:
-                continue
-            self.assertGreaterEqual(len(s), 2)
-            
-            if len(s) == 2:
-                decompose = re.findall(r'[[A-Za-z]+|\d+]', s[0])
-                id = int(decompose[1])
-                self.assertEqual(len(decompose), 2)
-                self.assertEqual(decompose[0], 'v')
-                self.assertGreaterEqual(id, 0)
-                if id not in graph_ids:
-                    graph_ids.append(id)
-                
-                label_line = s[1].split('"')
-                label = label_line[1]
-                # Test options!
-                self.assertEqual(label_line[0], 'label=')
-                self.assertEqual(label_line[2], ']')
-                self.assertIn(label, node_labels)
-                if label not in graph_labels:
-                    graph_labels.append(label)
-            elif len(s) >= 3:
-                for i in range(len(s), 1, 2):
-                    self.assertEqual(s[i], '->')
-                for i in range(len(s), 0, 2):
-                    decompose = re.findall(r'[[A-Za-z]+|\d+]', s[0])
-                    id = int(decompose[1])
-                    self.assertEqual(len(decompose), 2)
-                    self.assertEqual(decompose[0], 'v')
-                    self.assertGreaterEqual(id, 0)
-                if id not in graph_ids:
-                    graph_ids.append(id)
-
-        self.assertListEqual(graph_labels, node_labels)
-        self.assertEqual(len(graph_ids), len(self.G.get_node_ids()))
-
-    @unittest.skip("incomplete.")
     def test_from_dot_file(self):
         dot_file_content = """digraph G {
 v0 [label="&"];
@@ -528,6 +471,7 @@ v2 -> v4;
         print(dot_file_content, file=dot_file)
         dot_file.close()
         graph = open_digraph.from_dot_file(dot_file_path)
+        self.assertTrue(graph.is_well_formed())
 
     def test_cyclic_graphs_are_cyclic_open_digraph(self):
         self.assertTrue(self.G.is_cyclic())
