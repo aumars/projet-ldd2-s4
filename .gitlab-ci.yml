@@ -2,7 +2,7 @@ run tests:
   stage: test
   image: python:latest
   script:
-    - pip install coverage numpy
+    - pip install coverage numpy pydot
     - coverage run --branch -m unittest discover tests "*_test.py"
     - coverage report
     - coverage xml
