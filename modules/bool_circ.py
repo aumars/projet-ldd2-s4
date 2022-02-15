@@ -10,7 +10,7 @@ class bool_circ(open_digraph):
 
     @classmethod
     def bool_circ(cls, g):
-        return cls(g.get_inputs(), g.get_outputs, g.get_nodes())
+        return cls(g.get_inputs(), g.get_outputs(), g.get_nodes())
 
     def is_well_formed(self):
         """
