@@ -790,8 +790,8 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         open_digraph
            The graph corresponds to the file.        
         """
-        file = open(path, "r")
-        f = file.read()
+        with open(path, "r") as file:
+            f = file.read()
         f = f.split("{")[1].split("}")[0].replace(" ", "").replace("\n", "").split(";")
         f = [l for l in f if l != ""]
 
@@ -821,7 +821,6 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             graph.get_node_by_id(dict_node[str_node]["id"]).set_parent_ids(dict_node[str_node]["parents"])
             graph.get_node_by_id(dict_node[str_node]["id"]).set_children_ids(dict_node[str_node]["children"])
         
-        file.close()
         return graph
 
     def display(self, verbose=False):
