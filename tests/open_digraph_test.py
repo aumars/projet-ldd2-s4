@@ -406,11 +406,11 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertTrue(np.asarray(
             [self.dag_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
     
-    def test_random_loop(self):
-        self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
-        self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
 
-    @unittest.skip("broken.")
+        def test_random_loop(self):
+            self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
+            self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
+
     def test_random_loop_free_undirect(self):
         graph = self.loop_free_undirect_graph
         for node_id in graph.get_node_ids():
@@ -419,7 +419,7 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
-    @unittest.skip("broken.")
+    
     def test_random_undirect(self):
         graph = self.undirect_graph
         for node_id in graph.get_node_ids():
@@ -428,7 +428,7 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
-    @unittest.skip("broken.")
+    
     def test_random_oriented(self):
         graph = self.oriented_graph
         for node_id in graph.get_node_ids():
