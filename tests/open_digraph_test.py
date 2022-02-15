@@ -437,10 +437,16 @@ class Open_DigraphTest(unittest.TestCase):
                 child = graph.get_node_by_id(child_id)
                 self.assertNotIn(node_id, child.get_children_ids())
 
-    @unittest.skip("broken.")
     def test_random_DAG_open_digraph(self):
-        m_trian_sup = np.triu_indices(self.n, 1)
-        self.assertTrue((self.dag_graph_matrix[m_trian_sup] == 0).all())
+        """
+        Pas suffisant
+        """
+        graph = self.dag_graph
+        for node_id in graph.get_node_ids():
+            node = graph.get_node_by_id(node_id)
+            for child_id in node.get_children_ids():
+                child = graph.get_node_by_id(child_id)
+                self.assertNotIn(node_id, child.get_children_ids())
 
     @unittest.skip("broken.")
     def test_save_as_dot_file(self):
