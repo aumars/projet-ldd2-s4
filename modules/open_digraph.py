@@ -739,7 +739,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         string
            The string of the graph in dot format.
         """
-        digraph = "digraph G{\n"
+        digraph = "digraph G {\n"
 
         for node in self.get_nodes():
             form = ("shape=invhouse, " if node.get_id() in self.get_input_ids() else 
