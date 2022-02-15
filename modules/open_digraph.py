@@ -835,3 +835,17 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         digraph = quote(self.to_str_dot_format(verbose))
         url = f'https://dreampuf.github.io/GraphvizOnline/#"{digraph}"'
         os.system(f"firefox {url}")
+
+    def sub_is_cyclic(self, nodes):
+        if len(nodes) == 0:
+            return False
+
+        else:
+            if nodes == []:
+                return True
+
+            else:
+                return self.sub_is_cyclic(nodes[:-1])
+
+    def is_cyclic(self):
+        return self.sub_is_cyclic(self.get_nodes())
