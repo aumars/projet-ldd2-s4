@@ -1,109 +1,91 @@
-from random import randrange
-from modules.utils import *
+from modules.utils import (random_int_list,
+                           random_int_matrix,
+                           random_symetric_int_matrix,
+                           random_oriented_int_matrix,
+                           random_triangular_int_matrix)
 import unittest
 import numpy as np
 import sys
 import os
+from hypothesis import given, strategies as st
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)
 
+capped_n = st.integers(max_value=100)
+
 
 class UtilsTest(unittest.TestCase):
-    def setUp(self):
-        pass
+    @given(capped_n, st.integers())
+    def test_random_int_list_utils(self, n, bound):
+        if n < 0 or (n > 0 and bound < 0):
+            self.assertRaises(ValueError, random_int_list, n, bound)
+        else:
+            arr = np.asarray(random_int_list(n, bound))
+            self.assertEqual((n,), arr.shape)
+            self.assertTrue(np.all(arr <= bound))
 
-    def test_random_int_list(self):
-        n, bound = randrange(100), randrange(100)
-        arr = np.asarray(random_int_list(n, bound))
-        self.assertEqual(n, arr.shape[0])
-        self.assertTrue((arr <= bound).all())
+    @given(capped_n, st.integers(), st.booleans())
+    def test_random_int_matrix_utils(self, n, bound, null_diag):
+        if n < 0 or (n > 0 and bound < 0):
+            self.assertRaises(ValueError, random_int_matrix, n, bound, null_diag)
+        else:
+            A = random_int_matrix(n, bound, null_diag)
+            A = np.asarray(A)
+            self.assertTrue(np.all(A <= np.full(A.shape, bound)))
+            if n == 0:
+                self.assertEqual((0,), A.shape)
+            else:
+                self.assertEqual((n, n,), A.shape)
+                if null_diag:
+                    self.assertTrue(np.all(A.diagonal() == 0))
 
-        arr_empty = np.asarray(random_int_list(0, 10))
-        self.assertEqual(0, arr_empty.shape[0])
+    @given(capped_n, st.integers(), st.booleans())
+    def test_random_symetric_int_matrix_utils(self, n, bound, null_diag):
+        if n < 0 or (n > 0 and bound < 0):
+            self.assertRaises(ValueError, random_symetric_int_matrix, n, bound, null_diag)
+        else:
+            A = random_symetric_int_matrix(n, bound, null_diag)
+            A = np.asarray(A)
+            self.assertTrue(np.all(A <= np.full(A.shape, bound)))
+            self.assertTrue(np.all(A == A.T))
+            if n == 0:
+                self.assertEqual((0,), A.shape)
+            else:
+                self.assertEqual((n, n,), A.shape)
+                if null_diag:
+                    self.assertTrue(np.all(A.diagonal() == 0))
 
-    def test_random_int_matrix(self):
-        n, bound = randrange(1, 100), randrange(100)
+    @given(capped_n, st.integers(), st.booleans())
+    def test_random_oriented_int_matrix_utils(self, n, bound, null_diag):
+        if n < 0 or (n > 0 and bound < 0):
+            self.assertRaises(ValueError, random_oriented_int_matrix, n, bound, null_diag)
+        else:
+            A = random_oriented_int_matrix(n, bound, null_diag)
+            A = np.asarray(A)
+            self.assertTrue(np.all(A <= np.full(A.shape, bound)))
+            if n == 0:
+                self.assertEqual((0,), A.shape)
+            else:
+                self.assertEqual((n, n,), A.shape)
+                nonzero = np.nonzero(A)
+                if null_diag:
+                    self.assertTrue(np.all(A.diagonal() == 0))
+                else:
+                    np.fill_diagonal(A, 0)
+                self.assertTrue(np.all(A.T[nonzero] == 0))
 
-        m_no_diag_null = random_int_matrix(n, bound, null_diag=False)
-        m_diag_null = random_int_matrix(n, bound, null_diag=True)
-        m_no_diag_null = np.asarray(m_no_diag_null)
-        m_diag_null = np.asarray(m_diag_null)
-
-        self.assertEqual((n, n, ), m_no_diag_null.shape)
-        self.assertEqual((n, n, ), m_diag_null.shape)
-
-        self.assertTrue(
-            np.asarray([m_no_diag_null[i] <= bound for i in range(n)]).all())
-
-        self.assertTrue(
-            np.asarray([m_diag_null[i] <= bound for i in range(n)]).all())
-
-        self.assertTrue((m_diag_null.diagonal() == 0).all())
-
-    def test_random_symetric_int_matrix(self):
-        n, bound = randrange(1, 100), randrange(100)
-
-        m_no_diag_null = random_symetric_int_matrix(n, bound, null_diag=False)
-        m_diag_null = random_symetric_int_matrix(n, bound, null_diag=True)
-        m_no_diag_null = np.asarray(m_no_diag_null)
-        m_diag_null = np.asarray(m_diag_null)
-
-        self.assertEqual((n, n, ), m_no_diag_null.shape)
-        self.assertEqual((n, n, ), m_diag_null.shape)
-
-        self.assertTrue(
-            np.asarray([m_no_diag_null[i] <= bound for i in range(n)]).all())
-
-        self.assertTrue(
-            np.asarray([m_diag_null[i] <= bound for i in range(n)]).all())
-
-        self.assertTrue((m_no_diag_null == m_no_diag_null.T).all())
-        self.assertTrue((m_diag_null == m_diag_null.T).all())
-
-        self.assertTrue((m_diag_null.diagonal() == 0).all())
-
-    def test_random_oriented_int_matrix(self):
-        n, bound = randrange(100), randrange(100)
-
-        m_no_diag_null = random_oriented_int_matrix(n, bound, null_diag=False)
-        m_diag_null = random_oriented_int_matrix(n, bound, null_diag=True)
-        m_no_diag_null = np.asarray(m_no_diag_null)
-        m_diag_null = np.asarray(m_diag_null)
-
-        self.assertEqual((n, n, ), m_no_diag_null.shape)
-        self.assertEqual((n, n, ), m_diag_null.shape)
-
-        self.assertTrue(
-            np.asarray([m_no_diag_null[i] <= bound for i in range(n)]).all())
-
-        self.assertTrue(
-            np.asarray([m_diag_null[i] <= bound for i in range(n)]).all())
-
-        m_diag_is_oriented = [m_diag_null[j][i] == 0 if m_diag_null[i][j] != 0
-                              else True
-                              for i in range(n) for j in range(n)]
-
-        m_no_diag_is_oriented = [m_no_diag_null[j][i] == 0 or i == j if m_no_diag_null[i][j] != 0
-                                 else True
-                                 for i in range(n) for j in range(n)]
-
-
-        self.assertTrue(np.asarray(m_diag_is_oriented).all())
-        self.assertTrue(np.asarray(m_no_diag_is_oriented).all())
-
-        self.assertTrue((m_diag_null.diagonal() == 0).all())
-
-    def test_random_triangular_int_matrix(self):
-        n, bound = randrange(1, 100), randrange(100)
-        m_trian_sup = np.triu_indices(n, 1)
-
-        m_no_diag_null = random_triangular_int_matrix(
-            n, bound, null_diag=False)
-        m_diag_null = random_triangular_int_matrix(n, bound, null_diag=True)
-        m_no_diag_null = np.asarray(m_no_diag_null)
-        m_diag_null = np.asarray(m_diag_null)
-
-        self.assertTrue((m_no_diag_null[m_trian_sup] == 0).all())
-        self.assertTrue((m_diag_null[m_trian_sup] == 0).all())
-
-        self.assertTrue((m_diag_null.diagonal() == 0).all())
+    @given(capped_n, st.integers(), st.booleans())
+    def test_random_triangular_int_matrix_utils(self, n, bound, null_diag):
+        if n < 0 or (n > 0 and bound < 0):
+            self.assertRaises(ValueError, random_triangular_int_matrix, n, bound, null_diag)
+        else:
+            A = random_triangular_int_matrix(n, bound, null_diag)
+            A = np.asarray(A)
+            m_trian_sup = np.triu_indices(n, 1)
+            if n == 0:
+                self.assertEqual((0,), A.shape)
+            else:
+                self.assertEqual((n, n,), A.shape)
+                self.assertTrue(np.all(A[m_trian_sup] == 0))
+                if null_diag:
+                    self.assertTrue(np.all(A.diagonal() == 0))
