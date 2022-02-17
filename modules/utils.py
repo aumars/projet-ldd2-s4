@@ -41,9 +41,10 @@ def random_int_list(n, bound, number_generator=random):
     Parameters
     ----------
     n : int
-        Length of list
+        Length of list. Must be positive.
     bound : int
-        Upper bound of our random positive integers.
+        Upper bound of our random positive integers. Must be positive if [n] is
+        non zero.
     number_generator : callable, optional
         Random number generator that generates real numbers between 0 and 1
         (included or excluded). If [number_generator] generates real
@@ -59,15 +60,10 @@ def random_int_list(n, bound, number_generator=random):
     ------
     ValueError
         If [n] is not positive.
-    ValueError
-        If [bound] is not positive.
     """
     if not (n >= 0):
         raise ValueError("n={} must be positive."
                          .format(n))
-    elif not (bound >= 0):
-        raise ValueError("bound={} must be positive."
-                         .format(bound))
     else:
         return [get_random_int(bound, number_generator) for _ in range(n)]
 
@@ -80,9 +76,10 @@ def random_int_matrix(n, bound, null_diag=True, number_generator=random):
     Parameters
     ----------
     n : int
-        Height/width of square matrix
+        Height/width of square matrix. Must be positive.
     bound : int
-        Upper bound of our random positive integers.
+        Upper bound of our random positive integers. Must be positive if [n] is
+        non zero.
     null_diag : bool, optional
         Flag to make the diagonal of the square matrix to only contain zeros.
     number_generator : callable, optional
@@ -100,15 +97,10 @@ def random_int_matrix(n, bound, null_diag=True, number_generator=random):
     ------
     ValueError
         If [n] is not positive.
-    ValueError
-        If [bound] is not positive.
     """
     if not (n >= 0):
         raise ValueError("n={} must be positive."
                          .format(n))
-    elif not (bound >= 0):
-        raise ValueError("bound={} must be positive."
-                         .format(bound))
     else:
         A = [random_int_list(n, bound, number_generator) for _ in range(n)]
         if null_diag:
@@ -127,9 +119,10 @@ def random_symetric_int_matrix(n, bound, null_diag=True,
     Parameters
     ----------
     n : int
-        Height/width of square matrix
+        Height/width of square matrix. Must be positive.
     bound : int
-        Upper bound of our random positive integers.
+        Upper bound of our random positive integers. Must be positive if [n] is
+        non zero.
     null_diag : bool, optional
         Flag to make the diagonal of the square matrix to only contain zeros.
     number_generator : callable, optional
@@ -148,12 +141,12 @@ def random_symetric_int_matrix(n, bound, null_diag=True,
     ValueError
         If [n] is not positive.
     ValueError
-        If [bound] is not positive.
+        If [bound] is strictly negative and [n] is strictly positive.
     """
     if not (n >= 0):
         raise ValueError("n={} must be positive."
                          .format(n))
-    elif not (bound >= 0):
+    elif bound < 0 and n > 0:
         raise ValueError("bound={} must be positive."
                          .format(bound))
     else:
@@ -180,9 +173,10 @@ def random_oriented_int_matrix(n, bound, null_diag=True,
     Parameters
     ----------
     n : int
-        Height/width of square matrix
+        Height/width of square matrix. Must be positive.
     bound : int
-        Upper bound of our random positive integers.
+        Upper bound of our random positive integers. Must be positive if [n] is
+        non zero.
     null_diag : bool, optional
         Flag to make the diagonal of the square matrix to only contain zeros.
     number_generator : callable, optional
@@ -200,15 +194,10 @@ def random_oriented_int_matrix(n, bound, null_diag=True,
     ------
     ValueError
         If [n] is not positive.
-    ValueError
-        If [bound] is not positive.
     """
     if not (n >= 0):
         raise ValueError("n={} must be positive."
                          .format(n))
-    elif not (bound >= 0):
-        raise ValueError("bound={} must be positive."
-                         .format(bound))
     else:
         A = [[0 for _ in range(n)] for _ in range(n)]
         for i in range(1, n):
@@ -234,9 +223,10 @@ def random_triangular_int_matrix(n, bound, null_diag=True,
     Parameters
     ----------
     n : int
-        Height/width of triangular matrix
+        Height/width of triangular matrix. Must be positive.
     bound : int
-        Upper bound of our random positive integers.
+        Upper bound of our random positive integers. Must be positive if [n] is
+        non zero.
     null_diag : bool, optional
         Flag to make the diagonal of the triangular matrix to only contain
         zeros.
@@ -256,12 +246,12 @@ def random_triangular_int_matrix(n, bound, null_diag=True,
     ValueError
         If [n] is not positive.
     ValueError
-        If [bound] is not positive.
+        If [bound] is strictly negative and [n] is strictly positive.
     """
     if not (n >= 0):
         raise ValueError("n={} must be positive."
                          .format(n))
-    elif not (bound >= 0):
+    elif bound < 0 and n > 0:
         raise ValueError("bound={} must be positive."
                          .format(bound))
     else:
