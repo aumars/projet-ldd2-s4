@@ -32,11 +32,13 @@ class open_digraph:
         self.next_id = 0 if self.nodes == {} else max(self.nodes.keys()) + 1
 
     def __str__(self):
-        return """Noeuds : {}
-Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
-                      ", ".join([str(node) + " -> " + str(self.get_node_by_id(child))
-                                 for node in self.nodes.values()
-                                 for child in node.children.keys()]))
+        if len(self.get_id_node_map()) == 0:
+            return 'empty'
+        else:
+            return "{{ {}, {} }}".format(", ".join([str(node) for node in self.nodes.values()]),
+                                         ", ".join([str(node) + " -> " + str(self.get_node_by_id(child))
+                                                    for node in self.nodes.values()
+                                                    for child in node.children.keys()]))
 
     def __repr__(self):
         return str(self)
