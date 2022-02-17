@@ -109,17 +109,8 @@ class node:
         -------
         int
             The multiplicity of the parent node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a parent node.
         """
-        if id not in self.get_parent_ids():
-            raise ValueError("{} does not have a parent with the ID {}"
-                             ".".format(self, id))
-        else:
-            return self.parents[id]
+        return self.parents.get(id, 0)
 
     def get_child_multiplicity(self, id):
         """
@@ -134,17 +125,8 @@ class node:
         -------
         int
             The multiplicity of the child node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a child node.
         """
-        if id not in self.get_children_ids():
-            raise ValueError("{} does not have a child with the ID {}"
-                             ".".format(self, id))
-        else:
-            return self.children[id]
+        return self.children.get(id, 0)
 
     def set_id(self, id):
         """
@@ -223,21 +205,15 @@ class node:
     def remove_parent_once(self, id):
         """
         Remove one occurence of a parent node.
+        
+        If the given parent ID does not exist, nothing happens.
 
         Parameters
         ----------
         id : int
             The ID of the parent node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a parent node.
         """
-        if id not in self.get_parent_ids():
-            raise ValueError("{} does not have a parent with the ID {}"
-                             ".".format(self, id))
-        else:
+        if id in self.get_parent_ids():
             if self.parents[id] == 1:
                 del self.parents[id]
             else:
@@ -246,21 +222,15 @@ class node:
     def remove_child_once(self, id):
         """
         Remove one occurence of a child node.
+        
+        If the given child ID does not exist, nothing happens.
 
         Parameters
         ----------
         id : int
             The ID of the child node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a child node.
         """
-        if id not in self.get_children_ids():
-            raise ValueError("{} does not have a child with the ID {}"
-                             ".".format(self, id))
-        else:
+        if id in self.get_children_ids():
             if self.children[id] == 1:
                 del self.children[id]
             else:
@@ -269,41 +239,29 @@ class node:
     def remove_parent_id(self, id):
         """
         Remove all occurences of a parent node.
+        
+        If the given parent ID does not exist, nothing happens.
 
         Parameters
         ----------
         id : int
             The ID of the parent node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a parent node.
         """
-        if id not in self.get_parent_ids():
-            raise ValueError("{} does not have a parent with the ID {}"
-                             ".".format(self, id))
-        else:
+        if id in self.get_parent_ids():
             del self.parents[id]
 
     def remove_child_id(self, id):
         """
         Remove all occurences of a child node.
+        
+        If the given parent ID does not exist, nothing happens.
 
         Parameters
         ----------
         id : int
             The ID of the child node.
-
-        Raises
-        ------
-        ValueError
-            If [id] is not recognised as the ID of a child node.
         """
-        if id not in self.get_children_ids():
-            raise ValueError("{} does not have a child with the ID {}"
-                             ".".format(self, id))
-        else:
+        if id in self.get_children_ids():
             del self.children[id]
 
     def indegree(self):
