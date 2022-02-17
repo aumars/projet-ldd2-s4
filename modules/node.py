@@ -11,15 +11,29 @@ class node:
             A string.
         parents : int->int dict
             Maps a parent node's id to its multiplicity. All values must be
-            strictly positive integers.
+            positive integers. Zero values are ignored.
         children : int->int dict
             Maps a child node's id to its multiplicity. All values must be
-            strictly positive integers.
+            positive integers. Zero values are ignored.
+
+        Raises
+        ------
+        ValueError
+            If a value in [parents] or [children] is strictly negative.
         """
+        for key, value in parents.items():
+            if value < 0:
+                raise ValueError("ID {} must be positive: {}"
+                                 .format(key, value))
+        for key, value in children.items():
+            if value < 0:
+                raise ValueError("ID {} must be positive: {}"
+                                 .format(key, value))
+
         self.id = identity
         self.label = label
-        self.parents = parents
-        self.children = children
+        self.parents = {k: v for k, v in parents.items() if v >= 1}
+        self.children = {k: v for k, v in children.items() if v >= 1}
 
     def __str__(self):
         return "N({})".format(self.id)
