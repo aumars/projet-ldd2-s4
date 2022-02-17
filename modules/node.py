@@ -301,7 +301,7 @@ class node:
         int
             The degree of input.
         """
-        return len(self.get_parent_ids())
+        return sum(self.parents.values())
     
     def outdegree(self):
         """
@@ -312,7 +312,7 @@ class node:
         int
             The degree of output.
         """
-        return len(self.get_children_ids())
+        return sum(self.children.values())
     
     def degree(self):
         """
