@@ -751,9 +751,9 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
             digraph += f"v{ node.get_id() } [{form}label=\"{ node.get_label() }{ repr(id_str)[1:-1] }\"];\n"
         
         for node in self.get_nodes():  
-            for child in node.get_children_ids():
-                line = f"v{node.get_id()} -> v{child};\n"
-                digraph += line * node.get_child_multiplicity(child)
+            for parent in node.get_parent_ids():
+                line = f"v{parent} -> v{node.get_id()};\n"
+                digraph += line * node.get_parent_multiplicity(parent)
         
         digraph += "}"
 
