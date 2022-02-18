@@ -1,8 +1,9 @@
+from copy import deepcopy
 import os
 from random import random, sample
 import re
 from tkinter import N
-from urllib.parse import quote, unquote 
+from urllib.parse import quote 
 
 from .utils import (random_int_matrix,
                     random_triangular_int_matrix,
@@ -54,7 +55,7 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         open_digraph
             The copy of this graph.
         """
-        return open_digraph(self.inputs, self.outputs, self.nodes.values())
+        return open_digraph(self.inputs, self.outputs, [deepcopy(node.copy()) for node in self.nodes.values()])
 
     def get_input_ids(self):
         """
@@ -836,16 +837,23 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         url = f'https://dreampuf.github.io/GraphvizOnline/#"{digraph}"'
         os.system(f"firefox {url}")
 
-    def sub_is_cyclic(self, nodes):
-        if len(nodes) == 0:
+    def sub_is_cyclic(self, graph):
+        if graph.get_node_ids() == []:
             return False
-
+        
         else:
-            if nodes == []:
-                return True
+            leaf = []
+            for n_id in graph.get_node_ids():
+                if graph.get_node_by_id(n_id).get_parent_ids() == []:
+                    leaf.append(n_id)
+                    break
 
+            if leaf == []:
+                return True
+            
             else:
-                return self.sub_is_cyclic(nodes[:-1])
+                graph.remove_node_by_id(leaf[0])
+                return graph.is_cyclic()
 
     def is_cyclic(self):
-        return self.sub_is_cyclic(self.get_nodes())
+        return self.sub_is_cyclic(self.copy())
