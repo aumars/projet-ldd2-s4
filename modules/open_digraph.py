@@ -799,6 +799,10 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
         graph = open_digraph.empty()
         dict_node = {}
 
+        in_dict = lambda label: set(dict_node.keys()) & set(label) != set()
+        add_node = lambda label: {"id": graph.add_node(label), "parents":set(), "children": set()}
+        get_id_dict = lambda label : add_node(label) if not in_dict(label) else dict_node[str_node]["id"]
+
         for line in f:
             lbl_re = re.search(r".*label=\"(.*?)\"\]", line)
             lbl_node = lbl_re.group(1) if lbl_re != None else ""
@@ -807,16 +811,20 @@ Arêtes : {}""".format(", ".join([str(node) for node in self.nodes.values()]),
 
             n_node = len(line.split("->"))
             l = line.split("->")
-            for i in range(n_node):
-                str_node = line.split("->")[i]
-                
-                    
-                if not str_node in dict_node.keys():
-                    dict_node[str_node] = {"id": graph.add_node(lbl_node), "parents":set(), "children": set()}
 
+            for i in range(n_node):
+                str_node = line.split("->")[i]                
+                dict_node[str_node] = get_id_dict(lbl_node)
+
+                if not lbl_node in dict_node:
+                    add_node(lbl_node)
+                
                 else:
-                    dict_node[str_node]["parents"] = dict_node[str_node]["parents"].union([dict_node[parent]["id"] for parent in l[:i]])
-                    dict_node[str_node]["children"] = dict_node[str_node]["children"].union([dict_node[child]["id"] for child in l[i+1:]])
+                    l_parents = [get_id_dict(parent) for parent in l[:i]]
+                    l_children = [get_id_dict(child) for child in l[i+1:]]
+
+                    dict_node[str_node]["parents"] = dict_node[str_node]["parents"].union(l_parents)
+                    dict_node[str_node]["children"] = dict_node[str_node]["children"].union(l_children)
 
         for str_node in dict_node:
             graph.get_node_by_id(dict_node[str_node]["id"]).set_parent_ids(dict_node[str_node]["parents"])
