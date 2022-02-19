@@ -18,7 +18,7 @@ class Bool_CircTest(unittest.TestCase):
         nodes.append(node(4, '&', {0: 1, 3: 1}, {7: 1}))
         nodes.append(node(5, '|', {2: 1, 3: 1}, {6: 1}))
         nodes.append(node(6, '~', {5: 1}, {7: 1}))
-        nodes.append(node(7, '|', {4: 1, 7: 1}, {8: 1}))
+        nodes.append(node(7, '|', {4: 1}, {8: 1}))
         nodes.append(node(8, 'r0', {7: 1}, {}))
         self.B = bool_circ([0, 1, 2], [8], nodes)
 
@@ -34,7 +34,7 @@ class Bool_CircTest(unittest.TestCase):
         nodes.append(node(4, 'AND', {0: 1, 3: 1}, {7: 1}))
         nodes.append(node(5, 'OR', {2: 1, 3: 1}, {6: 1}))
         nodes.append(node(6, 'NOT', {5: 1}, {7: 1}))
-        nodes.append(node(7, 'OR', {4: 1, 7: 1}, {8: 1}))
+        nodes.append(node(7, 'OR', {4: 1}, {8: 1}))
         nodes.append(node(8, 'r0', {7: 1}, {}))
         B2 = bool_circ([0, 1, 2], [8], nodes)
         self.assertFalse(B2.is_well_formed())
@@ -50,8 +50,9 @@ class Bool_CircTest(unittest.TestCase):
         nodes.append(node(6, '~', {5: 1}, {7: 1}))
         nodes.append(node(7, '|', {4: 1, 7: 1}, {5: 1, 8: 1}))
         nodes.append(node(8, 'r0', {7: 1}, {}))
-        B2 = bool_circ([0, 1, 2], [8], nodes)
-        self.assertFalse(B2.is_well_formed())
+        self.assertRaises(ValueError, bool_circ, [0, 1, 2], [8], nodes)
+        # B2 = bool_circ([0, 1, 2], [8], nodes)
+        # self.assertFalse(B2.is_well_formed())
 
     def test_illegal_degree_bool_circ(self):
         nodes = []
@@ -62,7 +63,7 @@ class Bool_CircTest(unittest.TestCase):
         nodes.append(node(4, '&', {0: 1, 3: 1}, {6: 1, 7: 1}))
         nodes.append(node(5, '|', {2: 1, 3: 1}, {6: 1}))
         nodes.append(node(6, '~', {4: 1, 5: 1}, {7: 1}))
-        nodes.append(node(7, '|', {4: 1, 7: 1}, {8: 1}))
+        nodes.append(node(7, '|', {4: 1}, {8: 1}))
         nodes.append(node(8, 'r0', {7: 1}, {}))
         B2 = bool_circ([0, 1, 2], [8], nodes)
         self.assertFalse(B2.is_well_formed())

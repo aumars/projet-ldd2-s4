@@ -34,7 +34,6 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.G2 = open_digraph([], [],
                                [self.n0_2, self.n1_2, self.n2_2, self.n3_2, self.n4_2])
-
         self.M_G2 = [[0, 1, 1, 0, 0],
                      [0, 0, 0, 1, 2],
                      [0, 0, 0, 2, 0],
@@ -407,9 +406,9 @@ class Open_DigraphTest(unittest.TestCase):
             [self.dag_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
     
 
-        def test_random_loop(self):
-            self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
-            self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
+    def test_random_loop(self):
+        self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
+        self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
 
     def test_random_loop_free_undirect(self):
         graph = self.loop_free_undirect_graph
@@ -473,7 +472,7 @@ v2 -> v4;
         self.assertTrue(graph.is_well_formed())
 
     def test_cyclic_graphs_are_cyclic_open_digraph(self):
-        self.assertTrue(self.G.is_cyclic())
+        self.assertTrue(self.G2.is_cyclic())
 
     def test_acyclic_graphs_are_acyclic_open_digraph(self):
         self.assertFalse(self.dag_graph.is_cyclic())
