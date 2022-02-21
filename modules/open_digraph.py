@@ -358,8 +358,8 @@ class open_digraph:
                                   {child: 1 for child in children})
             for parent in parents:
                 self.nodes[parent].add_child_id(id)
-                for child in children:
-                    self.nodes[child].add_parent_id(id)
+            for child in children:
+                self.nodes[child].add_parent_id(id)
             return id
 
     def remove_edges(self, *args):
