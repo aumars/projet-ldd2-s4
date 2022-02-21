@@ -210,7 +210,7 @@ class Open_DigraphTest(unittest.TestCase):
             for parent in parents:
                 self.assertEqual(node.get_parent_multiplicity(parent), 1)
             for child in children:
-                self.assertEqual(node.get_parent_multiplicity(child), 1)
+                self.assertEqual(node.get_child_multiplicity(child), 1)
         else:
             self.assertRaises(ValueError, graph.add_node, label, parents, children)
 
