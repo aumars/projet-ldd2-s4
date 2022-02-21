@@ -441,7 +441,6 @@ class Open_DigraphTest(unittest.TestCase):
         self.G.save_as_dot_file(dot_file_path)
         pydot.graph_from_dot_file(dot_file_path)
 
-    @unittest.skip
     def test_from_dot_file(self):
         dot_file_content = """digraph G {
 v0 [label="&"];
@@ -461,10 +460,8 @@ v2 -> v4;
         graph = open_digraph.from_dot_file(dot_file_path)
         self.assertTrue(graph.is_well_formed())
 
-    @unittest.skip
     def test_cyclic_graphs_are_cyclic_open_digraph(self):
         self.assertTrue(self.G2.is_cyclic())
 
-    @unittest.skip
     def test_acyclic_graphs_are_acyclic_open_digraph(self):
         self.assertFalse(self.dag_graph.is_cyclic())
