@@ -178,8 +178,11 @@ class open_digraph:
 
     def add_input_id(self, id):
         """
-        Add a new input ID. If the ID already exists as an input node,
-        do nothing.
+        Add a new input ID.
+
+        [id] must be an existing node with no parent and one child, and does
+        not exist as an output node.
+        If [id] is already an input node, do nothing.
 
         Parameters
         ----------
@@ -189,24 +192,36 @@ class open_digraph:
         Raises
         ------
         ValueError
-            If [id] already exists as a output node.
+            If [id] is not an existing node.
         ValueError
-            If [id] points to a node that has parents.
+            If [id] has parents.
+        ValueError
+            If [id] does not exactly one child.
+        ValueError
+            If [id] is an output node.
         """
-        if id in self.get_output_ids():
-            raise ValueError("ID {} already exists as a output node "
-                             "or an internal node."
+        if id not in self.get_node_ids():
+            raise ValueError("ID {} does not exist as a node."
                              .format(id))
-        elif id in self.get_node_ids() and self.get_node_by_id(id).get_parent_ids() != []:
+        elif self.get_node_by_id(id).get_parent_ids() != []:
             raise ValueError("{} has parents and cannot be an input node."
+                             .format(self.get_node_by_id(id)))
+        elif len(self.get_node_by_id(id).get_children_ids()) != 1:
+            raise ValueError("{} has {} children and cannot be an input node."
+                             .format(self.get_node_by_id(id), len(self.get_node_by_id(id).get_children_ids())))
+        elif id in self.get_output_ids():
+            raise ValueError("{} is an output node and cannot be an input node."
                              .format(self.get_node_by_id(id)))
         elif id not in self.get_input_ids():
             self.inputs.append(id)
 
     def add_output_id(self, id):
         """
-        Add a new output ID. If the ID already exists as an output node,
-        do nothing.
+        Add a new output ID.
+
+        [id] must be an existing node with one parent and no children, and does
+        not exist as an input node.
+        If [id] is already an output node, do nothing.
 
         Parameters
         ----------
@@ -216,16 +231,25 @@ class open_digraph:
         Raises
         ------
         ValueError
-            If [id] already exists as a input node.
+            If [id] is not an existing node.
         ValueError
-            If [id] points to a node that has children.
+            If [id] has children.
+        ValueError
+            If [id] does not exactly one parent.
+        ValueError
+            If [id] is an input node.
         """
-        if id in self.get_input_ids():
-            raise ValueError("ID {} already exists as a input node "
-                             "or an internal node."
+        if id not in self.get_node_ids():
+            raise ValueError("ID {} does not exist as a node."
                              .format(id))
-        elif id in self.get_node_ids() and self.get_node_by_id(id).get_children_ids() != []:
+        elif self.get_node_by_id(id).get_children_ids() != []:
             raise ValueError("{} has children and cannot be an output node."
+                             .format(self.get_node_by_id(id)))
+        elif len(self.get_node_by_id(id).get_parent_ids()) != 1:
+            raise ValueError("{} has {} parents and cannot be an output node."
+                             .format(self.get_node_by_id(id), len(self.get_node_by_id(id).get_parent_ids())))
+        elif id in self.get_input_ids():
+            raise ValueError("{} is an input node and cannot be an output node."
                              .format(self.get_node_by_id(id)))
         elif id not in self.get_output_ids():
             self.outputs.append(id)
