@@ -337,33 +337,30 @@ class open_digraph:
             If one of the IDs in [children] correspond to an ID of an
             input node or does not correspond to a node.
         """
-        S = set(parents).union(set(children)) - set(self.get_node_ids())
-        if S != set():
+        P, C = set(parents), set(children)
+        N, O, I = set(self.get_id_node_map()), set(self.get_output_ids()), set(self.get_input_ids())
+        if not (P.issubset(N) and C.issubset(N)):
             raise ValueError("The following IDs do not correspond "
                              "to existing nodes : {}."
-                             .format(S))
-        O = set(parents) & set(self.get_output_ids())
-        if O != set():
+                             .format(P.union(C) - N))
+        elif P.intersection(O) != set():
             raise ValueError("The following nodes are output nodes "
                              "and cannot be parents: {}."
-                             .format(O))
-
-        I = set(children) & set(self.get_input_ids())
-        if I != set():
+                             .format(P.intersection(O)))
+        elif C.intersection(I) != set():
             raise ValueError("The following nodes are input nodes "
                              "and cannot be children: {}."
-                             .format(I))
-
-        id = self.new_id()
-        self.nodes[id] = node(id, label,
-                              {parent: 1 for parent in parents},
-                              {child: 1 for child in children})
-        for parent in parents:
-            self.nodes[parent].add_child_id(id)
-        for child in children:
-            self.nodes[child].add_parent_id(id)
-
-        return id
+                             .format(C.intersection(I)))
+        else:
+            id = self.new_id()
+            self.nodes[id] = node(id, label,
+                                  {parent: 1 for parent in parents},
+                                  {child: 1 for child in children})
+            for parent in parents:
+                self.nodes[parent].add_child_id(id)
+                for child in children:
+                    self.nodes[child].add_parent_id(id)
+            return id
 
     def remove_edges(self, *args):
         """
