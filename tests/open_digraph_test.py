@@ -5,8 +5,55 @@ import pydot
 import unittest
 import sys
 import os
+from hypothesis import assume
+from hypothesis import given, strategies as st
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
+
+
+@st.composite
+def node_strategy(draw, no_parents=True, no_children=True):
+    id = draw(st.integers())
+    label = draw(st.text())
+    if no_parents:
+        parents_min_size = 0
+    else:
+        parents_min_size = 1
+    if no_children:
+        children_min_size = 0
+    else:
+        children_min_size = 1
+    parents = draw(st.dictionaries(st.integers(), st.integers(min_value=1), min_size=parents_min_size))
+    children = draw(st.dictionaries(st.integers(), st.integers(min_value=1), min_size=children_min_size))
+    return node(id, label, parents, children)
+
+
+@st.composite
+def open_digraph_strategy(draw):
+    nodes = draw(st.lists(node_strategy()))
+    io_num = draw(st.integers(min_value=0, max_value=len(nodes)))
+    input_num = draw(st.integers(min_value=0, max_value=io_num))
+    io_ids = draw(st.permutations([node.get_id() for node in nodes]).map(lambda x: x[:io_num]))
+    input_ids = io_ids[:input_num]
+    output_ids = io_ids[input_num+1:]
+    return open_digraph(input_ids, output_ids, nodes)
+
+@st.composite
+def random_well_formed_open_digraph_strategy(draw, inputs=True, outputs=True):
+    form = draw(st.sampled_from(['free', 'loop-free', 'undirected', 'loop-free undirected', 'oriented', 'DAG']))
+    n = draw(st.integers(min_value=0, max_value=100))
+    bound = draw(st.integers(min_value=0))
+    if inputs:
+        inputs = draw(st.integers(min_value=0, max_value=n/2))
+    else:
+        inputs = 0
+    if outputs:
+        outputs = draw(st.integers(min_value=0, max_value=n/2))
+    else:
+        outputs = 0
+    graph = open_digraph.random(n, bound, inputs, outputs, form)
+    assume(graph.is_well_formed())
+    return graph
 
 
 class Open_DigraphTest(unittest.TestCase):
@@ -55,175 +102,117 @@ class Open_DigraphTest(unittest.TestCase):
         self.oriented_graph_matrix = np.asarray(self.oriented_graph.adjacency_matrix())
         self.dag_graph_matrix = np.asarray(self.dag_graph.adjacency_matrix())
 
-    def test_init_open_digraph(self):
-        """Test the constructor."""
-        self.assertIsInstance(self.G, open_digraph)
-
-    def test_copy_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_copy_open_digraph(self, graph):
         """Test the copy method of open_digraph class."""
-        self.assertIsNot(self.G.copy(), self.G)
+        self.assertIsNot(graph.copy(), graph)
 
-    def test_get_input_ids_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_get_input_ids_open_digraph(self, graph):
         """Test the get_input_ids method."""
-        self.assertEqual(self.G.get_input_ids(), [3, 4])
+        self.assertEqual(graph.get_input_ids(), graph.inputs)
 
-    def test_get_output_ids_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_get_output_ids_open_digraph(self, graph):
         """Test the get_output_ids method."""
-        self.assertEqual(self.G.get_output_ids(), [5, 6])
+        self.assertEqual(graph.get_output_ids(), graph.outputs)
 
-    def test_get_id_node_map_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_get_id_node_map_open_digraph(self, graph):
         """Test the get_id_node_map method."""
-        self.assertEqual(self.G.get_id_node_map(),
-                         {0: self.n0, 1: self.n1, 2: self.n2, 3: self.i0,
-                          4: self.i1, 5: self.o0, 6: self.o1})
+        self.assertEqual(graph.get_id_node_map(), graph.nodes)
 
-    def test_get_nodes_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_get_nodes_open_digraph(self, graph):
         """Test the get_nodes method."""
-        self.assertEqual(self.G.get_nodes(), [self.n0, self.n1, self.n2,
-                                              self.i0, self.i1, self.o0,
-                                              self.o1])
+        self.assertCountEqual(graph.get_nodes(), graph.nodes.values())
 
-    def test_get_node_ids_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_get_node_ids_open_digraph(self, graph):
         """Test the get_ids method."""
-        self.assertEqual(self.G.get_node_ids(), [0, 1, 2, 3, 4, 5, 6])
+        self.assertCountEqual(graph.get_node_ids(), graph.nodes.keys())
 
-    def test_get_node_by_id_existing_id_open_digraph(self):
-        """Test the get_node_by_id method with existing ID."""
-        self.assertEqual(self.G.get_node_by_id(0), self.n0)
+    @given(open_digraph_strategy(), st.integers())
+    def test_get_node_by_id_open_digraph(self, graph, id):
+        """Test the get_node_by_id method."""
+        if id in graph.get_node_ids():
+            self.assertEqual(graph.get_node_by_id(id), graph.get_id_node_map()[id])
+        else:
+            self.assertRaises(ValueError, graph.get_node_by_id, id)
 
-    def test_get_node_by_id_nonexistant_id_open_digraph(self):
-        """Test the get_node_by_id method with nonexistant ID."""
-        self.assertRaises(ValueError, self.G.get_node_by_id, -1)
+    @given(open_digraph_strategy(), st.lists(st.integers()))
+    def test_get_nodes_by_ids_open_digraph(self, graph, id_list):
+        """Test the get_nodes_by_ids method."""
+        if set(id_list).issubset(graph.get_node_ids()):
+            self.assertCountEqual(graph.get_nodes_by_ids(id_list), list(map(graph.get_id_node_map().get, id_list)))
+        else:
+            self.assertRaises(ValueError, graph.get_nodes_by_ids, id_list)
 
-    def test_get_nodes_by_ids_existing_ids_open_digraph(self):
-        """Test the get_nodes_by_ids method with existing IDs."""
-        self.assertEqual(self.G.get_nodes_by_ids([0, 1]), [self.n0, self.n1])
+    @given(open_digraph_strategy(), st.lists(st.integers()))
+    def test_set_input_ids_open_digraph(self, graph, input_ids):
+        """Test the set_input_ids method."""
+        graph.set_input_ids(input_ids)
+        self.assertEqual(set(graph.get_input_ids()), set(input_ids))
 
-    def test_get_nodes_by_ids_nonexistant_id_open_digraph(self):
-        """Test the get_nodes_by_ids method with a nonexistant ID."""
-        self.assertRaises(ValueError, self.G.get_nodes_by_ids, [0, -1])
+    @given(open_digraph_strategy(), st.lists(st.integers()))
+    def test_set_output_ids_open_digraph(self, graph, output_ids):
+        """Test the set_output_ids method."""
+        graph.set_output_ids(output_ids)
+        self.assertEqual(set(graph.get_output_ids()), set(output_ids))
 
-    def test_set_input_ids_open_digraph(self):
-        """Test the set_input_ids method with valid IDs."""
-        self.G.set_input_ids([0, 1])
-        self.assertEqual(self.G.get_input_ids(), [0, 1])
+    @given(open_digraph_strategy(), st.integers())
+    def test_add_input_id_open_digraph(self, graph, id):
+        """Test add_input_id method."""
+        if id in graph.get_node_ids() and id not in graph.get_output_ids() and graph.get_node_by_id(id).get_parent_ids() == [] and len(graph.get_node_by_id(id).get_children_ids()) == 1:
+            graph.add_input_id(id)
+            self.assertIn(id, graph.get_input_ids())
+        else:
+            self.assertRaises(ValueError, graph.add_input_id, id)
 
-    def test_set_input_ids_negative_ids_open_digraph(self):
-        """Test the set_input_ids method with negative IDs."""
-        self.G.set_input_ids([0, -1])
-        self.assertEqual(self.G.get_input_ids(), [0, -1])
+    @given(open_digraph_strategy(), st.integers())
+    def test_add_output_id_open_digraph(self, graph, id):
+        """Test add_output_id method."""
+        if id in graph.get_node_ids() and id not in graph.get_input_ids() and graph.get_node_by_id(id).get_children_ids() == [] and len(graph.get_node_by_id(id).get_parent_ids()) == 1:
+            graph.add_output_id(id)
+            self.assertIn(id, graph.get_output_ids())
+        else:
+            self.assertRaises(ValueError, graph.add_output_id, id)
 
-    def test_set_input_ids_duplicate_ids_open_digraph(self):
-        """Test the set_input_ids method with duplicate IDs."""
-        self.G.set_input_ids([0, 0, 1])
-        self.assertEqual(self.G.get_input_ids(), [0, 1])
-
-    def test_set_output_ids_open_digraph(self):
-        """Test the set_output_ids method with valid IDs."""
-        self.G.set_output_ids([0, 1])
-        self.assertEqual(self.G.get_output_ids(), [0, 1])
-
-    def test_set_output_ids_negative_ids_open_digraph(self):
-        """Test the set_output_ids method with negative IDs."""
-        self.G.set_output_ids([0, -1])
-        self.assertEqual(self.G.get_output_ids(), [0, -1])
-
-    def test_set_output_ids_duplicate_ids_open_digraph(self):
-        """Test the set_output_ids method with duplicate IDs."""
-        self.G.set_output_ids([0, 0, 1])
-        self.assertEqual(self.G.get_output_ids(), [0, 1])
-
-    def test_add_input_id_open_unused_digraph(self):
-        """Test add_input_id with unused ID"""
-        self.G.add_input_id(7)
-        self.assertIn(7, self.G.get_input_ids())
-
-    def test_add_input_id_existing_input_id_open_digraph(self):
-        """Test add_input_id with existing input ID"""
-        self.G.add_input_id(3)
-        self.assertIn(3, self.G.get_input_ids())
-
-    def test_add_input_id_existing_output_id_open_digraph(self):
-        """Test add_input_id with existing output ID"""
-        self.assertRaises(ValueError, self.G.add_input_id, 5)
-
-    def test_add_input_id_existing_internal_id_open_digraph(self):
-        """Test add_input_id with existing internal ID (neither input nor
-        output)"""
-        self.assertRaises(ValueError, self.G.add_input_id, 0)
-
-    def test_add_output_id_open_unused_digraph(self):
-        """Test add_output_id with unused ID"""
-        self.G.add_output_id(7)
-        self.assertIn(7, self.G.get_output_ids())
-
-    def test_add_output_id_existing_output_id_open_digraph(self):
-        """Test add_output_id with existing output ID"""
-        self.G.add_output_id(5)
-        self.assertIn(5, self.G.get_output_ids())
-
-    def test_add_output_id_existing_input_id_open_digraph(self):
-        """Test add_output_id with existing input ID"""
-        self.assertRaises(ValueError, self.G.add_output_id, 3)
-
-    def test_add_output_id_existing_internal_id_open_digraph(self):
-        """Test add_output_id with existing internal ID (neither input nor
-        output)"""
-        self.assertRaises(ValueError, self.G.add_output_id, 0)
-
-    def test_new_id_open_digraph(self):
+    @given(open_digraph_strategy())
+    def test_new_id_open_digraph(self, graph):
         """Test new_id method."""
-        self.assertNotIn(self.G.new_id(), self.G.get_node_ids())
+        self.assertNotIn(graph.new_id(), graph.get_node_ids())
 
-    def test_add_edge_between_two_valid_nodes_open_digraph(self):
-        """Test add_edge method between two valid nodes."""
-        self.G.add_edge(2, 0)
-        self.assertEqual(self.G.get_node_by_id(2).get_child_multiplicity(0), 1)
-        self.assertEqual(self.G.get_node_by_id(
-            0).get_parent_multiplicity(2), 1)
+    @given(open_digraph_strategy(), st.integers(), st.integers())
+    def test_add_edge_open_digraph(self, graph, src, tgt):
+        """Test add_edge method."""
+        if src in graph.get_node_ids() and tgt in graph.get_node_ids() \
+           and src not in graph.get_output_ids() and tgt not in graph.get_input_ids():
+            c = graph.get_node_by_id(src).get_child_multiplicity(tgt)
+            p = graph.get_node_by_id(tgt).get_parent_multiplicity(src)
+            graph.add_edge(src, tgt)
+            self.assertEqual(graph.get_node_by_id(src).get_child_multiplicity(tgt), c + 1)
+            self.assertEqual(graph.get_node_by_id(tgt).get_parent_multiplicity(src), p + 1)
+        else:
+            self.assertRaises(ValueError, graph.add_edge, src, tgt)
 
-    def test_add_edge_from_valid_node_to_input_node_open_digraph(self):
-        """Test add_edge method from valid node to input node."""
-        self.assertRaises(ValueError, self.G.add_edge, 2, 3)
-
-    def test_add_edge_from_output_node_to_valid_node_open_digraph(self):
-        """Test add_edge method from output node to valid node."""
-        self.assertRaises(ValueError, self.G.add_edge, 5, 0)
-
-    def test_add_edge_from_valid_node_to_nonexistant_node_open_digraph(self):
-        """Test add_edge method from valid node to nonexistant node."""
-        self.assertRaises(ValueError, self.G.add_edge, 0, 7)
-
-    def test_add_node_valid_nodes_open_digraph(self):
-        """Test add_node method by adding a node with an edge from ID 3
-        and an edge to ID 1."""
-        node_cpt = len(self.G.get_nodes())
-        id = self.G.add_node(parents=[3], children=[1])
-        self.assertEqual(len(self.G.get_nodes()), node_cpt + 1)
-        self.assertIn(id, self.G.get_node_ids())
-        self.assertEqual(self.G.get_node_by_id(
-            id).get_parent_multiplicity(3), 1)
-        self.assertEqual(self.G.get_node_by_id(
-            3).get_child_multiplicity(id), 1)
-        self.assertEqual(self.G.get_node_by_id(
-            id).get_child_multiplicity(1), 1)
-        self.assertEqual(self.G.get_node_by_id(
-            1).get_parent_multiplicity(id), 1)
-
-    def test_add_node_nonexistant_parent_open_digraph(self):
-        """Test add_node method with a nonexistant parent."""
-        self.assertRaises(ValueError, self.G.add_node,
-                          parents=[-1], children=[1])
-
-    def test_add_node_output_parent_open_digraph(self):
-        """Test add_node method with a output parent."""
-        self.assertRaises(ValueError, self.G.add_node,
-                          parents=[5], children=[1])
-
-    def test_add_node_input_child_open_digraph(self):
-        """Test add_node method with a input child."""
-        self.assertRaises(ValueError, self.G.add_node,
-                          parents=[0], children=[3])
+    @given(open_digraph_strategy(), st.text(), st.lists(st.integers()), st.lists(st.integers()))
+    def test_add_node_open_digraph(self, graph, label, parents, children):
+        """Test add_node method."""
+        P, C = set(parents), set(children)
+        N, O, I = set(graph.get_id_node_map()), set(graph.get_output_ids()), set(graph.get_input_ids())
+        if P.issubset(N) and C.issubset(N) and P.intersection(O) == set() and C.intersection(I) == set():
+            node_num = len(graph.get_nodes())
+            id = graph.add_node(parents, children)
+            node = graph.get_node_by_id(id)
+            self.assertEqual(len(graph.get_nodes()), node_num + 1)
+            self.assertIn(id, graph.get_node_ids())
+            for parent in parents:
+                self.assertEqual(node.get_parent_multiplicity(parent), 1)
+            for child in children:
+                self.assertEqual(node.get_parent_multiplicity(child), 1)
+        else:
+            self.assertRaises(ValueError, graph.add_node, label, parents, children)
 
     def test_remove_edges_existing_edges_open_digraph(self):
         """Test remove_edges method with existing edges."""
@@ -452,6 +441,7 @@ class Open_DigraphTest(unittest.TestCase):
         self.G.save_as_dot_file(dot_file_path)
         pydot.graph_from_dot_file(dot_file_path)
 
+    @unittest.skip
     def test_from_dot_file(self):
         dot_file_content = """digraph G {
 v0 [label="&"];
@@ -471,8 +461,10 @@ v2 -> v4;
         graph = open_digraph.from_dot_file(dot_file_path)
         self.assertTrue(graph.is_well_formed())
 
+    @unittest.skip
     def test_cyclic_graphs_are_cyclic_open_digraph(self):
         self.assertTrue(self.G2.is_cyclic())
 
+    @unittest.skip
     def test_acyclic_graphs_are_acyclic_open_digraph(self):
         self.assertFalse(self.dag_graph.is_cyclic())
