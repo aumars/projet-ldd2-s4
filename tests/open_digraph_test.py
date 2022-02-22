@@ -491,3 +491,23 @@ v2 -> v4;
             self.assertTrue(np.all(ids <= np.full(ids.shape, M + n)))
         else:
             self.assertRaises(ValueError, graph.shift_indices, n)
+
+    @given(open_digraph_strategy(), open_digraph_strategy())
+    def test_iparallel_open_digraph(self, graph, g):
+        inputs1 = len(graph.get_input_ids())
+        outputs1 = len(graph.get_output_ids())
+        inputs2 = len(g.get_input_ids())
+        outputs2 = len(g.get_output_ids())
+        graph.iparallel(g)
+        self.assertEqual(len(graph.get_input_ids()), inputs1 + inputs2)
+        self.assertEqual(len(graph.get_output_ids()), outputs1 + outputs2)
+
+    @given(open_digraph_strategy(), open_digraph_strategy())
+    def test_parallel_open_digraph(self, graph, g):
+        inputs1 = len(graph.get_input_ids())
+        outputs1 = len(graph.get_output_ids())
+        inputs2 = len(g.get_input_ids())
+        outputs2 = len(g.get_output_ids())
+        new = graph.parallel(g)
+        self.assertEqual(len(new.get_input_ids()), inputs1 + inputs2)
+        self.assertEqual(len(new.get_output_ids()), outputs1 + outputs2)
