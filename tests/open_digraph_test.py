@@ -394,42 +394,35 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
         self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
 
-    def test_random_loop_free_undirect(self):
-        graph = self.loop_free_undirect_graph
+    @given(random_well_formed_open_digraph_strategy(form='loop-free undirected'))
+    def test_random_loop_free_undirected_open_digraph(self, graph):
         for node_id in graph.get_node_ids():
             node = graph.get_node_by_id(node_id)
             for child_id in node.get_children_ids():
                 child = graph.get_node_by_id(child_id)
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
-    
-    def test_random_undirect(self):
-        graph = self.undirect_graph
+
+    @given(random_well_formed_open_digraph_strategy(form='undirected'))    
+    def test_random_undirected_open_digraph(self, graph):
         for node_id in graph.get_node_ids():
             node = graph.get_node_by_id(node_id)
             for child_id in node.get_children_ids():
                 child = graph.get_node_by_id(child_id)
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
-    
-    def test_random_oriented(self):
-        graph = self.oriented_graph
+
+    @given(random_well_formed_open_digraph_strategy(form='oriented'))
+    def test_random_oriented_open_digraph(self, graph):
         for node_id in graph.get_node_ids():
             node = graph.get_node_by_id(node_id)
             for child_id in node.get_children_ids():
                 child = graph.get_node_by_id(child_id)
                 self.assertNotIn(node_id, child.get_children_ids())
 
-    def test_random_DAG_open_digraph(self):
-        """
-        Pas suffisant
-        """
-        graph = self.dag_graph
-        for node_id in graph.get_node_ids():
-            node = graph.get_node_by_id(node_id)
-            for child_id in node.get_children_ids():
-                child = graph.get_node_by_id(child_id)
-                self.assertNotIn(node_id, child.get_children_ids())
+    @given(random_well_formed_open_digraph_strategy(form='DAG'))
+    def test_random_DAG_open_digraph(self, graph):
+        self.assertFalse(graph.is_cyclic())
 
     def test_save_as_dot_file(self):
         dot_file_path = "test_as_save_dot_file.dot"
