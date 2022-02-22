@@ -923,7 +923,7 @@ class open_digraph:
             raise ValueError("The number of output in the graphs don't coincide.")
        
         self.shift_indices(self.max_id())
-        self.nodes += g.get_ids_nodes_map()
+        self.nodes.update(g.get_id_node_map())
         for i in range(len(self.get_input_ids())):
             o_id = self.get_node_by_id(self.get_output_ids()[i])
             parent_o_id = o_id.get_parent_ids()[0]
