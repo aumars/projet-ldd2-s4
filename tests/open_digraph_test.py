@@ -379,7 +379,7 @@ class Open_DigraphTest(unittest.TestCase):
                 self.assertIn(node_id, child.get_children_ids())
                 self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
 
-    @given(random_well_formed_open_digraph_strategy(form='undirected'))    
+    @given(random_well_formed_open_digraph_strategy(form='undirected'))
     def test_random_undirected_open_digraph(self, graph):
         for node_id in graph.get_node_ids():
             node = graph.get_node_by_id(node_id)
