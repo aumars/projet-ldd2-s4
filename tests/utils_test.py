@@ -11,7 +11,7 @@ from hypothesis import given, strategies as st
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)
 
-capped_n = st.integers(max_value=100)
+capped_n = st.integers(max_value=20)
 capped_bound = st.integers(max_value=10)
 
 
