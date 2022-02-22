@@ -40,7 +40,7 @@ def open_digraph_strategy(draw):
 
 @st.composite
 def random_well_formed_open_digraph_strategy(draw, inputs=True, outputs=True, form=None):
-    if form == None:
+    if form is None:
         form = draw(st.sampled_from(['free', 'loop-free', 'undirected', 'loop-free undirected', 'oriented', 'DAG']))
     n = draw(st.integers(min_value=0, max_value=100))
     bound = draw(st.integers(min_value=0))
