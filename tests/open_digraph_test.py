@@ -365,7 +365,7 @@ class Open_DigraphTest(unittest.TestCase):
     @given(open_digraph_strategy())
     def test_node_dict_open_digraph(self, graph):
         uniq_dict = open_digraph.node_dict(graph)
-        vals = uniq_dicts.values()
+        vals = uniq_dict.values()
         ids = graph.get_node_ids()
         self.assertCountEqual(ids, uniq_dict.keys())
         self.assertEqual(len(set(vals)), len(vals))
