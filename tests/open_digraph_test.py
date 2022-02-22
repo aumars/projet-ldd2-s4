@@ -506,3 +506,18 @@ v2 -> v4;
         for k, v in d.items():
             self.assertIn(k, ids)
             self.assertLessEqual(v, n)
+
+    @given(open_digraph_strategy())
+    def test_get_connected_components_open_digraph(self, graph):
+        l = graph.get_connected_components()
+        n, _ = graph.connected_components()
+        inputs1 = len(graph.get_input_ids())
+        outputs1 = len(graph.get_output_ids())
+        nodes1 = len(graph.get_id_node_map())
+        inputs2 = sum([len(g.get_input_ids()) for g in l])
+        outputs2 = sum([len(g.get_output_ids()) for g in l])
+        nodes2 = sum([len(g.get_id_node_map()) for g in l])
+        self.assertEqual(len(l), n)
+        self.assertEqual(nodes1, nodes2)
+        self.assertEqual(inputs1, inputs2)
+        self.assertEqual(outputs1, outputs2)
