@@ -362,11 +362,13 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertRaises(ValueError, self.G.add_output_node, 3)
         self.assertRaises(ValueError, self.G.add_output_node, 5)
 
-    def test_node_dict_open_digraph(self):
-        uniq_dict_1 = open_digraph.node_dict(self.G)
-        uniq_dict_2 = open_digraph.node_dict(self.G2)
-        self.assertEqual(len(uniq_dict_1), len(set(uniq_dict_1.values())))
-        self.assertEqual(len(uniq_dict_2), len(set(uniq_dict_2.values())))
+    @given(open_digraph_strategy())
+    def test_node_dict_open_digraph(self, graph):
+        uniq_dict = open_digraph.node_dict(graph)
+        vals = uniq_dicts.values()
+        ids = graph.get_node_ids()
+        self.assertCountEqual(ids, uniq_dict.keys())
+        self.assertEqual(len(set(vals)), len(vals))
 
     def test_random_shape_open_digraph(self):
         self.assertEqual((self.n, self.n, ), self.free_graph_matrix.shape)
