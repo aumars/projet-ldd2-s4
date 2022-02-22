@@ -888,3 +888,69 @@ class open_digraph:
 
     def is_cyclic(self):
         return self.sub_is_cyclic(self.copy())
+    
+    def min_id(self):
+        return min(self.get_node_ids())
+    
+    def max_id(self):
+        return max(self.get_node_ids())
+    
+    def shift_indices(self, n):
+        for node in self.get_nodes():
+            node.set_id(node.get_id() + n)
+    
+    def iparallel(self, g):
+        for node in g.get_nodes():
+            self.add_node(node.get_label(), node.get_parent_ids(), node.get_children_ids())
+
+            if node.get_id() in g.get_input_ids():
+                self.add_input_node(node.get_id())
+
+            if node.get_id() in g.get_output_ids():
+                self.add_output_node(node.get_id())
+    
+    def parallel(self, g):
+        graph = open_digraph.empty()
+        graph.iparallel(self)
+        graph.iparallel(g)
+        return graph
+
+    def icompose(self, g):
+        if len(self.get_input_ids()) != len(g.get_input_ids()):
+            raise ValueError("The number of inputs in the graphs don't coincide.")
+
+        if len(self.get_output_ids()) != len(g.get_output_ids()):
+            raise ValueError("The number of output in the graphs don't coincide.")
+       
+        self.shift_indices(self.max_id())
+        self.nodes += g.get_ids_nodes_map()
+        for i in range(len(self.get_input_ids())):
+            o_id = self.get_node_by_id(self.get_output_ids()[i])
+            parent_o_id = o_id.get_parent_ids()[0]
+            self.remove_node_by_id(o_id)
+            self.add_edge(parent_o_id, g.get_input_ids()[i])
+        self.set_output_ids(g.get_outputs_ids())
+    
+    @classmethod
+    def identity(cls, n):
+        graph = cls.empty()
+        
+        for _ in range(2 * n):
+            graph.add_node()
+        
+        for i in range(2 * n):
+            if i % 2 == 0:
+                graph.add_edge(i, i + 1)
+        
+        graph.set_input_ids([2 * i for i in range(n + 1)])
+        graph.set_output_ids([2 * i + 1 for i in range(n + 1)])
+        
+        return graph
+
+    def compose(self, g):
+        graph = open_digraph.identity(len(self.get_output_ids()))
+        graph.icompose(self)
+        graph.icompose(g)
+        return graph
+
+    
