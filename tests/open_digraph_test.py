@@ -479,3 +479,15 @@ v2 -> v4;
             self.assertEqual(graph.max_id(), max(graph.get_node_ids()))
         else:
             self.assertRaises(ValueError, graph.min_id)
+            
+    @given(open_digraph_strategy(), st.integers())
+    def test_shift_indices_open_digraph(self, graph, n):
+        if len(graph.get_id_node_map()) > 0:
+            m = graph.min_id()
+            M = graph.max_id()
+            graph.shift_indices(n)
+            ids = np.asarray(graph.get_node_ids())
+            self.assertTrue(np.all(ids >= np.full(ids.shape, m + n)))
+            self.assertTrue(np.all(ids <= np.full(ids.shape, M + n)))
+        else:
+            self.assertRaises(ValueError, graph.shift_indices, n)
