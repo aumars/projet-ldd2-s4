@@ -12,10 +12,11 @@ root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)
 
 capped_n = st.integers(max_value=100)
+capped_bound = st.integers(max_value=10)
 
 
 class UtilsTest(unittest.TestCase):
-    @given(capped_n, st.integers())
+    @given(capped_n, capped_bound)
     def test_random_int_list_utils(self, n, bound):
         if n < 0 or (n > 0 and bound < 0):
             self.assertRaises(ValueError, random_int_list, n, bound)
@@ -24,7 +25,7 @@ class UtilsTest(unittest.TestCase):
             self.assertEqual((n,), arr.shape)
             self.assertTrue(np.all(arr <= bound))
 
-    @given(capped_n, st.integers(), st.booleans())
+    @given(capped_n, capped_bound, st.booleans())
     def test_random_int_matrix_utils(self, n, bound, null_diag):
         if n < 0 or (n > 0 and bound < 0):
             self.assertRaises(ValueError, random_int_matrix, n, bound, null_diag)
@@ -39,7 +40,7 @@ class UtilsTest(unittest.TestCase):
                 if null_diag:
                     self.assertTrue(np.all(A.diagonal() == 0))
 
-    @given(capped_n, st.integers(), st.booleans())
+    @given(capped_n, capped_bound, st.booleans())
     def test_random_symetric_int_matrix_utils(self, n, bound, null_diag):
         if n < 0 or (n > 0 and bound < 0):
             self.assertRaises(ValueError, random_symetric_int_matrix, n, bound, null_diag)
@@ -55,7 +56,7 @@ class UtilsTest(unittest.TestCase):
                 if null_diag:
                     self.assertTrue(np.all(A.diagonal() == 0))
 
-    @given(capped_n, st.integers(), st.booleans())
+    @given(capped_n, capped_bound, st.booleans())
     def test_random_oriented_int_matrix_utils(self, n, bound, null_diag):
         if n < 0 or (n > 0 and bound < 0):
             self.assertRaises(ValueError, random_oriented_int_matrix, n, bound, null_diag)
@@ -74,7 +75,7 @@ class UtilsTest(unittest.TestCase):
                     np.fill_diagonal(A, 0)
                 self.assertTrue(np.all(A.T[nonzero] == 0))
 
-    @given(capped_n, st.integers(), st.booleans())
+    @given(capped_n, capped_bound, st.booleans())
     def test_random_triangular_int_matrix_utils(self, n, bound, null_diag):
         if n < 0 or (n > 0 and bound < 0):
             self.assertRaises(ValueError, random_triangular_int_matrix, n, bound, null_diag)
