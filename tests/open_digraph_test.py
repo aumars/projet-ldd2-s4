@@ -400,9 +400,10 @@ class Open_DigraphTest(unittest.TestCase):
     def test_random_DAG_open_digraph(self, graph):
         self.assertFalse(graph.is_cyclic())
 
-    def test_save_as_dot_file(self):
+    @given(open_digraph_strategy())
+    def test_save_as_dot_file(self, graph):
         dot_file_path = "test_as_save_dot_file.dot"
-        self.G.save_as_dot_file(dot_file_path)
+        graph.save_as_dot_file(dot_file_path)
         pydot.graph_from_dot_file(dot_file_path)
 
     def test_from_dot_file(self):
