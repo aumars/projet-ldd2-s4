@@ -370,30 +370,6 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertCountEqual(ids, uniq_dict.keys())
         self.assertEqual(len(set(vals)), len(vals))
 
-    def test_random_bound_open_digraph(self):
-        self.assertTrue(np.asarray(
-            [self.free_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
-
-        self.assertTrue(np.asarray(
-            [self.loop_free_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
-
-        self.assertTrue(np.asarray(
-            [self.undirect_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
-
-        self.assertTrue(np.asarray(
-            [self.loop_free_undirect_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
-
-        self.assertTrue(np.asarray(
-            [self.oriented_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
-
-        self.assertTrue(np.asarray(
-            [self.dag_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
-    
-
-    def test_random_loop(self):
-        self.assertTrue((self.loop_free_graph_matrix.diagonal() == 0).all())
-        self.assertTrue((self.loop_free_undirect_graph_matrix.diagonal() == 0).all())
-
     @given(random_well_formed_open_digraph_strategy(form='loop-free undirected'))
     def test_random_loop_free_undirected_open_digraph(self, graph):
         for node_id in graph.get_node_ids():
