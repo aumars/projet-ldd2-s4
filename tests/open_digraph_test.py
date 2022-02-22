@@ -82,26 +82,9 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.G2 = open_digraph([], [],
                                [self.n0_2, self.n1_2, self.n2_2, self.n3_2, self.n4_2])
-        self.M_G2 = [[0, 1, 1, 0, 0],
-                     [0, 0, 0, 1, 2],
-                     [0, 0, 0, 2, 0],
-                     [1, 0, 0, 0, 1],
-                     [0, 2, 0, 1, 0]]
 
         self.n, self.bound = 10, 15
-        self.free_graph = open_digraph.random(self.n, self.bound, form="free")
-        self.loop_free_graph = open_digraph.random(self.n, self.bound, form="loop-free")
-        self.undirect_graph = open_digraph.random(self.n, self.bound, form="undirected")
-        self.loop_free_undirect_graph = open_digraph.random(self.n, self.bound, form="loop-free undirected")
-        self.oriented_graph = open_digraph.random(self.n, self.bound, form="oriented")
         self.dag_graph = open_digraph.random(self.n, self.bound, form="DAG")
-
-        self.free_graph_matrix = np.asarray(self.free_graph.adjacency_matrix())
-        self.loop_free_graph_matrix = np.asarray(self.loop_free_graph.adjacency_matrix())
-        self.undirect_graph_matrix = np.asarray(self.undirect_graph.adjacency_matrix())
-        self.loop_free_undirect_graph_matrix = np.asarray(self.loop_free_undirect_graph.adjacency_matrix())
-        self.oriented_graph_matrix = np.asarray(self.oriented_graph.adjacency_matrix())
-        self.dag_graph_matrix = np.asarray(self.dag_graph.adjacency_matrix())
 
     @given(open_digraph_strategy())
     def test_copy_open_digraph(self, graph):
