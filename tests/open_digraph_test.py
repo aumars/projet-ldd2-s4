@@ -517,3 +517,35 @@ v2 -> v4;
         self.assertEqual(len(new.get_input_ids()), inputs1 + inputs2)
         self.assertEqual(len(new.get_output_ids()), outputs1 + outputs2)
         self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2)
+
+    @given(open_digraph_strategy(), open_digraph_strategy())
+    def test_icompose_open_digraph(self, graph, g):
+        inputs1 = len(graph.get_input_ids())
+        outputs1 = len(graph.get_output_ids())
+        nodes1 = len(graph.get_id_node_map())
+        inputs2 = len(g.get_input_ids())
+        outputs2 = len(g.get_output_ids())
+        nodes2 = len(g.get_id_node_map())
+        if outputs1 == inputs2:
+            graph.icompose(g)
+            self.assertEqual(len(graph.get_input_ids()), inputs1)
+            self.assertEqual(len(graph.get_output_ids()), outputs2)
+            self.assertEqual(len(graph.get_id_node_map()), nodes1 + nodes2)
+        else:
+            self.assertRaises(ValueError, graph.icompose, g)
+
+    @given(open_digraph_strategy(), open_digraph_strategy())
+    def test_compose_open_digraph(self, graph, g):
+        inputs1 = len(graph.get_input_ids())
+        outputs1 = len(graph.get_output_ids())
+        nodes1 = len(graph.get_id_node_map())
+        inputs2 = len(g.get_input_ids())
+        outputs2 = len(g.get_output_ids())
+        nodes2 = len(g.get_id_node_map())
+        if outputs1 == inputs2:
+            new = graph.compose(g)
+            self.assertEqual(len(new.get_input_ids()), inputs1)
+            self.assertEqual(len(new.get_output_ids()), outputs2)
+            self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2)
+        else:
+            self.assertRaises(ValueError, graph.compose, g)
