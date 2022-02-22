@@ -549,3 +549,12 @@ v2 -> v4;
             self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2)
         else:
             self.assertRaises(ValueError, graph.compose, g)
+
+    @given(open_digraph_strategy())
+    def test_connected_components_open_digraph(self, graph):
+        n, d = graph.connected_components()
+        ids = graph.get_node_ids()
+        self.assertGreaterEqual(n, 0)
+        for k, v in d.items():
+            self.assertIn(k, ids)
+            self.assertLessEqual(v, n)
