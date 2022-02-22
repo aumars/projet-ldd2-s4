@@ -370,14 +370,6 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertCountEqual(ids, uniq_dict.keys())
         self.assertEqual(len(set(vals)), len(vals))
 
-    def test_random_shape_open_digraph(self):
-        self.assertEqual((self.n, self.n, ), self.free_graph_matrix.shape)
-        self.assertEqual((self.n, self.n, ), self.loop_free_graph_matrix.shape)
-        self.assertEqual((self.n, self.n, ), self.undirect_graph_matrix.shape)
-        self.assertEqual((self.n, self.n, ), self.loop_free_undirect_graph_matrix.shape)
-        self.assertEqual((self.n, self.n, ), self.oriented_graph_matrix.shape)
-        self.assertEqual((self.n, self.n, ), self.dag_graph_matrix.shape)
-
     def test_random_bound_open_digraph(self):
         self.assertTrue(np.asarray(
             [self.free_graph_matrix[i] <= self.bound for i in range(self.n)]).all())
