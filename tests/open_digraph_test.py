@@ -465,3 +465,17 @@ v2 -> v4;
 
     def test_acyclic_graphs_are_acyclic_open_digraph(self):
         self.assertFalse(self.dag_graph.is_cyclic())
+
+    @given(open_digraph_strategy())
+    def test_min_id_open_digraph(self, graph):
+        if len(graph.get_id_node_map()) > 0:
+            self.assertEqual(graph.min_id(), min(graph.get_node_ids()))
+        else:
+            self.assertRaises(ValueError, graph.min_id)
+            
+    @given(open_digraph_strategy())
+    def test_max_id_open_digraph(self, graph):
+        if len(graph.get_id_node_map()) > 0:
+            self.assertEqual(graph.max_id(), max(graph.get_node_ids()))
+        else:
+            self.assertRaises(ValueError, graph.min_id)
