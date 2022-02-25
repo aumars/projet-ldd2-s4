@@ -176,6 +176,9 @@ class open_digraph:
         """
         self.outputs = list(dict.fromkeys(outputs))
 
+    def set_nodes(self, nodes):
+        self.nodes = {node.get_id(): node for node in nodes}
+
     def add_input_id(self, id):
         """
         Add a new input ID.
@@ -896,9 +899,17 @@ class open_digraph:
         return max(self.get_node_ids())
     
     def shift_indices(self, n):
+        shift_list = lambda l :list(map(lambda x : x + n, l))
+
         for node in self.get_nodes():
             node.set_id(node.get_id() + n)
-    
+            node.set_parent_ids(shift_list(node.get_parent_ids()))
+            node.set_children_ids(shift_list(node.get_children_ids()))
+
+        self.set_nodes(self.get_nodes())
+        self.set_input_ids(shift_list(self.get_input_ids()))
+        self.set_output_ids(shift_list(self.get_output_ids()))
+                
     def iparallel(self, g):
         for node in g.get_nodes():
             self.add_node(node.get_label(), node.get_parent_ids(), node.get_children_ids())
