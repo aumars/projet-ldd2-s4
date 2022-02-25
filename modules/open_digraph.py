@@ -2,7 +2,6 @@ from copy import deepcopy
 import os
 from random import random, sample
 import re
-from tkinter import N
 from urllib.parse import quote 
 
 from .utils import (random_int_matrix,
@@ -964,49 +963,40 @@ class open_digraph:
         graph.icompose(g)
         return graph
     
-    def get_heritage(self, id, result, is_parent=True):
+    def get_heritage(self, id, result, nodes_seen=[], is_parent=True):
         result.add(id)
         node = self.get_node_by_id(id)
 
         in_out_nodes = self.get_input_ids() if is_parent else self.get_output_ids()
-        child_parent_nodes = node.get_parent_ids() if is_parent else node.get_children_ids()
 
-        if id in in_out_nodes:
+        if id in nodes_seen or id in in_out_nodes:
             return result
         
         else:
-            for parent in child_parent_nodes:
-                self.get_heritage(parent, result)
+            child_parent_nodes = node.get_parent_ids() if is_parent else node.get_children_ids()
             
-            
+            for child_parent in child_parent_nodes:
+                self.get_heritage(child_parent, result, nodes_seen=nodes_seen)
+
+    def assoc_nodes_to_comp(self, l, dict_comp):
+        for o in l:
+            component = set([o])
+
+            for child in self.get_node_by_id(o).get_parent_ids():
+                self.get_heritage(child, component, nodes_seen=dict_comp.keys()) 
+                
+                I = set(dict_comp.keys()).intersection(component)
+                group_comp = len(set(dict_comp.values())) if I == set() else dict_comp[list(I)[0]]
+                
+                dict_comp.update({id: group_comp for id in component})
 
     def connected_components(self):
         dict_comp = {}
 
-        for o in self.get_output_ids():
-            if o in dict_comp.keys():
-                continue
+        self.assoc_nodes_to_comp(self.get_output_ids(), dict_comp)
+        self.assoc_nodes_to_comp(set(self.get_node_ids()) - set(dict_comp.keys()), dict_comp)
 
-            n_component = len(set(dict_comp.values())) + 1
-            component = set([o])
-            o_parent = self.get_node_by_id(o).get_parent_ids()[0]
-
-
-            self.get_heritage(o_parent, component)
-            self.get_heritage(o_parent, component, is_parent=False)
-            I = set(dict_comp.keys()).intersection(component)
+        return len(set(dict_comp.values())), dict_comp
             
-            if I != set():
-                print()
-                dict_comp.update({id:dict_comp[list(I)[0]] for id in component})
-
-            else:
-                dict_comp.update({id:n_component for id in component})
-        
-        return n_component, dict_comp
-            
-
-
-
 
     
