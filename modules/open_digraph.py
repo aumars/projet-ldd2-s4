@@ -997,6 +997,30 @@ class open_digraph:
         self.assoc_nodes_to_comp(set(self.get_node_ids()) - set(dict_comp.keys()), dict_comp)
 
         return len(set(dict_comp.values())), dict_comp
-            
+    
+    def group_dict(self, dict):
+        group = {}
 
+        for k, v in dict.items():
+            group[v] = [k] if v not in group.keys() else group[v] + [k]
+        
+        return group
+
+    def get_connected_components(self):
+        n_comp, connected_comp = self.connected_components()
+        dict_comp = self.group_dict(connected_comp)
+        list_comps = []
+
+        for i in range(n_comp):
+            nodes_ids = dict_comp[i]
+            
+            nodes = self.get_nodes_by_ids(nodes_ids)
+            inputs = set(self.get_input_ids()).intersection(nodes_ids)
+            outputs = set(self.get_output_ids()).intersection(nodes_ids)
+            
+            graph = open_digraph(inputs, outputs, nodes)
+            
+            list_comps.append(graph)
+
+        return list_comps
     
