@@ -871,6 +871,19 @@ class open_digraph:
         os.system(f"firefox {url}")
 
     def sub_is_cyclic(self, graph):
+        """
+        Sub-function to test if a graph is cyclic.
+
+        Parameters
+        ----------
+        graph : open_digraph
+            A graph.
+
+        Returns
+        ------
+        bool
+           True if the graph is cyclic. Otherwise, return False.
+        """
         if graph.get_node_ids() == []:
             return False
         
@@ -889,15 +902,47 @@ class open_digraph:
                 return graph.is_cyclic()
 
     def is_cyclic(self):
+        """
+        Test if a graph is cyclic.
+
+        Returns
+        ------
+        bool
+           True if the graph is cyclic. Otherwise, return False.
+        """
         return self.sub_is_cyclic(self.copy())
     
     def min_id(self):
+        """
+        Get the min ID of nodes.
+
+        Returns
+        ------
+        int
+           The ID minimum. If the graph is empty returns 0.
+        """
         return min(self.get_node_ids()) if self.get_node_ids() else 0
     
     def max_id(self):
+        """
+        Get the max ID of nodes.
+
+        Returns
+        ------
+        int
+           The ID maximum. If the graph is empty returns 0.
+        """
         return max(self.get_node_ids()) if self.get_node_ids() else 0
     
     def shift_indices(self, n):
+        """
+        Shift the ID of all nodes.
+
+        Parameters
+        ----------
+        n : int
+            The offset value. 
+        """        
         shift_list = lambda l :list(map(lambda x : x + n, l))
 
         for node in self.get_nodes():
@@ -913,7 +958,15 @@ class open_digraph:
         self.set_input_ids(shift_list(self.get_input_ids()))
         self.set_output_ids(shift_list(self.get_output_ids()))
                 
-    def iparallel(self, list_graph):        
+    def iparallel(self, list_graph):
+        """
+        Add graphs parallel to itself.
+
+        Parameters
+        ----------
+        list_graph : open_digraph list
+            A list containing graphs to add.
+        """ 
         for graph in list_graph:
             self.shift_indices(graph.max_id() + 1)
             self.set_nodes(self.get_nodes() + graph.get_nodes())
@@ -921,12 +974,42 @@ class open_digraph:
             self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
 
     def parallel(self, list_graph):
+        """
+        Add graphs parallel to itself.
+
+        Parameters
+        ----------
+        list_graph : open_digraph list
+            A list containing graphs to add.
+        
+        Returns
+        ------
+        open_digraph
+           The graph of the fusion of parallel graphs. 
+        """ 
         list_graph.insert(0, self)
         graph = open_digraph.empty()
         graph.iparallel(list_graph)
         return graph
 
     def icompose(self, g):
+        """
+        Compose graph in sequence.
+        The graph g is not modified.
+
+        Parameters
+        ----------
+        g : open_digraph
+           A graph to compose in sequence.
+        
+        Raises
+        ------
+        ValueError
+            If the number of inputs between the graphs don't coincide.
+        ValueError
+            If the number of outputs between the graphs don't coincide.
+
+        """ 
         if len(self.get_input_ids()) != len(g.get_input_ids()):
             raise ValueError("The number of inputs in the graphs don't coincide.")
 
@@ -935,15 +1018,31 @@ class open_digraph:
        
         self.shift_indices(self.max_id())
         self.nodes.update(g.get_id_node_map())
+        
         for i in range(len(self.get_input_ids())):
             o_id = self.get_node_by_id(self.get_output_ids()[i])
-            parent_o_id = o_id.get_parent_ids()[0]
+            id_parent_o = o_id.get_parent_ids()[0]
+            
             self.remove_node_by_id(o_id)
-            self.add_edge(parent_o_id, g.get_input_ids()[i])
+            self.add_edge(id_parent_o, g.get_input_ids()[i])
+        
         self.set_output_ids(g.get_outputs_ids())
     
     @classmethod
     def identity(cls, n):
+        """
+        The identity graph.
+
+        Parameters
+        ----------
+        n : int
+           The number of input and output.
+        
+        Returns
+        ------
+        open_digraph
+           The identity graph composed of n inputs and n outputs. 
+        """ 
         graph = cls.empty()
         
         for _ in range(2 * n):
@@ -959,31 +1058,79 @@ class open_digraph:
         return graph
 
     def compose(self, g):
+        """
+        Get the composition of the self graph with the graph g.
+        The graphs are not modified.
+
+        Parameters
+        ----------
+        g : open_digraph
+           A graph to compose in sequence.
+        
+        Returns
+        ------
+        open_digraph
+           The composition of the self graph with g.
+        """ 
         graph = open_digraph.identity(len(self.get_output_ids()))
         graph.icompose(self)
         graph.icompose(g)
         return graph
     
-    def get_heritage(self, id, result, nodes_seen=[], is_parent=True):
+    def get_heritage(self, id, result, nodes_seen=[], to_parents=True):
+        """
+        Get the IDs list of all nodes having a possible path with the node 'id'
+        in the graph.
+
+        Parameters
+        ----------
+        id : int
+           The ID of the node we want to have the heritage.
+
+        result: int list
+            The list where IDs are stored.
+
+        node_seen: int_list, optional
+            The list containing the nodes seen. This argument is to optimize the graph path.
+            During the traversal of the graph, if a node has already been seen, then the 
+            traversal is stopped.
+        
+        to_parents: boolean, optional
+            Determines the traversal direction of the graph. By default, is True, then the direction is 
+            node to his parents. If False, it's the opposite direction node to his children.
+        """ 
         result.add(id)
         node = self.get_node_by_id(id)
 
-        in_out_nodes = self.get_input_ids() if is_parent else self.get_output_ids()
+        in_out_nodes = self.get_input_ids() if to_parents else self.get_output_ids()
 
         if id in nodes_seen or id in in_out_nodes:
             return result
         
         else:
-            child_parent_nodes = node.get_parent_ids() if is_parent else node.get_children_ids()
+            child_parent_nodes = node.get_parent_ids() if to_parents else node.get_children_ids()
             
             for child_parent in child_parent_nodes:
                 self.get_heritage(child_parent, result, nodes_seen=nodes_seen)
 
-    def assoc_nodes_to_comp(self, l, dict_comp):
-        for o in l:
-            component = set([o])
+    def assoc_nodes_to_comp(self, nodes, dict_comp):
+        """
+        Associated each node of a list with its components.
 
-            for child in self.get_node_by_id(o).get_parent_ids():
+        Parameters
+        ----------
+        nodes : int list
+           The IDs of nodes to associate.
+
+        dict_comp: int -> int
+            The dict where the assocation are stored. The keys corresponds to node ID. 
+            And values corresponds the ID of the component where the node is connected.
+
+        """ 
+        for n_id in nodes:
+            component = set([n_id])
+
+            for child in self.get_node_by_id(n_id).get_parent_ids():
                 self.get_heritage(child, component, nodes_seen=dict_comp.keys()) 
                 
                 I = set(dict_comp.keys()).intersection(component)
@@ -992,6 +1139,15 @@ class open_digraph:
                 dict_comp.update({id: group_comp for id in component})
 
     def connected_components(self):
+        """
+        Get the dict which associte each node with its connected components.
+       
+        Returns
+        ------
+        int * (int -> list)
+           The number of connected components and a dict where each node are associated
+           with its component.
+        """ 
         dict_comp = {}
 
         self.assoc_nodes_to_comp(self.get_output_ids(), dict_comp)
@@ -999,21 +1155,43 @@ class open_digraph:
 
         return len(set(dict_comp.values())), dict_comp
     
-    def group_dict(self, dict):
-        group = {}
+    def reverse_dict(self, dict):
+        """
+        Reverse the dict.
+        The values of dict become keys. The keys are regrouped in a list and associated to values.
 
-        for k, v in dict.items():
-            group[v] = [k] if v not in group.keys() else group[v] + [k]
+        Parameters
+        ----------
+        dict : int -> int
+           The dict to inverted.
         
-        return group
+        Returns
+        ------
+        int -> list
+           The dictionary reversed.
+        """ 
+        invert = {}
+
+        for key, val in dict.items():
+            invert[val] = [key] if val not in invert.keys() else invert[val] + [key]
+        
+        return invert
 
     def get_connected_components(self):
+        """
+        Separated the connected components of the graphs.
+
+        Returns
+        ------
+        open_digraph list
+           A list containing the separated graphs.
+        """ 
         n_comp, connected_comp = self.connected_components()
-        dict_comp = self.group_dict(connected_comp)
+        connected_comp = self.reverse_dict(connected_comp)
         list_comps = []
 
         for i in range(n_comp):
-            nodes_ids = dict_comp[i]
+            nodes_ids = connected_comp[i]
             
             nodes = self.get_nodes_by_ids(nodes_ids)
             inputs = set(self.get_input_ids()).intersection(nodes_ids)
