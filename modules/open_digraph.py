@@ -1018,7 +1018,7 @@ class open_digraph:
             inputs = set(self.get_input_ids()).intersection(nodes_ids)
             outputs = set(self.get_output_ids()).intersection(nodes_ids)
             
-            graph = open_digraph(inputs, outputs, nodes)
+            graph = open_digraph(list(inputs), list(outputs), nodes)
             
             list_comps.append(graph)
 
