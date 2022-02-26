@@ -913,20 +913,17 @@ class open_digraph:
         self.set_input_ids(shift_list(self.get_input_ids()))
         self.set_output_ids(shift_list(self.get_output_ids()))
                 
-    def iparallel(self, g):
-        for node in g.get_nodes():
-            self.add_node(node.get_label(), node.get_parent_ids(), node.get_children_ids())
+    def iparallel(self, list_graph):        
+        for graph in list_graph:
+            self.shift_indices(graph.max_id() + 1)
+            self.set_nodes(self.get_nodes() + graph.get_nodes())
+            self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
+            self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
 
-            if node.get_id() in g.get_input_ids():
-                self.add_input_node(node.get_id())
-
-            if node.get_id() in g.get_output_ids():
-                self.add_output_node(node.get_id())
-    
-    def parallel(self, g):
+    def parallel(self, list_graph):
+        list_graph.insert(0, self)
         graph = open_digraph.empty()
-        graph.iparallel(self)
-        graph.iparallel(g)
+        graph.iparallel(list_graph)
         return graph
 
     def icompose(self, g):
