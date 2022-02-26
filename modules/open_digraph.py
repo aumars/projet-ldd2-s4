@@ -968,6 +968,7 @@ class open_digraph:
             A list containing graphs to add.
         """ 
         for graph in list_graph:
+            graph = graph.copy()
             self.shift_indices(graph.max_id() + 1)
             self.set_nodes(self.get_nodes() + graph.get_nodes())
             self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
@@ -987,9 +988,8 @@ class open_digraph:
         open_digraph
            The graph of the fusion of parallel graphs. 
         """ 
-        list_graph.insert(0, self)
         graph = open_digraph.empty()
-        graph.iparallel(list_graph)
+        graph.iparallel([self] + list_graph)
         return graph
 
     def icompose(self, g):
@@ -1016,7 +1016,7 @@ class open_digraph:
         if len(self.get_output_ids()) != len(g.get_output_ids()):
             raise ValueError("The number of output in the graphs don't coincide.")
        
-        self.shift_indices(self.max_id())
+        self.shift_indices(g.max_id())
         self.nodes.update(g.get_id_node_map())
         
         for i in range(len(self.get_input_ids())):
