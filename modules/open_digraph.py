@@ -892,10 +892,10 @@ class open_digraph:
         return self.sub_is_cyclic(self.copy())
     
     def min_id(self):
-        return min(self.get_node_ids())
+        return min(self.get_node_ids()) if self.get_node_ids() else 0
     
     def max_id(self):
-        return max(self.get_node_ids())
+        return max(self.get_node_ids()) if self.get_node_ids() else 0
     
     def shift_indices(self, n):
         shift_list = lambda l :list(map(lambda x : x + n, l))
