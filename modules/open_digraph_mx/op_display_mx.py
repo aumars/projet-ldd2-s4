@@ -8,10 +8,12 @@ class op_display_mx:
         if len(self.get_id_node_map()) == 0:
             return 'empty'
         else:
-            return "{{ {}, {} }}".format(", ".join([str(node) for node in self.nodes.values()]),
-                                         ", ".join([str(node) + " -> " + str(self.get_node_by_id(child))
-                                                    for node in self.nodes.values()
-                                                    for child in node.children.keys()]))
+            return "{{ {}, I = {{ {} }}, O = {{ {} }}, {} }}".format(", ".join([str(node) for node in self.nodes.values()]),
+                                                                  ", ".join([str(id) for id in self.get_input_ids()]),
+                                                                  ", ".join([str(id) for id in self.get_output_ids()]),
+                                                                  ", ".join([str(node) + " -> " + str(self.get_node_by_id(child))
+                                                                             for node in self.nodes.values()
+                                                                             for child in node.children.keys()]))
 
     def __repr__(self):
         return str(self)
