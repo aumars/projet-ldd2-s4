@@ -125,7 +125,7 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertTrue(self.G2.is_cyclic())
 
     @given(random_well_formed_open_digraph_strategy(form='DAG'))
-    def test_acyclic_graphs_are_acyclic_open_digraph(self, graph):
+    def test_DAGs_are_acyclic_open_digraph(self, graph):
         self.assertFalse(graph.is_cyclic())
 
     @given(open_digraph_strategy(), st.integers())
