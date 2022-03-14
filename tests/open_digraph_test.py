@@ -11,7 +11,6 @@ sys.path.append(root)  # allows us to fetch files from the project root
 
 
 class Open_DigraphTest(unittest.TestCase):
-
     def setUp(self):
         self.n0 = node(0, 'a', {3: 1, 4: 1}, {1: 1, 2: 1})
         self.n1 = node(1, 'b', {0: 1}, {2: 2, 5: 1})
@@ -24,7 +23,7 @@ class Open_DigraphTest(unittest.TestCase):
         self.o1 = node(6, 'o1', {2: 1}, {})
 
         self.G = open_digraph([3, 4], [5, 6], [self.n0, self.n1, self.n2, self.i0, self.i1, self.o0, self.o1])
-        
+
         self.n0_2 = node(0, "v0", {3: 1}, {1: 1, 2: 1})
         self.n1_2 = node(1, "v1", {0: 1}, {3: 1, 4: 2})
         self.n2_2 = node(2, "v2", {0: 1}, {3: 2})
@@ -130,7 +129,7 @@ class Open_DigraphTest(unittest.TestCase):
 
     def test_acyclic_graphs_are_acyclic_open_digraph(self):
         self.assertFalse(self.dag_graph.is_cyclic())
-            
+
     @given(open_digraph_strategy(), st.integers())
     def test_shift_indices_open_digraph(self, graph, n):
         m = graph.min_id()
