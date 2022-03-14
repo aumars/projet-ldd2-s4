@@ -1,7 +1,7 @@
 
 class op_compositions_mx:
     def separate_indices(self, g):
-        if g.min_id() <= self.max_id():
+        if self.min_id() <= g.max_id():
             self.shift_indices(abs(g.max_id() - self.min_id()) + 1)
     
     def iparallel(self, list_graph):
