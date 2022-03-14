@@ -1,8 +1,9 @@
 from random import random, sample
 from modules.utils import (random_int_matrix,
-                    random_triangular_int_matrix,
-                    random_oriented_int_matrix,
-                    random_symetric_int_matrix)
+                           random_triangular_int_matrix,
+                           random_oriented_int_matrix,
+                           random_symetric_int_matrix)
+
 
 class op_special_graph_mx:
     @classmethod
@@ -19,26 +20,26 @@ class op_special_graph_mx:
         ----------
         n : int
            The number of input and output.
-        
+
         Returns
         ------
         open_digraph
-           The identity graph composed of n inputs and n outputs. 
-        """ 
+           The identity graph composed of n inputs and n outputs.
+        """
         graph = cls.empty()
-        
+
         for _ in range(2 * n):
             graph.add_node()
-        
+
         for i in range(2 * n):
             if i % 2 == 0:
                 graph.add_edge(i, i + 1)
-        
+
         graph.set_input_ids([2 * i for i in range(n + 1)])
         graph.set_output_ids([2 * i + 1 for i in range(n + 1)])
-        
+
         return graph
-    
+
     @classmethod
     def random(cls, n, bound, inputs=0, outputs=0, form="free",
                number_generator=random):
