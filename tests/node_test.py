@@ -1,4 +1,5 @@
 from modules.node import node
+from tests.strategy import node_strategy
 import unittest
 import sys
 import os
@@ -6,23 +7,6 @@ from hypothesis import given, strategies as st
 from collections import Counter
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
-
-
-@st.composite
-def node_strategy(draw, no_parents=True, no_children=True):
-    id = draw(st.integers())
-    label = draw(st.text())
-    if no_parents:
-        parents_min_size = 0
-    else:
-        parents_min_size = 1
-    if no_children:
-        children_min_size = 0
-    else:
-        children_min_size = 1
-    parents = draw(st.dictionaries(st.integers(), st.integers(min_value=1), min_size=parents_min_size))
-    children = draw(st.dictionaries(st.integers(), st.integers(min_value=1), min_size=children_min_size))
-    return node(id, label, parents, children)
 
 
 class NodeTest(unittest.TestCase):
