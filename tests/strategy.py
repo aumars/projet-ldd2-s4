@@ -37,17 +37,17 @@ def open_digraph_strategy(draw, num=20):
 
 
 @st.composite
-def random_well_formed_open_digraph_strategy(draw, n=20, bound=10, inputs=True, outputs=True, form=None):
+def random_well_formed_open_digraph_strategy(draw, nmax=20, boundmax=10, inputs=True, outputs=True, form=None):
     if form is None:
         form = draw(st.sampled_from(['free', 'loop-free', 'undirected', 'loop-free undirected', 'oriented', 'DAG']))
-    n = draw(st.integers(min_value=0))
-    bound = draw(st.integers(min_value=0))
+    n = draw(st.integers(min_value=0, max_value=nmax))
+    bound = draw(st.integers(min_value=0, max_value=boundmax))
     if inputs:
-        inputs = draw(st.integers(min_value=0, max_value=n/2))
+        inputs = draw(st.integers(min_value=0, max_value=n//2))
     else:
         inputs = 0
     if outputs:
-        outputs = draw(st.integers(min_value=0, max_value=n/2))
+        outputs = draw(st.integers(min_value=0, max_value=n//2))
     else:
         outputs = 0
     graph = open_digraph.random(n, bound, inputs, outputs, form)
