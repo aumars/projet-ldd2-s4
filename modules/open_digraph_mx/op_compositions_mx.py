@@ -10,7 +10,6 @@ class op_compositions_mx:
             A list containing graphs to add.
         """ 
         for graph in list_graph:
-            graph = graph.copy()
             self.shift_indices(graph.max_id() + 1)
             self.set_nodes(self.get_nodes() + graph.get_nodes())
             self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
