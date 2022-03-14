@@ -1,6 +1,6 @@
 from modules.node import node
 from modules.open_digraph import open_digraph
-from tests.strategy import open_digraph_strategy
+from tests.strategy import open_digraph_strategy, random_well_formed_open_digraph_strategy
 import numpy as np
 import unittest
 import sys
@@ -31,9 +31,6 @@ class Open_DigraphTest(unittest.TestCase):
         self.n4_2 = node(4, "v4", {}, {1: 2, 3: 1})
 
         self.G2 = open_digraph([], [], [self.n0_2, self.n1_2, self.n2_2, self.n3_2, self.n4_2])
-
-        self.n, self.bound = 10, 15
-        self.dag_graph = open_digraph.random(self.n, self.bound, form="DAG")
 
     @given(open_digraph_strategy())
     def test_new_id_open_digraph(self, graph):
@@ -127,8 +124,9 @@ class Open_DigraphTest(unittest.TestCase):
     def test_cyclic_graphs_are_cyclic_open_digraph(self):
         self.assertTrue(self.G2.is_cyclic())
 
-    def test_acyclic_graphs_are_acyclic_open_digraph(self):
-        self.assertFalse(self.dag_graph.is_cyclic())
+    @given(random_well_formed_open_digraph_strategy(form='DAG'))
+    def test_acyclic_graphs_are_acyclic_open_digraph(self, graph):
+        self.assertFalse(graph.is_cyclic())
 
     @given(open_digraph_strategy(), st.integers())
     def test_shift_indices_open_digraph(self, graph, n):
