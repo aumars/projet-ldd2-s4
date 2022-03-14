@@ -1,6 +1,6 @@
 from modules.node import node
 from modules.open_digraph import open_digraph
-from tests.strategy import open_digraph_strategy, random_well_formed_open_digraph_strategy
+from tests.strategy import open_digraph_strategy
 import numpy as np
 import unittest
 import sys
