@@ -68,7 +68,7 @@ class op_compositions_mx:
             self.remove_node_by_id(o_id)
             self.add_edge(id_parent_o, g.get_input_ids()[i])
         
-        self.set_output_ids(g.get_outputs_ids())
+        self.set_output_ids(g.get_output_ids())
     
     def compose(self, g):
         """
