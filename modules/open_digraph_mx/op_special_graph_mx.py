@@ -27,16 +27,12 @@ class op_special_graph_mx:
            The identity graph composed of n inputs and n outputs.
         """
         graph = cls.empty()
-
-        for _ in range(2 * n):
-            graph.add_node()
-
-        for i in range(2 * n):
-            if i % 2 == 0:
-                graph.add_edge(i, i + 1)
-
-        graph.set_input_ids([2 * i for i in range(n + 1)])
-        graph.set_output_ids([2 * i + 1 for i in range(n + 1)])
+        nodes = [graph.add_node() for _ in range(2 * n)]
+        for i in range(0, 2 * n, 2):
+            inode, onode = nodes[i], nodes[i+1]
+            graph.add_edge(inode, onode)
+            graph.add_input_id(inode)
+            graph.add_output_id(onode)
 
         return graph
 
