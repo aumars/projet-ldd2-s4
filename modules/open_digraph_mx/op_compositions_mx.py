@@ -2,7 +2,7 @@
 class op_compositions_mx:
     def iparallel(self, list_graph):
         """
-        Add graphs parallel to itself.
+        Add graphs parallel to itself. This functionality only accepts well-formed graphs.
 
         Parameters
         ----------
