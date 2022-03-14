@@ -194,10 +194,15 @@ def random_oriented_int_matrix(n, bound, null_diag=True,
     ------
     ValueError
         If [n] is not positive.
+    ValueError
+        If [bound] is strictly negative and [n] is strictly positive.
     """
     if not (n >= 0):
         raise ValueError("n={} must be positive."
                          .format(n))
+    elif bound < 0 and n > 0:
+        raise ValueError("bound={} must be positive."
+                         .format(bound))
     else:
         A = [[0 for _ in range(n)] for _ in range(n)]
         for i in range(1, n):
