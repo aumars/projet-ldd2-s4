@@ -1,4 +1,4 @@
-from tests.strategy import open_digraph_strategy
+from tests.strategy import open_digraph_strategy, random_well_formed_open_digraph_strategy
 import unittest
 import sys
 import os
@@ -8,7 +8,7 @@ sys.path.append(root)  # allows us to fetch files from the project root
 
 
 class op_compositions_mx_test(unittest.TestCase):
-    @given(open_digraph_strategy(), st.lists(open_digraph_strategy()))
+    @given(random_well_formed_open_digraph_strategy(), st.lists(random_well_formed_open_digraph_strategy()))
     def test_iparallel_open_digraph(self, graph, l):
         inputs1 = len(graph.get_input_ids())
         outputs1 = len(graph.get_output_ids())
@@ -21,7 +21,7 @@ class op_compositions_mx_test(unittest.TestCase):
         self.assertEqual(len(graph.get_output_ids()), outputs1 + outputs2)
         self.assertEqual(len(graph.get_id_node_map()), nodes1 + nodes2)
 
-    @given(open_digraph_strategy(), st.lists(open_digraph_strategy()))
+    @given(random_well_formed_open_digraph_strategy(), st.lists(random_well_formed_open_digraph_strategy()))
     def test_parallel_open_digraph(self, graph, l):
         inputs1 = len(graph.get_input_ids())
         outputs1 = len(graph.get_output_ids())
@@ -34,7 +34,7 @@ class op_compositions_mx_test(unittest.TestCase):
         self.assertEqual(len(new.get_output_ids()), outputs1 + outputs2)
         self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2)
 
-    @given(open_digraph_strategy(), open_digraph_strategy())
+    @given(random_well_formed_open_digraph_strategy(), random_well_formed_open_digraph_strategy())
     def test_icompose_open_digraph(self, graph, g):
         inputs1 = len(graph.get_input_ids())
         outputs1 = len(graph.get_output_ids())
@@ -46,11 +46,11 @@ class op_compositions_mx_test(unittest.TestCase):
             graph.icompose(g)
             self.assertEqual(len(graph.get_input_ids()), inputs1)
             self.assertEqual(len(graph.get_output_ids()), outputs2)
-            self.assertEqual(len(graph.get_id_node_map()), nodes1 + nodes2)
+            self.assertEqual(len(graph.get_id_node_map()), nodes1 + nodes2 - outputs1)
         else:
             self.assertRaises(ValueError, graph.icompose, g)
 
-    @given(open_digraph_strategy(), open_digraph_strategy())
+    @given(random_well_formed_open_digraph_strategy(), random_well_formed_open_digraph_strategy())
     def test_compose_open_digraph(self, graph, g):
         inputs1 = len(graph.get_input_ids())
         outputs1 = len(graph.get_output_ids())
@@ -62,6 +62,6 @@ class op_compositions_mx_test(unittest.TestCase):
             new = graph.compose(g)
             self.assertEqual(len(new.get_input_ids()), inputs1)
             self.assertEqual(len(new.get_output_ids()), outputs2)
-            self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2)
+            self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2 - outputs1)
         else:
             self.assertRaises(ValueError, graph.compose, g)
