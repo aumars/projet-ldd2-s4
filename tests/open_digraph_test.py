@@ -46,14 +46,14 @@ class Open_DigraphTest(unittest.TestCase):
         if len(graph.get_id_node_map()) > 0:
             self.assertEqual(graph.min_id(), min(graph.get_node_ids()))
         else:
-            self.assertRaises(ValueError, graph.min_id)
+            self.assertEqual(graph.min_id(), 0)
 
     @given(open_digraph_strategy())
     def test_max_id_open_digraph(self, graph):
         if len(graph.get_id_node_map()) > 0:
             self.assertEqual(graph.max_id(), max(graph.get_node_ids()))
         else:
-            self.assertRaises(ValueError, graph.min_id)
+            self.assertEqual(graph.max_id(), 0)
 
     @given(open_digraph_strategy())
     def test_copy_open_digraph(self, graph):
