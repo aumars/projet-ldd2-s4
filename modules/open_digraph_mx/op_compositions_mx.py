@@ -1,5 +1,9 @@
 
 class op_compositions_mx:
+    def separate_indices(self, g):
+        if g.min_id() <= self.max_id():
+            self.shift_indices(abs(g.max_id() - self.min_id()) + 1)
+    
     def iparallel(self, list_graph):
         """
         Add graphs parallel to itself. This functionality only accepts well-formed graphs.
@@ -10,7 +14,7 @@ class op_compositions_mx:
             A list containing graphs to add.
         """ 
         for graph in list_graph:
-            self.shift_indices(graph.max_id() + 1)
+            self.separate_indices(graph)
             self.set_nodes(self.get_nodes() + graph.get_nodes())
             self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
             self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
