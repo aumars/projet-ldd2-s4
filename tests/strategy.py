@@ -26,8 +26,8 @@ def node_strategy(draw, no_parents=True, no_children=True):
 
 
 @st.composite
-def open_digraph_strategy(draw):
-    nodes = draw(st.lists(node_strategy()))
+def open_digraph_strategy(draw, num=20):
+    nodes = draw(st.lists(node_strategy(), max_size=num))
     io_num = draw(st.integers(min_value=0, max_value=len(nodes)))
     input_num = draw(st.integers(min_value=0, max_value=io_num))
     io_ids = draw(st.permutations([node.get_id() for node in nodes]).map(lambda x: x[:io_num]))
