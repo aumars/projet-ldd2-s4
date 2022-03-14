@@ -12,9 +12,6 @@ from .open_digraph_mx.op_compositions_mx import op_compositions_mx
 from .open_digraph_mx.op_display_mx import op_display_mx
 
 
-from .node import node
-
-
 class open_digraph(op_compositions_mx, 
                    op_connected_components_mx,
                    op_display_mx, 
