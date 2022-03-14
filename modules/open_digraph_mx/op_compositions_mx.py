@@ -50,18 +50,13 @@ class op_compositions_mx:
         Raises
         ------
         ValueError
-            If the number of inputs between the graphs don't coincide.
-        ValueError
-            If the number of outputs between the graphs don't coincide.
+            If the number of outputs in self do not coincide with the number of inputs in g.
 
-        """ 
-        if len(self.get_input_ids()) != len(g.get_input_ids()):
-            raise ValueError("The number of inputs in the graphs don't coincide.")
-
-        if len(self.get_output_ids()) != len(g.get_output_ids()):
-            raise ValueError("The number of output in the graphs don't coincide.")
+        """
+        if len(self.get_output_ids()) != len(g.get_input_ids()):
+            raise ValueError("The number of outputs in self do not coincide with the number of inputs in g.")
         
-        self.shift_indices(g.max_id())
+        self.separate_indices(g)
         self.nodes.update(g.get_id_node_map())
         
         for i in range(len(self.get_input_ids())):
