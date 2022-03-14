@@ -205,12 +205,11 @@ class open_digraph(op_compositions_mx,
 
         for node in self.get_nodes():
             node.set_id(node.get_id() + n)
-            
-            parents = [p_id + n for p_id in node.get_parent_ids() for _ in range(node.get_parent_multiplicity(p_id))]
-            children = [c_id + n for c_id in node.get_children_ids() for _ in range(node.get_child_multiplicity(c_id))]
 
-            node.set_parent_ids(parents)
-            node.set_children_ids(children)
+            for pid in node.parents:
+                node.parents[pid] += n
+            for cid in node.children:
+                node.children[cid] += n
 
         self.set_nodes(self.get_nodes())
         self.set_input_ids(shift_list(self.get_input_ids()))
