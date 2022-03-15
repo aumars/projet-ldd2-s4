@@ -88,31 +88,28 @@ class op_algorithm_mx_test(unittest.TestCase):
         else:
             self.assertRaises(ValueError, graph.common_ancestry, foo, bar)
 
-    @unittest.skip
-    @given(random_well_formed_open_digraph_strategy())
+    @given(random_well_formed_open_digraph_strategy(form='DAG'))
     def test_topological_sort(self, graph):
         """
+        Only tested for directed acyclic graphs. Cyclic graphs lead to an infinite loop and thus cannot be tested.
         We check if the descendants of a node in a level is in a level below, and if that node has at least one child at the level directly below
         """
-        if not graph.is_cyclic():
-            toposort = graph.topological_sort()
-            for i, level in enumerate(toposort):
-                for id in level:
-                    node = graph.get_node_by_id(id)
-                    node_children = node.get_children_ids()
+        toposort = graph.topological_sort()
+        for i, level in enumerate(toposort):
+            for id in level:
+                node = graph.get_node_by_id(id)
+                node_children = node.get_children_ids()
 
-                    def find_descendants(node, lvl, toposort):
-                        for descendants in enumerate(toposort, lvl + 1):
-                            if node in descendants:
-                                return True
-                        return False
+                def find_descendants(node, lvl, toposort):
+                    for descendants in enumerate(toposort, lvl + 1):
+                        if node in descendants:
+                            return True
+                    return False
 
-                    if i != len(toposort) - 1:
-                        self.assertNotEqual(set(node_children).intersection(set(toposort[i+1])), set())
-                        for child in node_children:
-                            self.assertTrue(find_descendants(child, i, toposort))
-        else:
-            self.assertRaises(ValueError, graph.topological_sort)
+                if i != len(toposort) - 1:
+                    self.assertNotEqual(set(node_children).intersection(set(toposort[i+1])), set())
+                    for child in node_children:
+                        self.assertTrue(find_descendants(child, i, toposort))
 
     @given(random_well_formed_open_digraph_strategy(), st.integers())
     def test_node_depth(self, graph, node):
