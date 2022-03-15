@@ -1,4 +1,4 @@
-from tests.strategy import open_digraph_strategy, random_well_formed_open_digraph_strategy
+from tests.strategy import random_well_formed_open_digraph_strategy
 import unittest
 import sys
 import os
