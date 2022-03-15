@@ -1,8 +1,8 @@
-from tests.strategy import open_digraph_strategy, random_well_formed_open_digraph_strategy
+from tests.strategy import random_well_formed_open_digraph_strategy
 import unittest
 import sys
 import os
-from hypothesis import given, strategies as st
+from hypothesis import given
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
 
