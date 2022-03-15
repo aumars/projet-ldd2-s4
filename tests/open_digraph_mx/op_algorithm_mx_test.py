@@ -115,18 +115,36 @@ class op_algorithm_mx_test(unittest.TestCase):
 
     @given(random_well_formed_open_digraph_strategy(), st.integers())
     def test_node_depth(self, graph, node):
-        if node in graph.get_node_ids():
-            pass
+        if node in graph.get_node_ids() and not graph.is_cyclic():
+            depth = graph.node_dept(node)
+            toposort = graph.topological_sort()
+            self.assertIn(node, toposort[depth])
         else:
             self.assertRaises(ValueError, graph.node_depth, node)
 
     @given(random_well_formed_open_digraph_strategy())
     def test_depth(self, graph):
-        pass
+        if not graph.is_cyclic():
+            self.assertEqual(graph.depth(), len(graph.topological_sort()))
+        else:
+            self.assertRaises(ValueError, graph.depth)
 
     @given(random_well_formed_open_digraph_strategy(), st.integers(), st.integers())
     def test_longest_path(self, graph, src, tgt):
-        if src in graph.get_node_ids() and tgt in graph.get_node_ids():
-            pass
+        """
+        We check:
+        - the chemin has valid nodes
+        - the distance is correct
+
+        We do not check:
+        - if the distance is the longest possible
+        """
+        if src in graph.get_node_ids() and tgt in graph.get_node_ids() and not graph.is_cyclic():
+            chemin, dist = graph.longest_path(src, tgt)
+            self.assertEqual(len(chemin), dist)
+            for srcid, tgtid in zip(chemin[:-1], chemin[1:]):
+                srcnode, tgtnode = graph.get_node_by_id(srcid), graph.get_node_by_id(tgtid)
+                self.assertIn(srcid, tgtnode.get_parent_ids())
+                self.assertIn(tgtid, srcnode.get_children_ids())
         else:
             self.assertRaises(ValueError, graph.longest_path, src, tgt)
