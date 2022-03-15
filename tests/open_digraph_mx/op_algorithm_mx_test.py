@@ -104,7 +104,7 @@ class op_algorithm_mx_test(unittest.TestCase):
                         for descendants in enumerate(toposort, lvl + 1):
                             if node in descendants:
                                 return True
-                            return False
+                        return False
 
                     if i != len(toposort) - 1:
                         self.assertNotEqual(set(node_children).intersection(set(toposort[i+1])), set())
