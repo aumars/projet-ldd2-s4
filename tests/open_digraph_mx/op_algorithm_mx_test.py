@@ -8,7 +8,7 @@ sys.path.append(root)  # allows us to fetch files from the project root
 
 
 class op_algorithm_mx_test(unittest.TestCase):
-    @given(random_well_formed_open_digraph_strategy, st.integers(), st.one_of(st.integers(), st.just(None)), st.sampled_from([None, -1, 1]))
+    @given(random_well_formed_open_digraph_strategy(), st.integers(), st.one_of(st.integers(), st.just(None)), st.sampled_from([None, -1, 1]))
     def test_dijkstra(self, graph, src, tgt, direction):
         """
         On vérifie que :
@@ -43,7 +43,7 @@ class op_algorithm_mx_test(unittest.TestCase):
         else:
             self.assertRaises(ValueError, graph.dijkstra, src, tgt, direction)
 
-    @given(random_well_formed_open_digraph_strategy, st.integers(), st.integers())
+    @given(random_well_formed_open_digraph_strategy(), st.integers(), st.integers())
     def test_shortest_path(self, graph, src, tgt):
         """
         On vérifie que :
@@ -62,7 +62,7 @@ class op_algorithm_mx_test(unittest.TestCase):
         else:
             self.assertRaises(ValueError, graph.shortest_path, src, tgt)
 
-    @given(random_well_formed_open_digraph_strategy, st.integers(), st.integers())
+    @given(random_well_formed_open_digraph_strategy(), st.integers(), st.integers())
     def test_common_ancestry(self, graph, foo, bar):
         """
         On vérifie que :
@@ -116,7 +116,7 @@ class op_algorithm_mx_test(unittest.TestCase):
     @given(random_well_formed_open_digraph_strategy(), st.integers())
     def test_node_depth(self, graph, node):
         if node in graph.get_node_ids() and not graph.is_cyclic():
-            depth = graph.node_dept(node)
+            depth = graph.node_depth(node)
             toposort = graph.topological_sort()
             self.assertIn(node, toposort[depth])
         else:
