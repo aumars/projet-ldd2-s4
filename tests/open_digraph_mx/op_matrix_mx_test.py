@@ -14,8 +14,8 @@ class op_matrix_mx_test(unittest.TestCase):
             node = graph.get_node_by_id(node_id)
             for child_id in node.get_children_ids():
                 child = graph.get_node_by_id(child_id)
-                self.assertIn(node_id, child.get_children_ids())
-                self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
+                self.assertIn(node_id, child.get_parent_ids())
+                self.assertEqual(node.get_child_multiplicity(child_id), child.get_parent_multiplicity(node_id))
 
     @given(random_well_formed_open_digraph_strategy(form='undirected'))
     def test_random_undirected_open_digraph(self, graph):
@@ -23,8 +23,8 @@ class op_matrix_mx_test(unittest.TestCase):
             node = graph.get_node_by_id(node_id)
             for child_id in node.get_children_ids():
                 child = graph.get_node_by_id(child_id)
-                self.assertIn(node_id, child.get_children_ids())
-                self.assertEqual(node.get_child_multiplicity(child_id), child.get_child_multiplicity(node_id))
+                self.assertIn(node_id, child.get_parent_ids())
+                self.assertEqual(node.get_child_multiplicity(child_id), child.get_parent_multiplicity(node_id))
 
     @given(random_well_formed_open_digraph_strategy(form='oriented'))
     def test_random_oriented_open_digraph(self, graph):
