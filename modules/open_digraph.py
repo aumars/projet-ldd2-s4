@@ -1,6 +1,7 @@
 from copy import deepcopy
 from random import sample
 
+from modules.open_digraph_mx.op_algorithm_mx import op_algorithm_mx
 from modules.open_digraph_mx.op_connected_components_mx import op_connected_components_mx
 from modules.open_digraph_mx.op_getter_mx import op_getter_mx
 from modules.open_digraph_mx.op_matrix_mx import op_matrix_mx
@@ -20,7 +21,8 @@ class open_digraph(op_compositions_mx,
                    op_modify_mx,
                    op_setter_mx,
                    op_special_graph_mx,
-                   op_tools_mx
+                   op_tools_mx,
+                   op_algorithm_mx
                    ):
     def __init__(self, inputs, outputs, nodes):
         """
