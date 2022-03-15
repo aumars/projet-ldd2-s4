@@ -1,5 +1,5 @@
 class op_algorithm_mx:
-    def djikstra(self, src, tgt=None, direction=None):
+    def dijkstra(self, src, tgt=None, direction=None):
         Q = [src]
         dist = {src:0}
         prev = {}
@@ -30,7 +30,7 @@ class op_algorithm_mx:
         return dist, prev
 
     def shortest_path(self, src, tgt):
-        __, prev = self.djikstra(src, tgt, direction=1)
+        __, prev = self.dijkstra(src, tgt, direction=1)
         parent = tgt
         chemin = [tgt]
         while (parent != src):
@@ -40,8 +40,8 @@ class op_algorithm_mx:
         return chemin
 
     def common_ancestry(self, n0, n1):
-        dist_0, prev_O = self.djikstra(n0, direction=-1)
-        dist_1, prev_1 = self.djikstra(n1, direction=-1)
+        dist_0, prev_O = self.dijkstra(n0, direction=-1)
+        dist_1, prev_1 = self.dijkstra(n1, direction=-1)
 
         common = set(prev_O.keys()).intersection(set(prev_1))
         result = {}
