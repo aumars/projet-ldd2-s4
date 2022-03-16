@@ -32,12 +32,12 @@ class op_algorithm_mx:
     def shortest_path(self, src, tgt):
         __, prev = self.dijkstra(src, tgt, direction=1)
         parent = tgt
-        chemin = [tgt]
+        path = [tgt]
         while (parent != src):
-            chemin.insert(0, prev[parent])
+            path.insert(0, prev[parent])
             parent = prev[parent]
 
-        return chemin
+        return path
 
     def common_ancestry(self, n0, n1):
         dist_0, prev_O = self.dijkstra(n0, direction=-1)
@@ -53,6 +53,9 @@ class op_algorithm_mx:
 
 
     def topological_sort(self):
+        if self.is_cyclic(): 
+            raise ValueError("The graph can't be cyclic.")
+        
         result = [[]]
         etage = 1
         
@@ -99,3 +102,11 @@ class op_algorithm_mx:
 
 
         return result
+
+    def depth_node(self, node):
+        topo_sort = self.topological_sort()
+        
+        for i in range(len(topo_sort)):
+            if node in topo_sort[i]:
+                return i
+
