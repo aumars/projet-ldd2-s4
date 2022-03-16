@@ -3,6 +3,29 @@ from operator import itemgetter
 
 class op_algorithm_mx:
     def dijkstra(self, src, tgt=None, direction=None):
+        """
+        The Dijkstra Algorithm.
+        Get the path connecting a source and a target node.
+
+        Parameters
+        ----------
+        src : int
+            The ID of the source node.
+        tgt : int, optional
+            The ID of the target node. If it's None return the shrotest path. Value by default.
+        direction : int, optional
+            The direction of the algorithm's path. There is three possibilty : 
+            -1 : Search only in direction for parents. 
+            1 : Search only in direction for children. 
+            None : Search in direction for children and parents. Value by default.
+
+        Returns
+        -------
+        int -> node dict
+            The distance of each node in the path of the scr node, according to the direction.
+        int -> node dict
+            A dictionnary of the path. Keys are node in the path. And values are the ancestor of the key node.
+        """ 
         Q = [src]
         dist = {src: 0}
         prev = {}
@@ -33,16 +56,46 @@ class op_algorithm_mx:
         return dist, prev
 
     def shortest_path(self, src, tgt):
+        """
+        Compute the shortest path connecting source and target node.
+
+        Parameters
+        ----------
+        src : int
+            The ID of the source node.
+        tgt : int
+            The ID of the target node. If it's None return the shrotest path.
+
+        Returns
+        -------
+        int list
+            The shortest path connecting source and target node.
+        """
         __, prev = self.dijkstra(src, tgt, direction=1)
         parent = tgt
         path = [tgt]
-        while (parent != src):
+        while parent != src:
             path.insert(0, prev[parent])
             parent = prev[parent]
 
         return path
 
     def common_ancestry(self, n0, n1):
+        """
+        Compute common ancestry between two nodes. 
+
+        Parameters
+        ----------
+        n0 : int
+            The ID of the first node.
+        n1 : int
+            The ID of the second node.
+
+        Returns
+        -------
+        int -> int * int
+            Keys representing common ancestry. And values are the respectives distances.
+        """
         dist_0, prev_O = self.dijkstra(n0, direction=-1)
         dist_1, prev_1 = self.dijkstra(n1, direction=-1)
 
@@ -55,6 +108,19 @@ class op_algorithm_mx:
         return result
 
     def topological_sort(self):
+        """
+        Compute the topological sorted.
+
+        Returns
+        -------
+        int list list
+            The list of int list of the topological sorted.
+        
+        Raises
+        ------
+        ValueError
+            If the boolean circuit is cyclic.
+        """
         if self.is_cyclic():
             raise ValueError("The graph can't be cyclic.")
 
@@ -64,16 +130,13 @@ class op_algorithm_mx:
         I = set(self.get_input_ids())
         NON_INPUTS = set(self.get_nodes()) - I
 
-        # On ajoute les enfants d'inputs
         for i in I:
             result[0] += self.get_node_by_id(i).get_children_ids()
 
-        # On rajoute les noeuds sans enfants
         for node in NON_INPUTS:
             if node.get_parent_ids() == []:
                 result[0].append(node.get_id())
 
-        # On créer un nouveau etage
         while True:
             result.insert(etage, [])
 
@@ -93,7 +156,6 @@ class op_algorithm_mx:
             else:
                 etage += 1
 
-        # Remove duplicate
         seen = []
         for i in range(len(result)-1, 0, -1):
             for j in result[i]:
@@ -106,6 +168,24 @@ class op_algorithm_mx:
         return result
 
     def node_depth(self, node):
+        """
+        Get the depth a node in the graph.
+
+        Parameters
+        ----------
+        node : int
+            The ID of the node.
+
+        Returns
+        -------
+        int
+            The node depth.
+        
+        Raises
+        ------
+        ValueError
+            If the boolean circuit is cyclic.
+        """
         if self.is_cyclic():
             raise ValueError("The graph can't be cyclic.")
         
@@ -116,9 +196,37 @@ class op_algorithm_mx:
                 return i
 
     def depth(self):
+        """
+        Get the graph depth.
+
+        Returns
+        -------
+        int
+            The graph depth.
+        """
         return len(self.topological_sort())
 
     def longest_path(self, src, tgt):
+        """
+        Get the longest path in the graph.
+
+        Parameters
+        ----------
+        src : int
+            The ID of the source node.
+        tgt : int
+            The ID of the target node.
+
+        Returns
+        -------
+        int list
+            The longest path.
+        int
+            The distance of the longest path.
+        """
+        if self.is_cyclic():
+            raise ValueError("The graph can't be cyclic.")
+
         topological_sort = self.topological_sort()
 
         dist, prev = {}, {}
