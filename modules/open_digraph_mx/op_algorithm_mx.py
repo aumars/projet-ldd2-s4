@@ -103,10 +103,13 @@ class op_algorithm_mx:
 
         return result
 
-    def depth_node(self, node):
+    def node_depth(self, node):
         topo_sort = self.topological_sort()
         
         for i in range(len(topo_sort)):
             if node in topo_sort[i]:
                 return i
+    
+    def depth(self):
+        return len(self.topological_sort())
 
