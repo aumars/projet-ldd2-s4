@@ -231,27 +231,25 @@ class op_algorithm_mx:
         """
         if self.is_cyclic():
             raise ValueError("The graph can't be cyclic.")
+        elif src not in self.get_node_ids() or tgt not in self.get_node_ids():
+            raise ValueError(f"src = {src} or tgt = {tgt} is not a valid node ID.")
+        else:
+            topological_sort = self.topological_sort()
 
-        topological_sort = self.topological_sort()
+            dist, prev = {}, {}
+            depth = self.node_depth(src)
 
-        dist, prev = {}, {}
-        id_lk = 0
+            for level in topological_sort[depth+1:]:
+                for w in level:
+                    if w != tgt:
+                        w_parents = self.get_node_by_id(w).get_parent_ids()
+                        w_parents_depth_list = [(self.node_depth(p), p) for p in w_parents]
+                        w_parent_max_depth_p, w_parent_max_depth_id = max(w_parents_depth_list, key=itemgetter(0))
 
-        for i in range(len(topological_sort)):
-            if src in topological_sort[i]:
-                id_lk = i
+                        for parent in w_parents:
+                            if parent in dist:
+                                dist[w] = w_parent_max_depth_p + 1
+                                prev[w] = w_parent_max_depth_id
+                                break
 
-        for next_l in topological_sort[id_lk+1:]:
-            for w in next_l:
-                if w != tgt:
-                    w_parents = self.get_node_by_id(w).get_parent_ids()
-                    depth_list = [(self.node_depth(p), p) for p in w_parents]
-                    max_w_parents = max( depth_list, key=itemgetter(0) )
-
-                    for parent in w_parents:
-                        if parent in dist[w]:
-                            dist[w] = max_w_parents[0] + 1
-                            prev[w] = max_w_parents[1]
-                            break
-        
-        return dist.keys(), len(dist.keys())
+            return list(prev), len(prev)
