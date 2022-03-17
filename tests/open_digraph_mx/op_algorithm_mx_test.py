@@ -114,20 +114,13 @@ class op_algorithm_mx_test(unittest.TestCase):
                 node = graph.get_node_by_id(id)
                 node_children = node.get_children_ids()
 
-                def find_descendants(node, lvl, toposort):
-                    for descendants in enumerate(toposort, lvl + 1):
-                        if node in descendants:
-                            return True
-                    return False
-
-                def find_direct_descendant(node, lvl):
-                    for child in node.get_children_ids():
-                        if child in lvl:
+                def find_descendants(id, i, toposort):
+                    for _, descendants in enumerate(toposort, i + 1):
+                        if id in descendants:
                             return True
                     return False
 
                 if i != len(toposort) - 1:
-                    self.assertTrue(find_direct_descendant(node, toposort[i + 1]))
                     for child in node_children:
                         self.assertTrue(find_descendants(child, i, toposort))
 
