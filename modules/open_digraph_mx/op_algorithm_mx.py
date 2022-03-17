@@ -195,6 +195,8 @@ class op_algorithm_mx:
         Raises
         ------
         ValueError
+            If the boolean circuit is cyclic.
+        ValueError
             If [node] is not a valid node ID.
         """
         if node not in self.get_node_ids():
