@@ -8,12 +8,13 @@ class op_compositions_mx:
         ----------
         list_graph : open_digraph list
             A list containing graphs to add.
-        """ 
+        """
         for graph in list_graph:
-            self.separate_indices(graph)
-            self.set_nodes(self.get_nodes() + graph.get_nodes())
-            self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
-            self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
+            if len(graph.get_id_node_map()) > 0:
+                self.separate_indices(graph)
+                self.nodes.update(graph.get_id_node_map())
+                self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
+                self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
 
     def parallel(self, list_graph):
         """
