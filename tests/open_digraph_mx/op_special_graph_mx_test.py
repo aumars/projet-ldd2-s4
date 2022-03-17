@@ -7,7 +7,7 @@ root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
 
 
-class op_matrix_mx_test(unittest.TestCase):
+class op_special_graph_mx_test(unittest.TestCase):
     @given(random_well_formed_open_digraph_strategy(form='loop-free undirected'))
     def test_random_loop_free_undirected_open_digraph(self, graph):
         for node_id in graph.get_node_ids():
