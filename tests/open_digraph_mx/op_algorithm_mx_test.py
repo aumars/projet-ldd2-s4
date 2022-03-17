@@ -99,6 +99,13 @@ class op_algorithm_mx_test(unittest.TestCase):
         else:
             self.assertRaises(ValueError, graph.common_ancestry, foo, bar)
 
+    def test_common_ancestry_example(self):
+        ancestry = self.graph.common_ancestry(5, 8)
+        self.assertCountEqual(ancestry.keys(), [0, 3, 1])
+        self.assertEqual(ancestry[0], (2, 3))
+        self.assertEqual(ancestry[3], (1, 2))
+        self.assertEqual(ancestry[1], (1, 1))
+
     @given(random_well_formed_open_digraph_strategy(form='DAG'))
     def test_topological_sort(self, graph):
         """
