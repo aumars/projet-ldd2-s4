@@ -177,3 +177,7 @@ class op_algorithm_mx_test(unittest.TestCase):
                 self.assertIn(tgtid, srcnode.get_children_ids())
         else:
             self.assertRaises(ValueError, graph.longest_path, src, tgt)
+
+    def test_longest_path_example(self):
+        _, dist = self.graph.longest_path(1, 5)
+        self.assertEqual(dist, 1)
