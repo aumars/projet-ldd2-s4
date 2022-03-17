@@ -111,14 +111,8 @@ class op_algorithm_mx:
         """
         dist_0, prev_O = self.dijkstra(n0, direction=-1)
         dist_1, prev_1 = self.dijkstra(n1, direction=-1)
-
-        common = set(prev_O.keys()).intersection(set(prev_1))
-        result = {}
-
-        for n in common:
-            result[n] = (dist_0[n], dist_1[n])
-
-        return result
+        common = set(prev_O.keys()).intersection(set(prev_1.keys()))
+        return {n: (dist_0[n], dist_1[n]) for n in common}
 
     def topological_sort(self):
         """
