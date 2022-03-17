@@ -215,10 +215,8 @@ class open_digraph(op_compositions_mx,
                 children_ids.sort(reverse=True if n > 0 else False)
                 for cid in children_ids:
                     node.children[cid + n] = node.children.pop(cid)
-            node_ids = self.get_node_ids()
-            node_ids.sort(reverse=True if n > 0 else False)
-            for node in self.get_node_ids():
-                self.nodes[node + n] = self.nodes.pop(node)
+                node.set_id(node.get_id() + n)
+            self.set_nodes(self.get_nodes())
             self.set_input_ids(shift_list(self.get_input_ids()))
             self.set_output_ids(shift_list(self.get_output_ids()))
 
