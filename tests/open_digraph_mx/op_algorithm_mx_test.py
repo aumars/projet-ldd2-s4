@@ -60,12 +60,12 @@ class op_algorithm_mx_test(unittest.TestCase):
         if src in graph.get_node_ids() and tgt in graph.get_node_ids():
             try:
                 chemin = graph.shortest_path(src, tgt)
+                for srcid, tgtid in zip(chemin[:-1], chemin[1:]):
+                    srcnode, tgtnode = graph.get_node_by_id(srcid), graph.get_node_by_id(tgtid)
+                    self.assertIn(srcid, tgtnode.get_parent_ids())
+                    self.assertIn(tgtid, srcnode.get_children_ids())
             except RuntimeError:
                 pass
-            for srcid, tgtid in zip(chemin[:-1], chemin[1:]):
-                srcnode, tgtnode = graph.get_node_by_id(srcid), graph.get_node_by_id(tgtid)
-                self.assertIn(srcid, tgtnode.get_parent_ids())
-                self.assertIn(tgtid, srcnode.get_children_ids())
         else:
             self.assertRaises(ValueError, graph.shortest_path, src, tgt)
 
