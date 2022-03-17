@@ -1,13 +1,27 @@
 from tests.strategy import random_well_formed_open_digraph_strategy
+from modules.open_digraph import open_digraph
 import unittest
 import sys
 import os
-from hypothesis import given
+from hypothesis import given, strategies as st
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
 
 
 class op_special_graph_mx_test(unittest.TestCase):
+    @given(st.integers(max_value=20))
+    def test_identity(self, n):
+        if n >= 0:
+            graph = open_digraph.identity(n)
+            self.assertEqual(len(graph.get_id_node_map()), 2 * n)
+            self.assertEqual(len(graph.get_input_ids()), n)
+            self.assertEqual(len(graph.get_output_ids()), n)
+            for inid in graph.get_input_ids():
+                inode = graph.get_node_by_id(inid)
+                self.assertIn(inode.get_children_ids()[0], graph.get_output_ids())
+        else:
+            self.assertRaises(ValueError, open_digraph.identity, n)
+    
     @given(random_well_formed_open_digraph_strategy(form='loop-free undirected'))
     def test_random_loop_free_undirected_open_digraph(self, graph):
         for node_id in graph.get_node_ids():

@@ -25,16 +25,24 @@ class op_special_graph_mx:
         ------
         open_digraph
            The identity graph composed of n inputs and n outputs.
-        """
-        graph = cls.empty()
-        nodes = [graph.add_node() for _ in range(2 * n)]
-        for i in range(0, 2 * n, 2):
-            inode, onode = nodes[i], nodes[i+1]
-            graph.add_edge(inode, onode)
-            graph.add_input_id(inode)
-            graph.add_output_id(onode)
 
-        return graph
+        Raises
+        ------
+        ValueError
+           If [n] is not positive.
+        """
+        if n < 0:
+            raise ValueError(f"n = {n} must be positive.")
+        else:
+            graph = cls.empty()
+            nodes = [graph.add_node() for _ in range(2 * n)]
+            for i in range(0, 2 * n, 2):
+                inode, onode = nodes[i], nodes[i+1]
+                graph.add_edge(inode, onode)
+                graph.add_input_id(inode)
+                graph.add_output_id(onode)
+
+            return graph
 
     @classmethod
     def random(cls, n, bound, inputs=0, outputs=0, form="free",
