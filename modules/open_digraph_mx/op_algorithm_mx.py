@@ -83,7 +83,7 @@ class op_algorithm_mx:
             If no path can be calculated between [src] and [tgt]
         """
         __, prev = self.dijkstra(src, tgt, direction=1)
-        if prev == []:
+        if tgt not in prev:
             raise RuntimeError(f"No path can be calculated between src = {src} and tgt = {tgt}")
         parent = tgt
         path = [tgt]
