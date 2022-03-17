@@ -7,9 +7,9 @@ from modules.utils import (random_int_matrix,
 
 class op_special_graph_mx:
     @classmethod
-    def empty(self):
+    def empty(cls):
         """Create an empty graph."""
-        return self([], [], {})
+        return cls([], [], {})
 
     @classmethod
     def identity(cls, n):
