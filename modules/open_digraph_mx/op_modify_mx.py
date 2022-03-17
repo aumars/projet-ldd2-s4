@@ -334,12 +334,12 @@ class op_modify_mx:
                 input_index = self.get_input_ids().index(id)
                 del self.inputs[input_index]
             except ValueError:
-                pass
+                continue
             try:
                 output_index = self.get_output_ids().index(id)
                 del self.outputs[output_index]
             except ValueError:
-                pass
+                continue
 
     def remove_node_by_id(self, id):
         """
