@@ -11,21 +11,17 @@ sys.path.append(root)  # allows us to fetch files from the project root
 
 class op_algorithm_mx_test(unittest.TestCase):
     def setUp(self):
-        n0 = node(0, '0', {10: 1}, {3: 1})
+        n0 = node(0, '0', {}, {3: 1})
         n1 = node(1, '1', {}, {4: 1, 5: 1, 8: 1})
-        n2 = node(2, '2', {11: 1}, {4: 1})
+        n2 = node(2, '2', {}, {4: 1})
         n3 = node(3, '3', {0: 1}, {5: 1, 6: 1, 7: 1})
         n4 = node(4, '4', {1: 1, 2: 1}, {6: 1})
         n5 = node(5, '5', {1: 1, 3: 1}, {7: 1})
         n6 = node(6, '6', {3: 1, 4: 1}, {8: 1, 9: 1})
-        n7 = node(7, '7', {3: 1, 5: 1}, {12: 1})
+        n7 = node(7, '7', {3: 1, 5: 1}, {})
         n8 = node(8, '8', {1: 1, 6: 1}, {})
         n9 = node(9, '9', {6: 1}, {})
-
-        i0 = node(10, 'I0', {}, {0: 1})
-        i1 = node(11, 'I1', {}, {2: 1})
-        o0 = node(12, 'O0', {7: 1}, {})
-        self.graph = open_digraph([10, 11], [12], [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, i0, i1, o0])
+        self.graph = open_digraph([], [], [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9])
 
     @given(random_well_formed_open_digraph_strategy(), st.integers(), st.one_of(st.integers(), st.just(None)), st.sampled_from([None, -1, 1]))
     def test_dijkstra(self, graph, src, tgt, direction):
