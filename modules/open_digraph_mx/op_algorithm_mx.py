@@ -151,19 +151,17 @@ class op_algorithm_mx:
                 result[0].append(node.get_id())
 
         while True:
-            result.insert(etage, [])
-
-            children = set()
-
+            no_child = True
             for n_id in result[etage-1]:
                 node = self.get_node_by_id(n_id)
-                children = set(node.get_children_ids())
-
-                for child in children:
-                    if not child in result[etage]:
+                if result[-1] != [] and len(node.get_children_ids()) > 0:
+                    result.append([])
+                for child in node.get_children_ids():
+                    no_child = False
+                    if child not in result[etage]:
                         result[etage].append(child)
 
-            if children == set():
+            if no_child:
                 break
 
             else:
