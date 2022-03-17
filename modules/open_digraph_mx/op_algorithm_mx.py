@@ -256,4 +256,3 @@ class op_algorithm_mx:
                             break
         
         return dist.keys(), len(dist.keys())
-                            
