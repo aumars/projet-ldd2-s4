@@ -144,3 +144,13 @@ class Open_DigraphTest(unittest.TestCase):
             self.assertIn(old + n, graph.get_input_ids())
         for old in original.get_output_ids():
             self.assertIn(old + n, graph.get_output_ids())
+
+    @given(open_digraph_strategy(), open_digraph_strategy())
+    def test_separate_indices(self, g, h):
+        g.separate_indices(h)
+        for old in h.get_node_ids():
+            self.assertNotIn(old, g.get_node_ids())
+        for old in h.get_input_ids():
+            self.assertNotIn(old, g.get_input_ids())
+        for old in h.get_output_ids():
+            self.assertNotIn(old, g.get_output_ids())
