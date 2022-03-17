@@ -210,7 +210,7 @@ class op_modify_mx:
                              .format(self.get_node_by_id(id)))
         else:
             new_id = self.add_node(children=[id])
-            self.add_input_id(new_id)
+            self.inputs.append(new_id)
             return new_id
 
     def add_output_node(self, id):
@@ -248,7 +248,7 @@ class op_modify_mx:
                              .format(self.get_node_by_id(id)))
         else:
             new_id = self.add_node(parents=[id])
-            self.add_output_id(new_id)
+            self.outputs.append(new_id)
             return new_id
 
     def remove_edges(self, *args):
