@@ -14,11 +14,11 @@ class op_algorithm_mx_test(unittest.TestCase):
         On vérifie que :
         - dist contient uniquement les IDs des noeuds, comme valeurs une distance valide (entre 0 et N inclus)
         - prev contient uniquement les IDs des noeuds, comme valeurs une ID qui est son parent
-        - la longueur de dist et de prev est valide
-        - tgt, si spécifié, est dans dist et prev
 
         On ne vérifie pas que :
         - la distance est correcte
+        - la longueur de dist et de prev est valide
+        - tgt, si spécifié, est dans dist et prev
         """
         if src in graph.get_node_ids() and (tgt is None or tgt in graph.get_node_ids()):
             dist, prev = graph.dijkstra(src, tgt, direction)
@@ -29,9 +29,6 @@ class op_algorithm_mx_test(unittest.TestCase):
                 self.assertLessEqual(v, N)
             for k, v in prev.items():
                 self.assertIn(k, graph.get_node_ids())
-            if tgt is None:
-                self.assertEqual(len(dist), N)
-                self.assertEqual(len(prev), N)
         else:
             self.assertRaises(ValueError, graph.dijkstra, src, tgt, direction)
 
