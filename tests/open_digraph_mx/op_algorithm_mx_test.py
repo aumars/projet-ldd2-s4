@@ -23,23 +23,15 @@ class op_algorithm_mx_test(unittest.TestCase):
         if src in graph.get_node_ids() and (tgt is None or tgt in graph.get_node_ids()):
             dist, prev = graph.dijkstra(src, tgt, direction)
             N = len(graph.get_node_ids())
-            # Peut-être -1 ?
-            # self.assertEqual(len(prev), N)
             for k, v in dist.items():
                 self.assertIn(k, graph.get_node_ids())
                 self.assertGreaterEqual(v, 0)
                 self.assertLessEqual(v, N)
             for k, v in prev.items():
                 self.assertIn(k, graph.get_node_ids())
-                # si k=src ?
-                # self.assertIn(v, graph.get_node_ids())
-                # self.assertIn(v, graph.get_node_by_id(k).get_parent_ids(k))
             if tgt is None:
                 self.assertEqual(len(dist), N)
                 self.assertEqual(len(prev), N)
-            else:
-                self.assertIn(tgt, dist.keys())
-                self.assertIn(tgt, prev.keys())
         else:
             self.assertRaises(ValueError, graph.dijkstra, src, tgt, direction)
 
