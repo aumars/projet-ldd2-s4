@@ -76,8 +76,15 @@ class op_algorithm_mx:
         -------
         int list
             The shortest path connecting source and target node.
+
+        Raises
+        ------
+        RuntimeError
+            If no path can be calculated between [src] and [tgt]
         """
         __, prev = self.dijkstra(src, tgt, direction=1)
+        if prev == []:
+            raise RuntimeError(f"No path can be calculated between src = {src} and tgt = {tgt}")
         parent = tgt
         path = [tgt]
         while parent != src:
