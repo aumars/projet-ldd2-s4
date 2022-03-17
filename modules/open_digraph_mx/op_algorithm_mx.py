@@ -196,15 +196,19 @@ class op_algorithm_mx:
         ------
         ValueError
             If the boolean circuit is cyclic.
+        ValueError
+            If [node] is not a valid node ID.
         """
         if self.is_cyclic():
             raise ValueError("The graph can't be cyclic.")
-        
-        topo_sort = self.topological_sort()
+        elif node not in self.get_node_ids():
+            raise ValueError(f"node = {node} is not a valid node ID.")
+        else:
+            topo_sort = self.topological_sort()
 
-        for i in range(len(topo_sort)):
-            if node in topo_sort[i]:
-                return i
+            for i in range(len(topo_sort)):
+                if node in topo_sort[i]:
+                    return i
 
     def depth(self):
         """
