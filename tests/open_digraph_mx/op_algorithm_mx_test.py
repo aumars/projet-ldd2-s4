@@ -87,10 +87,12 @@ class op_algorithm_mx_test(unittest.TestCase):
                 # self.assertLessEqual(v[0], N)
                 # self.assertLessEqual(v[1], N)
 
-                distfoo, _ = graph.dijkstra(foo, k)
-                distbar, _ = graph.dijkstra(bar, k)
+                distfoo, _ = graph.dijkstra(foo, k, direction=-1)
+                distbar, _ = graph.dijkstra(bar, k, direction=-1)
 
+                self.assertIn(k, distfoo.keys())
                 self.assertEqual(distfoo[k], v[0])
+                self.assertIn(k, distbar.keys())
                 self.assertEqual(distbar[k], v[1])
         else:
             self.assertRaises(ValueError, graph.common_ancestry, foo, bar)
