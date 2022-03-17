@@ -224,4 +224,5 @@ class open_digraph(op_compositions_mx,
 
     def separate_indices(self, g):
         if self.min_id() <= g.max_id():
-            self.shift_indices(abs(g.max_id() - self.min_id()) + 1)
+            m = max(abs(g.max_id() - self.min_id()), abs(self.max_id() - g.min_id()))
+            self.shift_indices(m + 1)
