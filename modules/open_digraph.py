@@ -216,3 +216,7 @@ class open_digraph(op_compositions_mx,
         self.set_nodes(self.get_nodes())
         self.set_input_ids(shift_list(self.get_input_ids()))
         self.set_output_ids(shift_list(self.get_output_ids()))
+
+    def separate_indices(self, g):
+        if self.min_id() <= g.max_id():
+            self.shift_indices(abs(g.max_id() - self.min_id()) + 1)
