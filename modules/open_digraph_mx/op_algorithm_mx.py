@@ -25,7 +25,13 @@ class op_algorithm_mx:
             The distance of each node in the path of the scr node, according to the direction.
         int -> node dict
             A dictionnary of the path. Keys are node in the path. And values are the ancestor of the key node.
-        """ 
+        Raises
+        ------
+        ValueError
+            If [src] or [tgt] (except None) is not a valid node ID
+        """
+        if src not in self.get_node_ids() or (not (tgt is None) and tgt not in self.get_node_ids()):
+            raise ValueError(f"src = {src} must be a valid node and tgt = {tgt} must either be a valid node or None")
         Q = [src]
         dist = {src: 0}
         prev = {}
