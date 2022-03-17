@@ -80,7 +80,6 @@ class op_compositions_mx:
         open_digraph
            The composition of the self graph with g.
         """ 
-        graph = self.identity(len(self.get_output_ids()))
-        graph.icompose(self.copy())
-        graph.icompose(g.copy())
+        graph = self.copy()
+        graph.icompose(g)
         return graph
