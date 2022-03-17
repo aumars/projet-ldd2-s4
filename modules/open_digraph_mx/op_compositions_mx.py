@@ -50,14 +50,21 @@ class op_compositions_mx:
         """
         if len(self.get_output_ids()) != len(g.get_input_ids()):
             raise ValueError("The number of outputs in self do not coincide with the number of inputs in g.")
-        self.separate_indices(g)
-        self.nodes.update(g.get_id_node_map())
-        for outid, inid in zip(self.get_output_ids(), g.get_input_ids()):
-            onode = self.get_node_by_id(outid)
-            onode_parent_id = onode.get_parent_ids()[0] # since output node only has 1 parent
-            self.remove_node_by_id(outid)
-            self.add_edge(onode_parent_id, inid)
-        self.set_output_ids(g.get_output_ids())
+        elif len(self.get_output_ids()) == 0 and len(g.get_input_ids()) == 0:
+            self.iparallel([g])
+        elif len(self.get_id_node_map()) == 0 and len(g.get_id_node_map()) > 0:
+            self.nodes = g.get_id_node_map()
+            self.set_input_ids(g.get_input_ids())
+            self.set_output_ids(g.get_output_ids())
+        elif len(g.get_id_node_map()) > 0:
+            self.separate_indices(g)
+            self.nodes.update(g.get_id_node_map())
+            for outid, inid in zip(self.get_output_ids(), g.get_input_ids()):
+                onode = self.get_node_by_id(outid)
+                onode_parent_id = onode.get_parent_ids()[0] # since output node only has 1 parent
+                self.add_edge(onode_parent_id, inid)
+            self.remove_nodes_by_id(self.get_output_ids())
+            self.set_output_ids(g.get_output_ids())
 
     def compose(self, g):
         """
