@@ -98,8 +98,14 @@ class op_algorithm_mx_test(unittest.TestCase):
                             return True
                     return False
 
+                def find_direct_descendant(node, lvl):
+                    for child in node.get_children_ids():
+                        if child in lvl:
+                            return True
+                    return False
+
                 if i != len(toposort) - 1:
-                    self.assertNotEqual(set(node_children).intersection(set(toposort[i+1])), set())
+                    self.assertTrue(find_direct_descendant(node, toposort[i + 1]))
                     for child in node_children:
                         self.assertTrue(find_descendants(child, i, toposort))
 
