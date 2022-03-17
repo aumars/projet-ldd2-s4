@@ -130,9 +130,13 @@ class Open_DigraphTest(unittest.TestCase):
 
     @given(open_digraph_strategy(), st.integers())
     def test_shift_indices_open_digraph(self, graph, n):
-        m = graph.min_id()
-        M = graph.max_id()
+        original = graph.copy()
         graph.shift_indices(n)
-        ids = np.asarray(graph.get_node_ids())
-        self.assertTrue(np.all(ids >= np.full(ids.shape, m + n)))
-        self.assertTrue(np.all(ids <= np.full(ids.shape, M + n)))
+        for old, new in zip(original.get_node_ids(), graph.get_node_ids()):
+            self.assertEqual(old + n, new)
+            old_node = original.get_node_by_id(old)
+            new_node = graph.get_node_by_id(new)
+            for old_parent, new_parent in zip(old_node.get_parent_ids(), new_node.get_parent_ids()):
+                self.assertEqual(old_parent + n, new_parent)
+            for old_child, new_child in zip(old_node.get_children_ids(), new_node.get_children_ids()):
+                self.assertEqual(old_child + n, new_child)
