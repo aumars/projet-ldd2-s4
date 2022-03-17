@@ -12,9 +12,9 @@ sys.path.append(root)  # allows us to fetch files from the project root
 class op_algorithm_mx_test(unittest.TestCase):
     def setUp(self):
         n0 = node(0, '0', {10: 1}, {3: 1})
-        n1 = node(1, '1', {}, {4: 1, 5: 1})
+        n1 = node(1, '1', {}, {4: 1, 5: 1, 8: 1})
         n2 = node(2, '2', {11: 1}, {4: 1})
-        n3 = node(3, '3', {0: 1}, {6: 1, 7: 1})
+        n3 = node(3, '3', {0: 1}, {5: 1, 6: 1, 7: 1})
         n4 = node(4, '4', {1: 1, 2: 1}, {6: 1})
         n5 = node(5, '5', {1: 1, 3: 1}, {7: 1})
         n6 = node(6, '6', {3: 1, 4: 1}, {8: 1, 9: 1})
