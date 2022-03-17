@@ -37,20 +37,20 @@ class op_algorithm_mx:
         prev = {}
 
         while Q != []:
-            u = min(dist, key=dist.get)
+            u = min(Q, key=dist.get)
             Q.remove(u)
 
             neighbours = []
 
-            if direction == 1 or direction == None:
+            if direction == 1 or direction is None:
                 neighbours = self.get_node_by_id(u).get_children_ids()
 
-            if direction == -1 or direction == None:
+            if direction == -1 or direction is None:
                 neighbours += self.get_node_by_id(u).get_parent_ids()
 
             for v in neighbours:
                 if v not in dist.keys():
-                    neighbours.append(v)
+                    Q.append(v)
 
                 if v not in dist.keys() or dist[v] > dist[u] + 1:
                     dist[v] = dist[u] + 1
