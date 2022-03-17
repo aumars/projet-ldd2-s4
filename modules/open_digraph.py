@@ -203,19 +203,22 @@ class open_digraph(op_compositions_mx,
         n : int
             The offset value. 
         """
-        if n != 0:
+        if n != 0 and len(self.get_id_node_map()) > 0:
             shift_list = lambda l :list(map(lambda x : x + n, l))
 
             for node in self.get_nodes():
-                for pid in node.get_parent_ids():
-                    node.parents[pid + n] = node.parents[pid]
-                    del node.parents[pid]
-                for cid in node.get_children_ids():
-                    node.children[cid + n] = node.children[cid]
-                    del node.children[cid]
+                parent_ids = node.get_parent_ids()
+                parent_ids.sort(reverse=True if n > 0 else False)
+                for pid in parent_ids:
+                    node.parents[pid + n] = node.parents.pop(pid)
+                children_ids = node.get_children_ids()
+                children_ids.sort(reverse=True if n > 0 else False)
+                for cid in children_ids:
+                    node.children[cid + n] = node.children.pop(cid)
+            node_ids = self.get_node_ids()
+            node_ids.sort(reverse=True if n > 0 else False)
             for node in self.get_node_ids():
-                self.nodes[node + n] = self.nodes[node]
-                del self.nodes[node]
+                self.nodes[node + n] = self.nodes.pop(node)
             self.set_input_ids(shift_list(self.get_input_ids()))
             self.set_output_ids(shift_list(self.get_output_ids()))
 

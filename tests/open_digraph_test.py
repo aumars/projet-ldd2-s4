@@ -132,11 +132,15 @@ class Open_DigraphTest(unittest.TestCase):
     def test_shift_indices_open_digraph(self, graph, n):
         original = graph.copy()
         graph.shift_indices(n)
-        for old, new in zip(original.get_node_ids(), graph.get_node_ids()):
-            self.assertEqual(old + n, new)
+        for old in original.get_node_ids():
+            self.assertIn(old + n, graph.get_node_ids())
             old_node = original.get_node_by_id(old)
-            new_node = graph.get_node_by_id(new)
-            for old_parent, new_parent in zip(old_node.get_parent_ids(), new_node.get_parent_ids()):
-                self.assertEqual(old_parent + n, new_parent)
-            for old_child, new_child in zip(old_node.get_children_ids(), new_node.get_children_ids()):
-                self.assertEqual(old_child + n, new_child)
+            new_node = graph.get_node_by_id(old + n)
+            for old_parent in old_node.get_parent_ids():
+                self.assertIn(old_parent + n, new_node.get_parent_ids())
+            for old_child in old_node.get_children_ids():
+                self.assertIn(old_child + n, new_node.get_children_ids())
+        for old in original.get_input_ids():
+            self.assertIn(old + n, graph.get_input_ids())
+        for old in original.get_output_ids():
+            self.assertIn(old + n, graph.get_output_ids())
