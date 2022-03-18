@@ -8,6 +8,7 @@ sys.path.append(root)  # allows us to fetch files from the project root
 
 
 class op_connected_components_mx_test(unittest.TestCase):
+    @unittest.skip
     @given(open_digraph_strategy())
     def test_connected_components_open_digraph(self, graph):
         n, d = graph.connected_components()
@@ -17,6 +18,7 @@ class op_connected_components_mx_test(unittest.TestCase):
             self.assertIn(k, ids)
             self.assertLessEqual(v, n)
 
+    @unittest.skip
     @given(open_digraph_strategy())
     def test_get_connected_components_open_digraph(self, graph):
         l = graph.get_connected_components()
