@@ -239,20 +239,22 @@ class op_algorithm_mx:
         else:
             topological_sort = self.topological_sort()
 
-            dist, prev = {}, {}
+            dist, prev = {src: 0}, {}
             depth = self.node_depth(src)
 
             for level in topological_sort[depth+1:]:
                 for w in level:
-                    if w != tgt:
-                        w_parents = self.get_node_by_id(w).get_parent_ids()
-                        w_parents_depth_list = [(self.node_depth(p), p) for p in w_parents]
-                        w_parent_max_depth_p, w_parent_max_depth_id = max(w_parents_depth_list, key=itemgetter(0))
-
-                        for parent in w_parents:
-                            if parent in dist:
-                                dist[w] = w_parent_max_depth_p + 1
-                                prev[w] = w_parent_max_depth_id
-                                break
-
-            return list(prev), len(prev)
+                    w_parents = self.get_node_by_id(w).get_parent_ids()
+                    for parent in w_parents:
+                        if parent in dist:
+                            p_dict = {k: v for k, v in dist.items() if k in w_parents}
+                            p, d = max(p_dict.items(), key=itemgetter(1))
+                            dist[w] = d + 1
+                            prev[w] = p
+                            break
+            parent = tgt
+            path = [tgt]
+            while parent != src:
+                path.insert(0, prev[parent])
+                parent = prev[parent]
+            return path, dist[tgt]
