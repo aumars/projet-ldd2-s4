@@ -319,7 +319,7 @@ class op_modify_mx:
         ids : int list
             List of IDs of nodes.
         """
-        for id in ids:
+        for id in ids[:]:
             try:
                 n = self.get_node_by_id(id)
             except ValueError:
@@ -331,15 +331,13 @@ class op_modify_mx:
             self.next_fd = min(id, self.next_id)
             del self.nodes[id]
             try:
-                input_index = self.get_input_ids().index(id)
-                del self.inputs[input_index]
+                self.inputs.remove(id)
             except ValueError:
                 pass
             try:
-                output_index = self.get_output_ids().index(id)
-                del self.outputs[output_index]
+                self.outputs.remove(id)
             except ValueError:
-                continue
+                pass
 
     def remove_node_by_id(self, id):
         """
