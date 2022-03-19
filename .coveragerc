@@ -1,2 +1,4 @@
 [report]
-omit =  *numpy*
+omit =
+     /gnu/*
+     */.local/*
