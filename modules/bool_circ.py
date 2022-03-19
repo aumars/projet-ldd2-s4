@@ -51,6 +51,7 @@ class bool_circ(open_digraph):
         - each '' node must have a parent.
         - each '&' and '|' node must have a child.
         - each '~' node must have one parent and one child.
+        - each label is different to 'COPIE', 'NOT', 'AND' and 'OR'.
 
         Returns
         -------
