@@ -252,6 +252,8 @@ class op_algorithm_mx:
                             dist[w] = d + 1
                             prev[w] = p
                             break
+            if tgt not in prev and src != tgt:
+                raise RuntimeError(f"Path not found between src = {src} and tgt = {tgt}")
             parent = tgt
             path = [tgt]
             while parent != src:
