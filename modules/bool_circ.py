@@ -61,10 +61,17 @@ class bool_circ(open_digraph):
         if self.is_cyclic():
             return False
 
+        ILLEGAL = ["COPIE", "NOT", "AND", "OR"]
+
         for node in self.get_nodes():
-            if ((node.get_label() == "" and node.indegree() != 1) or
-                ((node.get_label() == "&" or node.get_label() == "|") and node.outdegree() != 1) or
-                    (node.get_label() == "~" and node.indegree() != 1 and node.outdegree() != 1)):
+            label = node.get_label()
+            
+            COND_COPY = label == "" and node.indegree() != 1 
+            COND_AND_OR = (label == "&" or label == "|") and node.outdegree() != 1 
+            COND_NOT = label == "~" and (node.indegree() != 1 or node.outdegree() != 1)
+            COND_ILLEGAL = label in ILLEGAL
+            
+            if COND_ILLEGAL or COND_COPY or COND_AND_OR or COND_NOT:
                 return False
 
         return True
