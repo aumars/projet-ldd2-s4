@@ -58,14 +58,18 @@ class op_algorithm_mx_test(unittest.TestCase):
         - le chemin est le plus court possible
         """
         if src in graph.get_node_ids() and tgt in graph.get_node_ids():
-            try:
+            dist, _ = graph.dijkstra(src, tgt, direction=1)
+            if tgt in dist:
                 chemin = graph.shortest_path(src, tgt)
-                for srcid, tgtid in zip(chemin[:-1], chemin[1:]):
-                    srcnode, tgtnode = graph.get_node_by_id(srcid), graph.get_node_by_id(tgtid)
-                    self.assertIn(srcid, tgtnode.get_parent_ids())
-                    self.assertIn(tgtid, srcnode.get_children_ids())
-            except RuntimeError:
-                pass
+                if src != tgt:
+                    for srcid, tgtid in zip(chemin[:-1], chemin[1:]):
+                        srcnode, tgtnode = graph.get_node_by_id(srcid), graph.get_node_by_id(tgtid)
+                        self.assertIn(srcid, tgtnode.get_parent_ids())
+                        self.assertIn(tgtid, srcnode.get_children_ids())
+                else:
+                    self.assertEqual(chemin, [src])
+            else:
+                self.assertRaises(RuntimeError, graph.shortest_path, src, tgt)
         else:
             self.assertRaises(ValueError, graph.shortest_path, src, tgt)
 
@@ -160,15 +164,16 @@ class op_algorithm_mx_test(unittest.TestCase):
         - if the distance is the longest possible
         """
         if src in graph.get_node_ids() and tgt in graph.get_node_ids() and not graph.is_cyclic():
-            try:
+            dist, _ = graph.dijkstra(src, tgt, direction=1)
+            if tgt in dist:
                 chemin, dist = graph.longest_path(src, tgt)
                 self.assertEqual(len(chemin) - 1, dist)
                 for srcid, tgtid in zip(chemin[:-1], chemin[1:]):
                     srcnode, tgtnode = graph.get_node_by_id(srcid), graph.get_node_by_id(tgtid)
                     self.assertIn(srcid, tgtnode.get_parent_ids())
                     self.assertIn(tgtid, srcnode.get_children_ids())
-            except RuntimeError:
-                pass
+            else:
+                self.assertRaises(RuntimeError, graph.longest_path, src, tgt)
         else:
             self.assertRaises(ValueError, graph.longest_path, src, tgt)
 
