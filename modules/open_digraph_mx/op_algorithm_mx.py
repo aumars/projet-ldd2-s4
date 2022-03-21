@@ -82,8 +82,8 @@ class op_algorithm_mx:
         RuntimeError
             If no path can be calculated between [src] and [tgt]
         """
-        __, prev = self.dijkstra(src, tgt, direction=1)
-        if tgt not in prev:
+        dist, prev = self.dijkstra(src, tgt, direction=1)
+        if tgt not in dist:
             raise RuntimeError(f"No path can be calculated between src = {src} and tgt = {tgt}")
         parent = tgt
         path = [tgt]
