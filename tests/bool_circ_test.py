@@ -72,7 +72,7 @@ class Bool_CircTest(unittest.TestCase):
         LEGAL_LABELS = set(["&", "|", "~", ""])
 
         B_EMPTY = bool_circ.from_formula("")
-        self.assertEqual(len(B_EMPTY.get_node_ids()), 0)
+        self.assertEqual(len(B_EMPTY.get_node_ids()), 2)
         self.assertTrue(B_EMPTY.is_well_formed())
 
         B0 = bool_circ.from_formula("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
