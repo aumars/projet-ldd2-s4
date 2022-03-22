@@ -24,9 +24,23 @@ class open_digraph(op_compositions_mx,
                    op_tools_mx,
                    op_algorithm_mx
                    ):
+    """
+    An open directed graph.
+
+    Attributes
+    ----------
+    inputs: int list
+        The IDs of the input nodes.
+    outputs: int list
+        The IDs of the output nodes.
+    nodes: int -> node dict
+        The nodes of the graph.
+    next_id: int
+        The ID of the next node to be initialised.
+    """
     def __init__(self, inputs, outputs, nodes):
         """
-        An open directed graph.
+        Construct an open directed graph.
 
         Parameters
         ----------
