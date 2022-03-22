@@ -1,5 +1,5 @@
 from .open_digraph import open_digraph
-
+from .node import node
 
 class bool_circ(open_digraph):
     """
@@ -42,6 +42,42 @@ class bool_circ(open_digraph):
             The boolean circuit.
         """
         return cls(g.get_inputs(), g.get_outputs(), g.get_nodes())
+
+    @classmethod
+    def from_formula(cls, s):
+        """
+        Construct a tree from a propositional formula.
+
+        Parameters
+        ----------
+        s : str
+            A propositional formula
+
+        Returns
+        -------
+        g : bool_circ
+            A tree constructed from [s].
+        """
+        g = bool_circ(open_digraph.empty())
+        id = g.add_node()
+        g.add_output_node(id)
+
+        current_node = id
+        s2 = ''
+        for char in s:
+            if char == '(':
+                g.get_node_by_id(current_node).set_label(s2)
+                pid = g.add_node()
+                g.add_edge(pid, current_node)
+                current_node = pid
+                s2 = ''
+            elif char == ')':
+                g.get_node_by_id(current_node).set_label(s2)
+                current_node = g.get_node_by_id(current_node).get_children_ids()[0]
+                s2 = ''
+            else:
+                s2 += char
+        return g
 
     def is_well_formed(self):
         """
