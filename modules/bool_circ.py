@@ -60,7 +60,7 @@ class bool_circ(open_digraph):
         g : bool_circ
             A tree constructed from [s].
         """
-        g = bool_circ(open_digraph.empty())
+        g = cls.bool_circ(open_digraph.empty())
         labels = {}
         for s in args:
             id = g.add_node()
