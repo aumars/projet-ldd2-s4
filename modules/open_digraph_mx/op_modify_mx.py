@@ -349,3 +349,46 @@ class op_modify_mx:
             The ID of a node.
         """
         self.remove_nodes_by_id([id])
+
+    def merge_nodes_by_id(self, foo, bar, bar_label=False):
+        """
+        Merge nodes according to ID.
+
+        Parameters
+        ----------
+        foo : int
+           A node ID.
+        bar : int
+           Another node ID.
+        bar_label : bool
+           Flag that determines if the new node takes foo's label or bar's label. By default the new node takes foo's label.
+
+        Raises
+        ------
+        ValueError
+            If [foo] or [bar] is not a valid node ID.
+        ValueError
+            If [foo/bar] is an input/output node and [bar/foo] has parents/children
+        """
+        if foo in self.get_node_ids() and bar in self.get_node_ids():
+            if foo != bar:
+                fnode = self.get_node_by_id(foo)
+                bnode = self.get_node_by_id(bar)
+                if foo in self.get_input_ids() and len(bnode.get_parent_ids()) > 0:
+                    raise ValueError(f"foo = {foo} is an input node and bar = {bar} has parents, therefore they cannot be merged.")
+                elif bar in self.get_input_ids() and len(fnode.get_parent_ids()) > 0:
+                    raise ValueError(f"bar = {bar} is an input node and foo = {foo} has parents, therefore they cannot be merged.")
+                elif foo in self.get_output_ids() and len(bnode.get_children_ids()) > 0:
+                    raise ValueError(f"foo = {foo} is an output node and bar = {bar} has children, therefore they cannot be merged.")
+                elif bar in self.get_output_ids() and len(fnode.get_children_ids()) > 0:
+                    raise ValueError(f"bar = {bar} is an output node and foo = {foo} has children, therefore they cannot be merged.")
+                else:
+                    for p in bnode.get_parents_ids():
+                        self.add_edge(p, foo)
+                    for c in bnode.get_children_ids():
+                        self.add_edge(foo, c)
+                    if bar_label:
+                        fnode.set_label(bnode.get_label())
+                    self.remove_node_by_id(bar)
+        else:
+            raise ValueError(f"foo = {foo} and bar = {bar} must be valid node IDs.")
