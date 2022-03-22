@@ -320,25 +320,19 @@ class op_modify_mx:
         ids : int list
             List of IDs of nodes.
         """
-        for id in ids[:]:
-            try:
+        for id in ids:
+            if id in self.get_node_ids():
                 n = self.get_node_by_id(id)
-            except ValueError:
-                continue
-            for parent in n.get_parent_ids():
-                self.remove_parallel_edges((id, parent))
-            for child in n.get_children_ids():
-                self.remove_parallel_edges((id, child))
-            self.next_fd = min(id, self.next_id)
-            del self.nodes[id]
-            try:
-                self.inputs.remove(id)
-            except ValueError:
-                pass
-            try:
-                self.outputs.remove(id)
-            except ValueError:
-                pass
+                for parent in n.get_parent_ids():
+                    self.remove_parallel_edges((id, parent))
+                for child in n.get_children_ids():
+                    self.remove_parallel_edges((id, child))
+                self.next_fd = min(id, self.next_id)
+                del self.nodes[id]
+                if id in self.get_input_ids():
+                    self.inputs.remove(id)
+                elif id in self.get_output_ids():
+                    self.outputs.remove(id)
 
     def remove_node_by_id(self, id):
         """
