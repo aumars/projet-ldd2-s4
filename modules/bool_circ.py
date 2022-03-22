@@ -59,12 +59,11 @@ class bool_circ(open_digraph):
             A tree constructed from [s].
         """
         g = bool_circ(open_digraph.empty())
-        id = g.add_node()
-        g.add_output_node(id)
-
-        current_node = id
         labels = {}
         for s in args:
+            id = g.add_node()
+            g.add_output_node(id)
+            current_node = id
             s2 = ''
             for char in s:
                 if char == '(':
@@ -74,19 +73,19 @@ class bool_circ(open_digraph):
                     g.add_edge(pid, current_node)
                     if s2 in labels:
                         g.merge_nodes_by_id(current_node, labels[s2])
-                    else:
+                    elif s2[0] == 'x':
                         labels[s2] = node
                         current_node = pid
-                        s2 = ''
+                    s2 = ''
                 elif char == ')':
                     node = g.get_node_by_id(current_node)
                     node.set_label(s2)
                     if s2 in labels:
                         g.merge_nodes_by_id(current_node, labels[s2])
-                    else:
+                    elif s2[0] == 'x':
                         labels[s2] = node
                         current_node = g.node.get_children_ids()[0]
-                        s2 = ''
+                    s2 = ''
                 else:
                     s2 += char
         return g
