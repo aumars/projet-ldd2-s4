@@ -26,6 +26,8 @@ class bool_circ(open_digraph):
         if self.is_cyclic():
             raise ValueError("The boolean circuit is cyclic.")
 
+        self.variables = {}
+
     @classmethod
     def bool_circ(cls, g):
         """
@@ -88,6 +90,8 @@ class bool_circ(open_digraph):
                     s2 = ''
                 else:
                     s2 += char
+        for s2 in labels:
+            g.variables[s2] = g.add_input_node(labels[s2].get_node_id())
         return g
 
     def is_well_formed(self):
