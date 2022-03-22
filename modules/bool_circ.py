@@ -5,22 +5,30 @@ class bool_circ(open_digraph):
     """
     A boolean circuit. Inherits from open_digraph class.
 
-    Parameters
+    Attributes
     ----------
-    inputs : int list
-        The IDs of the input nodes.
-    outputs : int list
-        The IDs of the output nodes.
-    nodes : node iter
-        The nodes of the graph.
-
-    Raises
-    ------
-    ValueError
-        If the boolean circuit is cyclic.
+    variables: str -> int dict
+        Map associating variables to their corresponding input node IDs.
     """
 
     def __init__(self, inputs, outputs, nodes):
+        """
+        Construct a boolean circuit from given nodes. The nodes must not form a cycle.
+
+        Parameters
+        ----------
+        inputs : int list
+            The IDs of the input nodes.
+        outputs : int list
+            The IDs of the output nodes.
+        nodes : node iter
+            The nodes of the graph.
+
+        Raises
+        ------
+        ValueError
+            If the boolean circuit is cyclic.
+        """
         super().__init__(inputs, outputs, nodes)
 
         if self.is_cyclic():
