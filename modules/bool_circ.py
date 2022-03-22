@@ -37,9 +37,9 @@ class bool_circ(open_digraph):
         self.variables = {}
 
     @classmethod
-    def bool_circ(cls, g):
+    def from_open_digraph(cls, g):
         """
-        Create a boolean circuit.
+        Create a boolean circuit from an open directed graph.
 
         Parameters
         ----------
@@ -51,7 +51,7 @@ class bool_circ(open_digraph):
         bool_circ
             The boolean circuit.
         """
-        return cls(g.get_inputs(), g.get_outputs(), g.get_nodes())
+        return cls(g.get_input_ids(), g.get_output_ids(), g.get_id_node_map())
 
     @classmethod
     def from_formula(cls, *args):
@@ -68,7 +68,7 @@ class bool_circ(open_digraph):
         g : bool_circ
             A tree constructed from [s].
         """
-        g = cls.bool_circ(open_digraph.empty())
+        g = cls.from_open_digraph(open_digraph.empty())
         labels = {}
         for s in args:
             id = g.add_node()
