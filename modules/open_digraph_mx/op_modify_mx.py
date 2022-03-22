@@ -1,5 +1,6 @@
 from modules.node import node
 
+
 class op_modify_mx:
     def add_input_id(self, id):
         """
