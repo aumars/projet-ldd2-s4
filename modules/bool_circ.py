@@ -1,5 +1,5 @@
 from .open_digraph import open_digraph
-from .node import node
+
 
 class bool_circ(open_digraph):
     """
@@ -63,17 +63,28 @@ class bool_circ(open_digraph):
         g.add_output_node(id)
 
         current_node = id
+        labels = {}
         s2 = ''
         for char in s:
             if char == '(':
-                g.get_node_by_id(current_node).set_label(s2)
+                node = g.get_node_by_id(current_node)
+                node.set_label(s2)
                 pid = g.add_node()
                 g.add_edge(pid, current_node)
+                if s2 in labels:
+                    g.merge_nodes_by_id(current_node, labels[s2])
+                else:
+                    labels[s2] = node
                 current_node = pid
                 s2 = ''
             elif char == ')':
-                g.get_node_by_id(current_node).set_label(s2)
-                current_node = g.get_node_by_id(current_node).get_children_ids()[0]
+                node = g.get_node_by_id(current_node)
+                node.set_label(s2)
+                if s2 in labels:
+                    g.merge_nodes_by_id(current_node, labels[s2])
+                else:
+                    labels[s2] = node
+                current_node = g.node.get_children_ids()[0]
                 s2 = ''
             else:
                 s2 += char
