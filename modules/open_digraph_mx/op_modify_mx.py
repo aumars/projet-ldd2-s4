@@ -378,10 +378,14 @@ class op_modify_mx:
                 elif bar in self.get_output_ids() and len(fnode.get_children_ids()) > 0:
                     raise ValueError(f"bar = {bar} is an output node and foo = {foo} has children, therefore they cannot be merged.")
                 else:
-                    for p in bnode.get_parents_ids():
-                        self.add_edge(p, foo)
-                    for c in bnode.get_children_ids():
-                        self.add_edge(foo, c)
+                    for p in bnode.parents:
+                        pnode = self.get_node_by_id(p)
+                        pnode.children[foo] = pnode.children[bar]
+                        fnode.parents[p] = bnode.parents[p]
+                    for c in bnode.children:
+                        cnode = self.get_node_by_id(c)
+                        cnode.parents[foo] = cnode.parents[bar]
+                        fnode.children[c] = bnode.children[c]
                     if bar_label:
                         fnode.set_label(bnode.get_label())
                     self.remove_node_by_id(bar)
