@@ -320,7 +320,7 @@ class op_modify_mx:
         ids : int list
             List of IDs of nodes.
         """
-        for id in ids:
+        for id in ids[:]:
             if id in self.get_node_ids():
                 n = self.get_node_by_id(id)
                 for parent in n.get_parent_ids():
