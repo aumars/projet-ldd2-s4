@@ -347,7 +347,7 @@ class op_modify_mx:
 
     def merge_nodes_by_id(self, foo, bar, bar_label=False):
         """
-        Merge nodes according to ID.
+        Merge nodes according to ID. The new node inherits foo's ID, and foo's label (by default).
 
         Parameters
         ----------
