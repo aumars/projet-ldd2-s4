@@ -155,7 +155,6 @@ class Open_DigraphTest(unittest.TestCase):
         for old in h.get_output_ids():
             self.assertNotIn(old, g.get_output_ids())
 
-    @unittest.skip
     def test_fusion_open_digraph(self):
         self.assertRaises(ValueError, self.G.fusion, 0, 13)
 

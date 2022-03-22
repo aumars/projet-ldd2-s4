@@ -68,7 +68,6 @@ class Bool_CircTest(unittest.TestCase):
         B2 = bool_circ([0, 1, 2], [8], nodes)
         self.assertFalse(B2.is_well_formed())
 
-    @unittest.skip
     def test_from_formula_bool_circ(self):
         LEGAL_LABELS = set(["&", "|", "~", ""])
 
