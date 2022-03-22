@@ -44,14 +44,14 @@ class bool_circ(open_digraph):
         return cls(g.get_inputs(), g.get_outputs(), g.get_nodes())
 
     @classmethod
-    def from_formula(cls, s):
+    def from_formula(cls, *args):
         """
         Construct a tree from a propositional formula.
 
         Parameters
         ----------
-        s : str
-            A propositional formula
+        *args : str
+            Propositional formulas
 
         Returns
         -------
@@ -64,30 +64,31 @@ class bool_circ(open_digraph):
 
         current_node = id
         labels = {}
-        s2 = ''
-        for char in s:
-            if char == '(':
-                node = g.get_node_by_id(current_node)
-                node.set_label(s2)
-                pid = g.add_node()
-                g.add_edge(pid, current_node)
-                if s2 in labels:
-                    g.merge_nodes_by_id(current_node, labels[s2])
+        for s in args:
+            s2 = ''
+            for char in s:
+                if char == '(':
+                    node = g.get_node_by_id(current_node)
+                    node.set_label(s2)
+                    pid = g.add_node()
+                    g.add_edge(pid, current_node)
+                    if s2 in labels:
+                        g.merge_nodes_by_id(current_node, labels[s2])
+                    else:
+                        labels[s2] = node
+                        current_node = pid
+                        s2 = ''
+                elif char == ')':
+                    node = g.get_node_by_id(current_node)
+                    node.set_label(s2)
+                    if s2 in labels:
+                        g.merge_nodes_by_id(current_node, labels[s2])
+                    else:
+                        labels[s2] = node
+                        current_node = g.node.get_children_ids()[0]
+                        s2 = ''
                 else:
-                    labels[s2] = node
-                current_node = pid
-                s2 = ''
-            elif char == ')':
-                node = g.get_node_by_id(current_node)
-                node.set_label(s2)
-                if s2 in labels:
-                    g.merge_nodes_by_id(current_node, labels[s2])
-                else:
-                    labels[s2] = node
-                current_node = g.node.get_children_ids()[0]
-                s2 = ''
-            else:
-                s2 += char
+                    s2 += char
         return g
 
     def is_well_formed(self):
