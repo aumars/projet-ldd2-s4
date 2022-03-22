@@ -146,7 +146,7 @@ class Open_DigraphTest(unittest.TestCase):
             self.assertIn(old + n, graph.get_output_ids())
 
     @given(open_digraph_strategy(), open_digraph_strategy())
-    def test_separate_indices(self, g, h):
+    def test_separate_indices_open_digraph(self, g, h):
         g.separate_indices(h)
         for old in h.get_node_ids():
             self.assertNotIn(old, g.get_node_ids())
@@ -154,3 +154,22 @@ class Open_DigraphTest(unittest.TestCase):
             self.assertNotIn(old, g.get_input_ids())
         for old in h.get_output_ids():
             self.assertNotIn(old, g.get_output_ids())
+
+    @unittest.skip
+    def test_fusion_open_digraph(self):
+        self.assertRaises(ValueError, self.G.fusion, 0, 13)
+
+        len_before_fusion = len(self.G2.get_node_ids())
+        id_fusion = self.G2.fusion(0, 1, "node_fusion")
+
+        self.assertTrue(self.G2.is_well_formed())
+        self.assertTrue(self.G2.get_node_by_id(id_fusion).get_label(), "node_fusion") 
+
+        self.assertEqual(len_before_fusion-1, len(self.G2.get_node_ids()))
+        self.assertEqual(3, len(self.G2.get_node_by_id(id_fusion).get_parent_ids()))
+        self.assertEqual(2, len(self.G2.get_node_by_id(id_fusion).get_children_ids()))
+
+        self.assertIn(id_fusion, self.G2.get_nodes_ids())
+        self.assertIn(id_fusion, self.G2.get_node_by_id(2).get_children_ids())
+        self.assertIn(2, self.G2.get_node_by_id(id_fusion).get_children_ids())
+
