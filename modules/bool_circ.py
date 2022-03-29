@@ -79,30 +79,38 @@ class bool_circ(open_digraph):
                 # We create a node at '(' which begins a variable.
                 if char == '(':
                     node = g.get_node_by_id(current_node)
-                    node.set_label(s2)
+                    if len(node.get_label()) == 0 and len(s2) > 0 and s2[0] != 'x':
+                        node.set_label(s2)
                     pid = g.add_node()
                     g.add_edge(pid, current_node)
-                    # If the variable already exists, we merge it with the already existing node.
-                    if s2 in labels:
-                        g.merge_nodes_by_id(current_node, labels[s2])
-                    elif s2[0] == 'x':
-                        labels[s2] = node
-                        current_node = pid
+                    if len(s2) > 0 and s2[0] == 'x':
+                        if s2 not in labels:
+                            labels[s2] = [current_node]
+                        else:
+                            if current_node not in labels[s2]:
+                                labels[s2].append(current_node)
+                    current_node = pid
                     s2 = ''
                 # We set the current_node at ')' which ends a variable.
                 elif char == ')':
                     node = g.get_node_by_id(current_node)
-                    node.set_label(s2)
-                    if s2 in labels:
-                        g.merge_nodes_by_id(current_node, labels[s2])
-                    elif s2[0] == 'x':
-                        labels[s2] = node
-                        current_node = g.node.get_children_ids()[0]
+                    if len(node.get_label()) == 0 and len(s2) > 0 and s2[0] != 'x':
+                        node.set_label(s2)
+                    if len(s2) > 0 and s2[0] == 'x':
+                        if s2 not in labels:
+                            labels[s2] = [current_node]
+                        else:
+                            if current_node not in labels[s2]:
+                                labels[s2].append(current_node)
+                    current_node = node.get_children_ids()[0]
                     s2 = ''
                 else:
                     s2 += char
         for s2 in labels:
-            g.variables[s2] = g.add_input_node(labels[s2].get_id())
+            for i in range(1, len(labels[s2])):
+                g.merge_nodes_by_id(labels[s2][0], labels[s2][i])
+        for s2 in labels:
+            g.variables[s2] = g.add_input_node(labels[s2][0])
         return g
 
     def is_well_formed(self):
