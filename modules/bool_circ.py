@@ -76,17 +76,20 @@ class bool_circ(open_digraph):
             current_node = id
             s2 = ''
             for char in s:
+                # We create a node at '(' which begins a variable.
                 if char == '(':
                     node = g.get_node_by_id(current_node)
                     node.set_label(s2)
                     pid = g.add_node()
                     g.add_edge(pid, current_node)
+                    # If the variable already exists, we merge it with the already existing node.
                     if s2 in labels:
                         g.merge_nodes_by_id(current_node, labels[s2])
                     elif s2[0] == 'x':
                         labels[s2] = node
                         current_node = pid
                     s2 = ''
+                # We set the current_node at ')' which ends a variable.
                 elif char == ')':
                     node = g.get_node_by_id(current_node)
                     node.set_label(s2)
@@ -99,7 +102,7 @@ class bool_circ(open_digraph):
                 else:
                     s2 += char
         for s2 in labels:
-            g.variables[s2] = g.add_input_node(labels[s2].get_node_id())
+            g.variables[s2] = g.add_input_node(labels[s2].get_id())
         return g
 
     def is_well_formed(self):
