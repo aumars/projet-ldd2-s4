@@ -99,7 +99,7 @@ class open_digraph(op_compositions_mx,
         open_digraph
             The copy of this graph.
         """
-        return open_digraph(self.inputs, self.outputs, [deepcopy(node.copy()) for node in self.nodes.values()])
+        return open_digraph(self.inputs.copy(), self.outputs.copy(), [deepcopy(node.copy()) for node in self.nodes.values()])
 
     def node_dict(self):
         """
