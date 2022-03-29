@@ -155,20 +155,3 @@ class Open_DigraphTest(unittest.TestCase):
         for old in h.get_output_ids():
             self.assertNotIn(old, g.get_output_ids())
 
-    def test_merge_nodes_by_id_open_digraph(self):
-        self.assertRaises(ValueError, self.G.merge_nodes_by_id, 0, 13)
-
-        len_before_fusion = len(self.G2.get_node_ids())
-        id_fusion = self.G2.merge_nodes_by_id(0, 1, "node_fusion")
-
-        self.assertTrue(self.G2.is_well_formed())
-        self.assertTrue(self.G2.get_node_by_id(id_fusion).get_label(), "node_fusion") 
-
-        self.assertEqual(len_before_fusion-1, len(self.G2.get_node_ids()))
-        self.assertEqual(3, len(self.G2.get_node_by_id(id_fusion).get_parent_ids()))
-        self.assertEqual(2, len(self.G2.get_node_by_id(id_fusion).get_children_ids()))
-
-        self.assertIn(id_fusion, self.G2.get_node_ids())
-        self.assertIn(id_fusion, self.G2.get_node_by_id(2).get_children_ids())
-        self.assertIn(2, self.G2.get_node_by_id(id_fusion).get_children_ids())
-
