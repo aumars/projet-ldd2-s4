@@ -122,16 +122,16 @@ class bool_circ(open_digraph):
             return False
 
         ILLEGAL = ["COPIE", "NOT", "AND", "OR"]
-
         for node in self.get_nodes():
-            label = node.get_label()
+            if node.get_id() not in self.get_input_ids() and node.get_id() not in self.get_output_ids():
+                label = node.get_label()
+
+                COND_COPY = label == "" and node.indegree() != 1 
+                COND_AND_OR = (label == "&" or label == "|") and node.outdegree() != 1 
+                COND_NOT = label == "~" and (node.indegree() != 1 or node.outdegree() != 1)
+                COND_ILLEGAL = label in ILLEGAL
             
-            COND_COPY = label == "" and node.indegree() != 1 
-            COND_AND_OR = (label == "&" or label == "|") and node.outdegree() != 1 
-            COND_NOT = label == "~" and (node.indegree() != 1 or node.outdegree() != 1)
-            COND_ILLEGAL = label in ILLEGAL
-            
-            if COND_ILLEGAL or COND_COPY or COND_AND_OR or COND_NOT:
-                return False
+                if COND_ILLEGAL or COND_COPY or COND_AND_OR or COND_NOT:
+                    return False
 
         return True
