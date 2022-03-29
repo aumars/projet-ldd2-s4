@@ -174,15 +174,16 @@ class op_modify_mx_test(unittest.TestCase):
         self.assertRaises(ValueError, self.G.merge_nodes_by_id, 0, 13)
 
         len_before_fusion = len(self.G2.get_node_ids())
-        id_fusion = self.G2.merge_nodes_by_id(0, 1, "node_fusion")
+        self.G2.merge_nodes_by_id(0, 1, "node_fusion")
+        id_fusion = 0
 
         self.assertTrue(self.G2.is_well_formed())
-        self.assertTrue(self.G2.get_node_by_id(id_fusion).get_label(), "node_fusion")
+        self.assertTrue(self.G2.get_node_by_id(0).get_label(), "node_fusion")
 
         self.assertEqual(len_before_fusion-1, len(self.G2.get_node_ids()))
         self.assertEqual(3, len(self.G2.get_node_by_id(id_fusion).get_parent_ids()))
-        self.assertEqual(2, len(self.G2.get_node_by_id(id_fusion).get_children_ids()))
+        self.assertEqual(4, len(self.G2.get_node_by_id(id_fusion).get_children_ids()))
 
         self.assertIn(id_fusion, self.G2.get_node_ids())
-        self.assertIn(id_fusion, self.G2.get_node_by_id(2).get_children_ids())
+        self.assertIn(id_fusion, self.G2.get_node_by_id(2).get_parent_ids())
         self.assertIn(2, self.G2.get_node_by_id(id_fusion).get_children_ids())
