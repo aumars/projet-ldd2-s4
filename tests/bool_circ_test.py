@@ -22,6 +22,8 @@ class Bool_CircTest(unittest.TestCase):
         nodes.append(node(8, 'r0', {7: 1}, {}))
         self.B = bool_circ([0, 1, 2], [8], nodes)
 
+        self.LEGAL_LABELS = set(["&", "|", "~", ""])
+
     def test_well_formed_bool_circ(self):
         self.assertTrue(self.B.is_well_formed())
 
@@ -68,26 +70,27 @@ class Bool_CircTest(unittest.TestCase):
         B2 = bool_circ([0, 1, 2], [8], nodes)
         self.assertFalse(B2.is_well_formed())
 
-    def test_from_formula_bool_circ(self):
-        LEGAL_LABELS = set(["&", "|", "~", ""])
-
+    def test_from_formula_empty_bool_circ(self):
         B_EMPTY = bool_circ.from_formula("")
-        self.assertEqual(len(B_EMPTY.get_node_ids()), 2)
         self.assertFalse(B_EMPTY.is_well_formed())
 
+    def test_from_formula_copy_bool_circ(self):
         B_COPY = bool_circ.from_formula("(x0)")
+        self.assertEqual(len(B_COPY.get_node_ids()), 4)
         self.assertTrue(B_COPY.is_well_formed())
 
+    def test_from_formula_example1_bool_circ(self):
         B0 = bool_circ.from_formula("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
         self.assertTrue(B0.is_well_formed())
         self.assertEqual(len(B0.get_node_ids()), 12)
         labels = set([n.get_label() for n in B0.get_nodes()])
-        self.assertEqual(labels - LEGAL_LABELS, set())
+        self.assertEqual(labels - self.LEGAL_LABELS, set())
         self.assertCountEqual(B0.variables.keys(), ["x0", "x1", "x2"])
 
+    def test_from_formula_example2_bool_circ(self):
         B1 = bool_circ.from_formula("((x0)&((x1)&(x2)))|((x1)&(~(x2)))", "((x0)&(~(x1)))|(x2)")
         self.assertTrue(B1.is_well_formed())
         self.assertEqual(len(B1.get_node_ids()), 16)
         labels = set([n.get_label() for n in B1.get_nodes()])
-        self.assertEqual(labels - LEGAL_LABELS, set())
+        self.assertEqual(labels - self.LEGAL_LABELS, set())
         self.assertCountEqual(B1.variables.keys(), ["x0", "x1", "x2"])
