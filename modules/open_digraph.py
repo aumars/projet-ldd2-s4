@@ -165,37 +165,6 @@ class open_digraph(op_compositions_mx,
                     return False
 
         return True
-           
-    def sub_is_cyclic(self, graph):
-        """
-        Sub-function to test if a graph is cyclic.
-
-        Parameters
-        ----------
-        graph : open_digraph
-            A graph.
-
-        Returns
-        ------
-        bool
-           True if the graph is cyclic. Otherwise, return False.
-        """
-        if graph.get_node_ids() == []:
-            return False
-        
-        else:
-            leaf = []
-            for n_id in graph.get_node_ids():
-                if graph.get_node_by_id(n_id).get_parent_ids() == []:
-                    leaf.append(n_id)
-                    break
-
-            if leaf == []:
-                return True
-            
-            else:
-                graph.remove_node_by_id(leaf[0])
-                return graph.is_cyclic()
 
     def is_cyclic(self):
         """
@@ -206,7 +175,25 @@ class open_digraph(op_compositions_mx,
         bool
            True if the graph is cyclic. Otherwise, return False.
         """
-        return self.sub_is_cyclic(self.copy())
+        def sub_is_cyclic(graph):
+            if graph.get_node_ids() == []:
+                return False
+
+            else:
+                leaf = []
+                for n_id in graph.get_node_ids():
+                    if graph.get_node_by_id(n_id).get_parent_ids() == []:
+                        leaf.append(n_id)
+                        break
+
+                if leaf == []:
+                    return True
+
+                else:
+                    graph.remove_node_by_id(leaf[0])
+                    return graph.is_cyclic()
+
+        return sub_is_cyclic(self.copy())
     
     def shift_indices(self, n):
         """
