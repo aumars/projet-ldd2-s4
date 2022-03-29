@@ -270,3 +270,63 @@ def random_triangular_int_matrix(n, bound, null_diag=True,
                 A[i][i] = get_random_int(bound,
                                          number_generator=number_generator)
         return A
+
+def gray_code(n):
+    """
+    Generate the gray code with n bits.
+
+    Parameters
+    ----------
+    n : int
+        The numbers of bits.
+
+    Returns
+    -------
+    list int
+        The ordering list of gray code with n bits.
+    
+    Raises
+    ------
+    ValueError
+        If bit_string is not composed of bit.
+    """
+
+def K_map(bit_string):
+    """
+    Generate the Karnaugh table.
+
+    Parameters
+    ----------
+    bit_string : string
+        A bit string of the truth table output.    
+    
+    Returns
+    -------
+    list list int
+        The Karnaugh table.
+    
+    Raises
+    ------
+    ValueError
+        If bit_string is not composed of bit.
+    """
+
+def bit_string_to_formula(bit_string):
+    """
+    Generate the formula from a bit string.
+
+    Parameters
+    ----------
+    bit_string : string
+        A bit string of the truth table output.    
+    
+    Returns
+    -------
+    string
+        The formula thats corresponds to the bit string.
+
+    Raises
+    ------
+    ValueError
+        If bit_string is not composed of bit.
+    """

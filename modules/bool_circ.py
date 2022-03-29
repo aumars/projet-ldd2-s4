@@ -146,3 +146,26 @@ class bool_circ(open_digraph):
                     return False
 
         return True
+
+    @classmethod
+    def from_binary(cls, bit_string):
+        """
+        Construct a boolean circuit from given binary numbers.
+
+        Parameters
+        ----------
+        bit_string : string
+            A bit string of the truth table output.
+
+        Returns
+        -------
+        bool_circ
+            The boolean circuit representing the bit string.
+
+        Raises
+        ------
+        ValueError
+            If the length of the argument bit_string is not a power of 2.
+        ValueError
+            If bit_string is not composed of bit.
+        """

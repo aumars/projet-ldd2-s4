@@ -94,3 +94,21 @@ class Bool_CircTest(unittest.TestCase):
         labels = set([n.get_label() for n in B1.get_nodes()])
         self.assertEqual(labels - self.LEGAL_LABELS, set())
         self.assertCountEqual(B1.variables.keys(), ["x0", "x1", "x2"])
+
+        self.assertEqual(B1.get_node_ids(), 11)
+        labels = set([n.get_labels() for n in self.get_nodes()])
+        self.assertEqual(labels - self.LEGAL_LABELS, set())
+        self.assertEqual(B1.variables, {"x0", "x1", "x2"})
+    
+    def test_from_binary_bool_circ(self):
+        self.assertRaises(ValueError, bool_circ.from_binary, "10101")
+        self.assertRaises(ValueError, bool_circ.from_binary, "1234")
+
+        B1 = bool_circ.from_binary("1")
+        self.assertTrue(4, B1.is_well_formed())
+        self.assertTrue(1, B1.is_well_formed())
+
+        B2 = bool_circ.from_binary("1110001000111111")
+        self.assertTrue(B2.is_well_formed())
+        self.assertEqual(4, B2.get_input_ids())
+        self.assertEqual(1, B2.get_output_ids())

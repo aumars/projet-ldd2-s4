@@ -1,8 +1,4 @@
-from modules.utils import (random_int_list,
-                           random_int_matrix,
-                           random_symetric_int_matrix,
-                           random_oriented_int_matrix,
-                           random_triangular_int_matrix)
+from modules.utils import *
 import unittest
 import numpy as np
 import sys
@@ -90,3 +86,39 @@ class UtilsTest(unittest.TestCase):
                 self.assertTrue(np.all(A[m_trian_sup] == 0))
                 if null_diag:
                     self.assertTrue(np.all(A.diagonal() == 0))
+
+    def test_code_gray_open_digraph(self):
+        CG0 = gray_code(0)
+        CG0_EXACT = [""]
+        self.assertListEqual(CG0, CG0_EXACT)
+
+        CG1 = gray_code(1)
+        CG1_EXACT = ["0", "1"]
+        self.assertListEqual(CG1, CG1_EXACT)
+
+        CG7 = gray_code(3)
+        CG7_EXACT = ["000", "001", "011", "010", "110", "111", "101", "100"]
+        self.assertListEqual(CG7, CG7_EXACT)
+
+    def test_K_map_open_digraph(self):
+        self.assertRaises(ValueError, K_map, "1234")
+        self.assertListEqual(K_map(""), [])
+
+        M0 = K_map("11100")
+        n = len(M0)
+        
+        for i in M0: 
+            self.assertLessEqual(1, abs(n - len(i)))
+
+        M1 = K_map("1110001000111111")
+        T1_KARNAUGH = [[1, 1, 0, 1], [0, 0, 0, 1], [1, 1, 1, 1], [0, 0, 1, 1]]
+        self.assertListEqual(M1, T1_KARNAUGH)
+
+    def test_bit_string_to_formula_open_digraph(self):
+        self.assertRaises(ValueError, K_map, "1234")
+        self.assertEqual("(x0&x2)",  bit_string_to_formula("1100"))
+
+        OP1 = "1110001000111111"
+        F1 = bit_string_to_formula(OP1)
+        F1_EXACT = "(x0&x2)|(x2&~x3)|(x0&x1)|(~x0&~x1&~x2)"
+        self.assertEqual(F1, F1_EXACT)
