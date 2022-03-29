@@ -22,7 +22,15 @@ class op_modify_mx_test(unittest.TestCase):
         self.o1 = node(6, 'o1', {2: 1}, {})
 
         self.G = open_digraph([3, 4], [5, 6], [self.n0, self.n1, self.n2, self.i0, self.i1, self.o0, self.o1])
-        
+
+        self.n0_2 = node(0, "v0", {3: 1}, {1: 1, 2: 1})
+        self.n1_2 = node(1, "v1", {0: 1, 4: 2}, {3: 1, 4: 2})
+        self.n2_2 = node(2, "v2", {0: 1}, {3: 2})
+        self.n3_2 = node(3, "v3", {1: 1, 2: 2, 4: 1}, {0: 1, 4: 1})
+        self.n4_2 = node(4, "v4", {1: 2, 3: 1}, {1: 2, 3: 1})
+
+        self.G2 = open_digraph([], [], [self.n0_2, self.n1_2, self.n2_2, self.n3_2, self.n4_2])
+
     @given(open_digraph_strategy(), st.integers())
     def test_add_input_id_open_digraph(self, graph, id):
         """Test add_input_id method."""
