@@ -73,7 +73,10 @@ class Bool_CircTest(unittest.TestCase):
 
         B_EMPTY = bool_circ.from_formula("")
         self.assertEqual(len(B_EMPTY.get_node_ids()), 2)
-        self.assertTrue(B_EMPTY.is_well_formed())
+        self.assertFalse(B_EMPTY.is_well_formed())
+
+        B_COPY = bool_circ.from_formula("(x0)")
+        self.assertTrue(B_COPY.is_well_formed())
 
         B0 = bool_circ.from_formula("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
         self.assertTrue(B0.is_well_formed())
