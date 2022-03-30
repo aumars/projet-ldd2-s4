@@ -105,5 +105,5 @@ class Bool_CircTest(unittest.TestCase):
 
         B2 = bool_circ.from_binary("1110001000111111")
         self.assertTrue(B2.is_well_formed())
-        self.assertEqual(4, B2.get_input_ids())
-        self.assertEqual(1, B2.get_output_ids())
+        self.assertEqual(4, len(B2.get_input_ids()))
+        self.assertEqual(1, len(B2.get_output_ids()))

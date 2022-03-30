@@ -169,3 +169,36 @@ class bool_circ(open_digraph):
         ValueError
             If bit_string is not composed of bit.
         """
+        not_pow2 = f"bit_string = {bit_string} is not a power of 2."
+        if len(bit_string) == 0:
+            raise ValueError("Empty bit_string.")
+        for c in bit_string:
+            if c != '0' and c != '1':
+                raise ValueError(f"bit_string = {bit_string} is not entirely composed of bits.")
+        if bin(len(bit_string))[2] == '0':
+            raise ValueError(not_pow2)
+        for c in bin(len(bit_string))[3:]:
+            if c == '1':
+                raise ValueError(not_pow2)
+        g = cls.from_open_digraph(open_digraph.empty())
+        n = len(bin(len(bit_string))) - 3
+        oid = g.add_node('|')
+        g.add_output_node(oid)
+        vars = {}
+        for i in range(n):
+            pid = g.add_node()
+            iid = g.add_input_node(pid)
+            g.variables["x" + str(i)] = iid
+            vars[i] = pid
+        for i, k in enumerate(bit_string):
+            if k == '1':
+                a = g.add_node('&')
+                g.add_edge(a, oid)
+                for j in bin(int(k))[3:]:
+                    if j == '0':
+                        g.add_edge(vars[i % n], a)
+                    else:
+                        id = g.add_node('~')
+                        g.add_edge(vars[i % n], id)
+                        g.add_edge(id, a)
+        return g
