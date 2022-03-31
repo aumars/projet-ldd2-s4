@@ -271,6 +271,7 @@ def random_triangular_int_matrix(n, bound, null_diag=True,
                                          number_generator=number_generator)
         return A
 
+
 def gray_code(n):
     """
     Generate the gray code with n bits.
@@ -282,14 +283,25 @@ def gray_code(n):
 
     Returns
     -------
-    list int
+    list str
         The ordering list of gray code with n bits.
-    
+
     Raises
     ------
     ValueError
         If bit_string is not composed of bit.
     """
+    def int2bin(n, k):
+        bin_compressed = bin(n)[2:]
+        return (k - len(bin_compressed)) * "0" + bin_compressed
+
+    gray = []
+    for k in range(2 ** n):
+        gray.append(int2bin(k ^ (k >> 1), n))
+    if gray == ['0']:
+        return ['']
+    else:
+        return gray
 
 def K_map(bit_string):
     """
