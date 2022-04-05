@@ -1,3 +1,4 @@
+from random import choice
 from .open_digraph import open_digraph
 
 
@@ -204,10 +205,10 @@ class bool_circ(open_digraph):
         return g
 
     @classmethod
-    def random(n):
+    def random(cls, n):
         """
         Generate a random bool_circ graph.
-        
+
         Parameters
         ----------
         n : int
@@ -218,5 +219,20 @@ class bool_circ(open_digraph):
         bool_circ
             A random bool_circ graph.
         """
-        pass
-    
+        UNAIRE = ['', '~']
+        BINAIRE = ['&', '|', '^']
+        if n <= 0:
+            raise ValueError(f"n = {n} doit être strictement positif.")
+        g = open_digraph.random(n, 1, inputs=n, outputs=n, form="DAG")
+        for id, n in g.get_id_node_map().items():
+            if n.indegree() == 1 and n.outdegree() == 1:
+                n.set_label(choice(UNAIRE))
+            elif n.indegree() > 1 and n.outdegree() == 0:
+                n.set_label(choice(BINAIRE))
+            elif n.indegree() > 1 and n.outdegree() > 1:
+                uop = n
+                ucp_id = g.add_node()
+                g.get_node_by_id(ucp_id).children = uop.children
+                uop.children = {}
+                g.add_edge(uop.get_id(), ucp_id)
+        return g
