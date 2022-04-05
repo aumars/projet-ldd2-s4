@@ -303,6 +303,7 @@ def gray_code(n):
     else:
         return gray
 
+
 def K_map(bit_string):
     """
     Generate the Karnaugh table.
@@ -310,18 +311,37 @@ def K_map(bit_string):
     Parameters
     ----------
     bit_string : string
-        A bit string of the truth table output.    
-    
+        A bit string of the truth table output.
+
     Returns
     -------
     list list int
         The Karnaugh table.
-    
+
     Raises
     ------
     ValueError
         If bit_string is not composed of bit.
     """
+    not_pow2 = f"bit_string = {bit_string} is not a power of 2."
+    for c in bit_string:
+        if c != '0' and c != '1':
+            raise ValueError(f"bit_string = {bit_string} is not entirely composed of bits.")
+    if bin(len(bit_string))[2] == '0' and len(bit_string) > 3:
+        raise ValueError(not_pow2)
+    for c in bin(len(bit_string))[3:]:
+        if c == '1':
+            raise ValueError(not_pow2)
+    n = len(bin(len(bit_string))) - 3
+    K = [[None for _ in range(n)] for _ in range(n)]
+    for k in range(n**2):
+        gray = k ^ (k >> 1)
+        i, j = k // n, k % n
+        K[i][j] = int(bit_string[gray])
+    for i in range(1, n, 2):
+        K[i].reverse()
+    return K
+
 
 def bit_string_to_formula(bit_string):
     """

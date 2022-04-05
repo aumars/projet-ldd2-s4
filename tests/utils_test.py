@@ -105,13 +105,8 @@ class UtilsTest(unittest.TestCase):
 
     def test_K_map_open_digraph(self):
         self.assertRaises(ValueError, K_map, "1234")
+        self.assertRaises(ValueError, K_map, "11100")
         self.assertListEqual(K_map(""), [])
-
-        M0 = K_map("11100")
-        n = len(M0)
-        
-        for i in M0: 
-            self.assertLessEqual(1, abs(n - len(i)))
 
         M1 = K_map("1110001000111111")
         T1_KARNAUGH = [[1, 1, 0, 1], [0, 0, 0, 1], [1, 1, 1, 1], [0, 0, 1, 1]]
@@ -165,3 +160,4 @@ class UtilsTest(unittest.TestCase):
         sum1, carry = half_adder(r0, r1)
         self.assertListEqual(sum1, r1)
         self.assertListEqual(carry, 1)
+
