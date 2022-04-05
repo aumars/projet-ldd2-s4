@@ -13,7 +13,13 @@ capped_bound = st.integers(max_value=10)
 
 class UtilsTest(unittest.TestCase):
     def setUp(self):
-        pass
+        self.r_bad = [1] * 3
+        self.r0 = [0] * 8
+        self.r1 = [1] * 8
+        self.r = [0, 1, 1, 1, 1, 1, 1, 1]
+        self.r230 = [1, 1, 1, 0, 0, 1, 1, 0]
+        self.r245 = [1, 1, 1, 1, 0, 1, 0, 1]
+        self.r475 = [1, 1, 1, 0, 1, 1, 0, 1]
         
     @given(capped_n, capped_bound)
     def test_random_int_list_utils(self, n, bound):
