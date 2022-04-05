@@ -350,8 +350,8 @@ def bit_string_to_formula(bit_string):
     Parameters
     ----------
     bit_string : string
-        A bit string of the truth table output.    
-    
+        A bit string of the truth table output.
+
     Returns
     -------
     string
@@ -362,7 +362,8 @@ def bit_string_to_formula(bit_string):
     ValueError
         If bit_string is not composed of bit.
     """
-    
+    raise NotImplementedError("C'est trop dur.")
+
 def adder(self, r1, r2, hold_bit):
     """
     Cumpute the sum of the regiter r1 and r2.
