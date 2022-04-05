@@ -202,3 +202,21 @@ class bool_circ(open_digraph):
                         g.add_edge(vars[i % n], id)
                         g.add_edge(id, a)
         return g
+
+    @classmethod
+    def random(n):
+        """
+        Generate a random bool_circ graph.
+        
+        Parameters
+        ----------
+        n : int
+            The number of input and output in the graph. This number must be greater than 0.
+
+        Returns
+        -------
+        bool_circ
+            A random bool_circ graph.
+        """
+        pass
+    

@@ -107,3 +107,14 @@ class Bool_CircTest(unittest.TestCase):
         self.assertTrue(B2.is_well_formed())
         self.assertEqual(4, len(B2.get_input_ids()))
         self.assertEqual(1, len(B2.get_output_ids()))
+
+    def test_random_bool_circ(self):       
+        B1 = bool_circ.random(1)
+        self.assertTrue(B1.is_well_formed())
+        self.assertEqual(1, B1.get_input_ids())
+        self.assertEqual(1, B1.get_output_ids())
+
+        B10 = bool_circ.random(10)
+        self.assertTrue(B10.is_well_formed())
+        self.assertEqual(10, B10.get_input_ids())
+        self.assertEqual(10, B10.get_output_ids())
