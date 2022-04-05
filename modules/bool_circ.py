@@ -236,3 +236,68 @@ class bool_circ(open_digraph):
                 uop.children = {}
                 g.add_edge(uop.get_id(), ucp_id)
         return g
+
+    @classmethod
+    def adder(cls, n):
+    """
+
+    Parameters
+    ----------
+    n: int
+        Puissance de 2
+
+    Returns
+    -------
+
+    Raises
+    ------
+    ValueError
+        If the length of the argument r1 or r2 is not a power of 2.
+    """
+    g = bool_circ(open_digraph.empty())
+    if n == 0:
+        x0 = g.add_node()
+        x1 = g.add_node()
+        x2 = g.add_node()
+        g.add_input_node(x0)
+        g.add_input_node(x1)
+        g.add_input_node(x2)
+        xor1 = g.add_node()
+        g.add_edge(x0, xor1)
+        g.add_edge(x1, xor1)
+        copie1 = g.add_node()
+        g.add_edge(xor1, copie1)
+        and1 = g.add_node()
+        and2 = g.add_node()
+        xor2 = g.add_node()
+        g.add_edge(x0, and1)
+        g.add_edge(x1, and1)
+        g.add_edge(copie1, and2)
+        g.add_edge(x2, and2)
+        g.add_edge(copie1, xor1)
+        g.add_edge(x2, xor1)
+        or1 = g.add_node()
+        g.add_edge(and1, or1)
+        g.add_edge(and2, or1)
+        g.add_output_node(or1)
+        g.add_output_node(xor1)
+    else:
+        adder1 = cls.adder(n - 1)
+        adder2 = cls.adder(n - 1)
+
+        adder1variables = list(sorted(adder1.variables.items()))
+        adder2variables = list(sorted(adder2.variables.items()))
+
+        adder1varA = adder1variables[:n/2]
+        adder1varB = adder1variables[n/2:]
+
+        adder2varA = adder2variables[:n/2]
+        adder2varB = adder2variables[n/2:]
+
+        return parallel(adder1, adder2)
+
+
+def half_adder(self, n):
+    """
+    """ 
+    pass

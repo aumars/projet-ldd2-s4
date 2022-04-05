@@ -364,59 +364,5 @@ def bit_string_to_formula(bit_string):
     """
     raise NotImplementedError("C'est trop dur.")
 
-def adder(self, r1, r2, hold_bit):
-    """
-    Cumpute the sum of the regiter r1 and r2.
-    
-    Parameters
-    ----------
-    r1 : int list
-        The first registre. The length must be a power of 2.
 
-    r2 : int list
-        The second registre. The length must be a power of 2.
 
-    hold_bit : int
-        A hold bit.
-
-    Returns
-    -------
-    int list
-        The sum of registres.
-    int 
-        A carry bit. Set to 1 if the calculation has exceeded the size of the
-        register. Otherwise set to 0.
-
-    Raises
-    ------
-    ValueError
-        If the length of the argument r1 or r2 is not a power of 2.
-    """ 
-    pass
-
-def half_adder(self, r1, r2):
-    """
-    Cumpute the sum of the regiter r1 and r2.
-    
-    Parameters
-    ----------
-    r1 : int list
-        The first registre. The length must be a power of 2.
-
-    r2 : int list
-        The second registre. The length must be a power of 2.
-
-    Returns
-    -------
-    int list
-        The sum of registres.
-    int 
-        A carry bit. Set to 1 if the calculation has exceeded the size of the
-        register. Otherwise set to 0.
-
-    Raises
-    ------
-    ValueError
-        If the length of the argument r1 or r2 is not a power of 2.
-    """ 
-    pass
