@@ -305,4 +305,7 @@ class bool_circ(open_digraph):
 
     @classmethod
     def half_adder(cls, n):
-        raise NotImplementedError
+        g = cls.adder(n)
+        g.get_node_by_id(g.get_input_ids()[-1]).set_label('0')
+        g.set_input_ids(g.get_input_ids()[:-1])
+        return g
