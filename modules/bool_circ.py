@@ -50,11 +50,19 @@ class bool_circ(open_digraph):
     @classmethod
     def from_formula(cls, *args):
         """
-        Construct a tree from a propositional formula.
+        Construct a binary circuit from a propositional formula.
+
+        The index of the circuit's [inputs] attribute correspond to the
+        index of the variable in the propositional formula, thus x0
+        will correspond to index 0 of [inputs], x1 will correspond to
+        index 1, etc.
+        If a variable in the propositional formula is missing, for
+        example, if x0 is omitted, then the indices are shifted
+        leftward accordingly, so x1 will correspond to index 0...
 
         Parameters
         ----------
-        *args : str
+        *args
             Propositional formulas
 
         Returns
