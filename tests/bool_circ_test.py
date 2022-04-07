@@ -84,7 +84,6 @@ class Bool_CircTest(unittest.TestCase):
         self.assertEqual(len(B0.get_node_ids()), 12)
         labels = set([n.get_label() for n in B0.get_nodes()])
         self.assertEqual(labels - self.LEGAL_LABELS, set())
-        self.assertCountEqual(B0.variables.keys(), ["x0", "x1", "x2"])
 
     def test_from_formula_example2_bool_circ(self):
         B1 = bool_circ.from_formula("((x0)&((x1)&(x2)))|((x1)&(~(x2)))", "((x0)&(~(x1)))|(x2)")
@@ -92,15 +91,13 @@ class Bool_CircTest(unittest.TestCase):
         self.assertEqual(len(B1.get_node_ids()), 16)
         labels = set([n.get_label() for n in B1.get_nodes()])
         self.assertEqual(labels - self.LEGAL_LABELS, set())
-        self.assertCountEqual(B1.variables.keys(), ["x0", "x1", "x2"])
 
     def test_from_binary_bool_circ(self):
         self.assertRaises(ValueError, bool_circ.from_binary, "10101")
         self.assertRaises(ValueError, bool_circ.from_binary, "1234")
 
         B1 = bool_circ.from_binary("1")
-        self.assertTrue(4, B1.is_well_formed())
-        self.assertTrue(1, B1.is_well_formed())
+        self.assertTrue(B1.is_well_formed())
 
         B2 = bool_circ.from_binary("1110001000111111")
         self.assertTrue(B2.is_well_formed())
