@@ -235,6 +235,7 @@ class bool_circ(open_digraph):
                 g.get_node_by_id(ucp_id).children = uop.children
                 uop.children = {}
                 g.add_edge(uop.get_id(), ucp_id)
+        return g
 
     @classmethod
     def adder(cls, n):
