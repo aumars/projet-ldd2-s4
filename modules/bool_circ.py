@@ -189,8 +189,7 @@ class bool_circ(open_digraph):
         vars = {}
         for i in range(n):
             pid = g.add_node()
-            iid = g.add_input_node(pid)
-            g.variables["x" + str(i)] = iid
+            g.add_input_node(pid)
             vars[i] = pid
         for i, k in enumerate(bit_string):
             if k == '1':
