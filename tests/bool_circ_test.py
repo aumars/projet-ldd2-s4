@@ -114,3 +114,45 @@ class Bool_CircTest(unittest.TestCase):
         self.assertTrue(B10.is_well_formed())
         self.assertEqual(10, len(B10.get_input_ids()))
         self.assertEqual(10, len(B10.get_output_ids()))
+
+    @unittest.skip
+    def test_adder_bool_circ(self):
+        r_bad = [0, 1, 0, 1, 0]
+        r0 = [0] * 8
+        r1 = [1] * 8
+
+        self.assertRaises(ValueError, bool_circ.adder, r_bad, r1)
+        self.assertRaises(ValueError, bool_circ.adder, r1, r_bad)
+
+        sum0, carry = bool_circ.adder(r0, r0)
+        self.assertListEqual(sum0, r0)
+        self.assertListEqual(carry, 0)
+
+        sum1, carry = bool_circ.adder(r0, r1)
+        self.assertListEqual(sum1, r1)
+        self.assertListEqual(carry, 1)
+
+        sum1, carry = bool_circ.adder(r0, r1)
+        self.assertListEqual(sum1, r1)
+        self.assertListEqual(carry, 1)
+
+    @unittest.skip
+    def test_half_adder_bool_circ(self):
+        r_bad = [0, 1, 0, 1, 0]
+        r0 = [0] * 8
+        r1 = [1] * 8
+
+        self.assertRaises(ValueError, bool_circ.half_adder, r_bad, r1)
+        self.assertRaises(ValueError, bool_circ.half_adder, r1, r_bad)
+
+        sum0, carry = bool_circ.half_adder(r0, r0)
+        self.assertListEqual(sum0, r0)
+        self.assertListEqual(carry, 0)
+
+        sum1, carry = bool_circ.half_adder(r0, r1)
+        self.assertListEqual(sum1, r1)
+        self.assertListEqual(carry, 1)
+
+        sum1, carry = bool_circ.half_adder(r0, r1)
+        self.assertListEqual(sum1, r1)
+        self.assertListEqual(carry, 1)
