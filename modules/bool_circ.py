@@ -5,11 +5,6 @@ from .open_digraph import open_digraph
 class bool_circ(open_digraph):
     """
     A boolean circuit. Inherits from open_digraph class.
-
-    Attributes
-    ----------
-    variables: str -> int dict
-        Map associating variables to their corresponding input node IDs.
     """
 
     def __init__(self, inputs, outputs, nodes):
@@ -34,8 +29,6 @@ class bool_circ(open_digraph):
 
         if self.is_cyclic():
             raise ValueError("The boolean circuit is cyclic.")
-
-        self.variables = {}
 
     @classmethod
     def from_open_digraph(cls, g):
@@ -110,8 +103,8 @@ class bool_circ(open_digraph):
         for s2 in labels:
             for i in range(1, len(labels[s2])):
                 g.merge_nodes_by_id(labels[s2][0], labels[s2][i])
-        for s2 in labels:
-            g.variables[s2] = g.add_input_node(labels[s2][0])
+        for s2 in list(sorted(labels)):
+            g.add_input_node(labels[s2][0])
         return g
 
     def is_well_formed(self):
