@@ -1,5 +1,4 @@
 from modules.node import node
-from modules.open_digraph import open_digraph
 from modules.bool_circ import bool_circ
 import unittest
 import sys
