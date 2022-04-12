@@ -268,7 +268,7 @@ class bool_circ(open_digraph):
         if n < 0:
             raise ValueError(f"n = {n} must be positive.")
         if n == 0:
-            g = bool_circ(open_digraph.empty())
+            g = cls.from_open_digraph(open_digraph.empty())
             x0 = g.add_node()
             x1 = g.add_node()
             x2 = g.add_node()
@@ -294,6 +294,7 @@ class bool_circ(open_digraph):
             g.add_edge(and2, or1)
             g.add_output_node(or1)
             g.add_output_node(xor2)
+            return g
         else:
             adder1 = cls.adder(n - 1)
             adder2 = cls.adder(n - 1)
