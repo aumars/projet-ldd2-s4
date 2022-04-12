@@ -380,3 +380,65 @@ class bool_circ(open_digraph):
             ip = g.add_input_node(id)
             g.get_node_by_id(ip).set_label(k)
         return g
+
+    def transform(self, ids):
+        """
+        Apply a simplifying transformation to a list of concerned nodes.
+        These nodes must have no parents.
+
+        Parameters
+        ----------
+        ids: list of int
+            List of valid node IDs.
+        """
+        def transform_replace(self, id, child_id, child, label):
+            for p in child.get_parents():
+                if p != id:
+                    self.remove_parallel_edges(p, child_id)
+                    new_id = self.add_node()
+                    self.add_edge(p, new_id)
+            child.set_label(label)
+
+        def transform_one_child(self, id, child_id, label):
+            child = self.get_node_by_id(child_id)
+            child_label = child.get_label()
+
+            if (child_label == '' and child_id not in self.get_output_ids()):
+                for child_copie_id in child.get_children():
+                    new_id = self.add_node(label=label)
+                    self.add_edge(new_id, child_copie_id)
+                self.remove_node(child)
+            elif child_label == '~':
+                if label == '0':
+                    child.set_label('1')
+                else:
+                    child.set_label('0')
+            elif (child_label == '&' and label == '0'
+                  or child_label == '|' and label == '1'):
+                self.transform_replace(id, child_id, child, label)
+            elif child_label == '^':
+                if label == '1':
+                    for c in child.get_children():
+                        new_id = self.add_node('~')
+                        self.add_edge(child_id, new_id)
+                        self.add_edge(new_id, c)
+                    if len(child.get_children()) == 0:
+                        new_id = self.add_node('~')
+                        self.add_edge(child_id, new_id)
+
+        def transform_one(self, id):
+            node = self.get_node_by_id(id)
+            if len(node.get_parents()) == 0:
+                label = node.get_label()
+                children = node.get_children()
+                if label == '0' or label == '1':
+                    for child_id in children:
+                        self.transform_one_child(id, child_id, label)
+                    self.remove_node(id)
+                elif label == '|' or label == '^':
+                    node.set_label('0')
+                elif label == '&':
+                    node.set_label('1')
+
+        for id in ids:
+            self.transform_one(id)
