@@ -499,28 +499,28 @@ class bool_circ(open_digraph):
         str
             Calculated result of the boolean circuit.
         """
-        def get_no_parents(self):
+        def get_no_parents(g):
             ids = []
-            for node in self.get_nodes():
+            for node in g.get_nodes():
                 if len(node.get_parents()) == 0:
                     ids.append(node.get_id())
             return ids
 
-        def result(self):
-            for out_id in self.get_output_ids():
-                out = self.get_node_by_id(out_id)
+        def result(g):
+            for out_id in g.get_output_ids():
+                out = g.get_node_by_id(out_id)
                 if len(out.get_parent_ids()) != 1:
                     return False
             return True
 
         g = self.copy()
 
-        while not g.result():
-            g.transform(g.get_no_parents())
+        while not result(g):
+            g.transform(get_no_parents(g))
 
         bit_string = ""
         for out_id in g.get_output_ids():
             out = g.get_node_by_id(out_id)
-            node = g.get_node_by_id(out.get_parents()[0])
-            bit_string.append(node.get_label())
+            node = g.get_node_by_id(out.get_parent_ids()[0])
+            bit_string += node.get_label()
         return bit_string
