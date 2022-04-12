@@ -437,9 +437,9 @@ class bool_circ(open_digraph):
                     children = node.get_children_ids()
                     for child_id in children:
                         child = self.get_node_by_id(child_id)
-                        for p in child.get_parents():
+                        for p in child.get_parent_ids():
                             if p != id:
-                                self.remove_parallel_edges(p, child_id)
+                                self.remove_parallel_edges((p, child_id))
                                 new_id = self.add_node()
                                 self.add_edge(p, new_id)
                         child.set_label(label)
