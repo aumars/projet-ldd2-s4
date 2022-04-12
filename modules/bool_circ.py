@@ -472,8 +472,8 @@ class bool_circ(open_digraph):
             g.transform(g.get_no_parents())
 
         bit_string = ""
-        for out_id in self.get_output_ids():
-            out = self.get_node_by_id(out_id)
-            node = self.get_node_by_id(out.get_parents()[0])
+        for out_id in g.get_output_ids():
+            out = g.get_node_by_id(out_id)
+            node = g.get_node_by_id(out.get_parents()[0])
             bit_string.append(node.get_label())
         return bit_string
