@@ -10,21 +10,36 @@ sys.path.append(root)  # allows us to fetch files from the project root
 class Bool_CircTest(unittest.TestCase):
     def setUp(self):
         nodes = []
-        nodes.append(node(0, 'x0', {}, {4: 1}))
-        nodes.append(node(1, 'x1', {}, {3: 1}))
-        nodes.append(node(2, 'x2', {}, {5: 1}))
-        nodes.append(node(3, '', {1: 1}, {4: 1, 5: 1}))
-        nodes.append(node(4, '&', {0: 1, 3: 1}, {7: 1}))
-        nodes.append(node(5, '|', {2: 1, 3: 1}, {6: 1}))
-        nodes.append(node(6, '~', {5: 1}, {7: 1}))
-        nodes.append(node(7, '|', {4: 1}, {8: 1}))
-        nodes.append(node(8, 'r0', {7: 1}, {}))
+
+        n0 = node(0, '0', {}, {4: 1})
+        n1 = node(1, '1', {}, {3: 1})
+        n2 = node(2, '0', {}, {5: 1})
+        n3 = node(3, '', {1: 1}, {4: 1, 5: 1})
+        n4 = node(4, '&', {0: 1, 3: 1}, {7: 1})
+        n5 = node(5, '|', {2: 1, 3: 1}, {6: 1})
+        n6 = node(6, '~', {5: 1}, {7: 1})
+        n7 = node(7, '|', {4: 1}, {8: 1})
+        n8 = node(8, 'r0', {7: 1}, {})
+
+        nodes = [n0, n1, n2, n3, n4, n5, n6, n7, n8]
         self.B = bool_circ([0, 1, 2], [8], nodes)
+
+        n4_xor = node(4, '^', {0: 1, 3: 1}, {7: 1})
+        nodes_xor = [n0, n1, n2, n3, n4_xor, n5, n6, n7, n8]
+        self.C = bool_circ([0, 1, 2], [8], nodes_xor)
+
+        primitives_0 = node(9, '0', {7:1}, {})
+        nodes_pri = [n0, n1, n2, n3, n4, n5, n6, n7, n8, primitives_0]
+        self.D = bool_circ([0, 1, 2], [8], nodes_pri)
 
         self.LEGAL_LABELS = set(["&", "|", "~", ""])
 
     def test_well_formed_bool_circ(self):
         self.assertTrue(self.B.is_well_formed())
+        self.assertTrue(self.C.is_well_formed())
+        
+    def test_well_formed_primitives(self):
+        self.assertTrue(self.D.is_well_formed())
 
     def test_illegal_labels_bool_circ(self):
         nodes = []
@@ -156,3 +171,60 @@ class Bool_CircTest(unittest.TestCase):
         sum1, carry = bool_circ.half_adder(r0, r1)
         self.assertListEqual(sum1, r1)
         self.assertListEqual(carry, 1)
+
+    def test_get_bool_circ_of_n(self):
+        g = bool_circ.get_bool_circ_of_n(11, 8)
+        
+        n0 = 0
+        n1 = 0
+        n_autre = 0
+        for n in g.get_nodes():
+            if n.get_labels() == "0": n0 += 1
+            elif n.get_labels() == "1" : n1 += 1
+            else : n_autre += 1
+
+            self.assertListEqual(n.get_parent_ids(), [])
+            self.assertListEqual(n.get_children_ids(), [])
+
+        self.assertEquals(n0, 5)
+        self.assertEquals(n1, 3)
+        self.assertEquals(n_autre, 0)
+
+    def test_trans_copy(self):
+        self.assertTrue(self.B.trans_copy([0, 1]).is_well_formed())
+
+    def test_trans_op(self):
+        self.assertTrue(self.B.trans_no([0, 1]).is_well_formed())
+
+        self.assertTrue(self.B.get_node_by_id(0).get_label(), '1')
+        self.assertTrue(self.B.get_node_by_id(1).get_label(), '0')
+
+    def test_trans_and(self):
+        self.assertTrue(self.B.trans_and([0, 1]).is_well_formed())
+
+        self.assertTrue(self.B.get_node_by_id(0).get_label(), '0')
+        self.assertTrue(self.B.get_node_by_id(1).get_label(), '0')
+
+    def test_trans_or(self):
+        self.assertTrue(self.B.trans_or([0, 1]).is_well_formed())
+
+        self.assertTrue(self.B.get_node_by_id(0).get_label(), '1')
+        self.assertTrue(self.B.get_node_by_id(1).get_label(), '1')
+
+    def test_trans_xor(self):
+        self.assertTrue(self.B.trans_xor([0, 1]).is_well_formed())
+
+        self.assertTrue(self.B.get_node_by_id(0).get_label(), '1')
+        self.assertTrue(self.B.get_node_by_id(1).get_label(), '1')
+
+    def test_trans_neutre(self):
+        self.assertTrue(self.B.trans_neutral([0]).is_well_formed())
+
+    def test_evaluate(self):
+        A0 = bool_circ.adder(0)
+        A0.evaluate()
+        self.assertTrue(A0.is_well_formed())
+
+        A8 = bool_circ.adder(8)
+        A8.evaluate()
+        self.assertTrue(A8.is_well_formed())

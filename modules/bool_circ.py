@@ -305,6 +305,25 @@ class bool_circ(open_digraph):
 
     @classmethod
     def half_adder(cls, n):
+        """
+        Construct an half-adder circuit for n-bit registers.
+
+        Parameters
+        ----------
+        n: int
+            Number of bits for the registers that the adder circuit
+            is designed for.
+
+        Returns
+        -------
+        bool_circ
+            An half-adder circuit.
+
+        Raises
+        ------
+        ValueError
+            If [n] is not positive.
+        """
         g = cls.adder(n)
         g.get_node_by_id(g.get_input_ids()[-1]).set_label('0')
         g.set_input_ids(g.get_input_ids()[:-1])
