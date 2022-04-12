@@ -28,10 +28,29 @@ class Bool_CircTest(unittest.TestCase):
         nodes_xor = [n0, n1, n2, n3, n4_xor, n5, n6, n7, n8]
         self.C = bool_circ([0, 1, 2], [8], nodes_xor)
 
-        primitives_0 = node(9, '0', {7:1}, {})
-        nodes_pri = [n0, n1, n2, n3, n4, n5, n6, n7, n8, primitives_0]
-        self.D = bool_circ([0, 1, 2], [8], nodes_pri)
+        self.D = bool_circ.empty()
 
+        self.D.add_node('0', [], [])
+        self.D.add_node('1', [], [])
+        self.D.add_node('0', [], [])
+        self.D.add_node('', [], [])
+        self.D.add_node('&', [], [])
+        self.D.add_node('|', [], [])
+        self.D.add_node('~', [], [])
+        self.D.add_node('|', [], [])
+        self.D.add_node('r0', [], [])
+        self.D.add_node('0', [], [])
+
+        self.D.add_edge(0, 4)
+        self.D.add_edge(1, 3)
+        self.D.add_edge(2, 5)
+        self.D.add_edge(3, 4)
+        self.D.add_edge(3, 5)
+        self.D.add_edge(4, 7)
+        self.D.add_edge(5, 6)
+        self.D.add_edge(6, 7)
+        self.D.add_edge(7, 8)
+        self.D.add_edge(9, 5)
         self.LEGAL_LABELS = set(["&", "|", "~", ""])
 
     def test_well_formed_bool_circ(self):
