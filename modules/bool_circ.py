@@ -442,3 +442,38 @@ class bool_circ(open_digraph):
 
         for id in ids:
             self.transform_one(id)
+
+    def evaluate(self):
+        """
+        Evaluate the boolean circuit.
+
+        Returns
+        -------
+        str
+            Calculated result of the boolean circuit.
+        """
+        def get_no_parents(self):
+            ids = []
+            for node in self.get_nodes():
+                if len(node.get_parents()) == 0:
+                    ids.append(node.get_id())
+            return ids
+
+        def result(self):
+            for out_id in self.get_output_ids():
+                out = self.get_node_by_id(out_id)
+                if len(out.get_parent_ids()) != 1:
+                    return False
+            return True
+
+        g = self.copy()
+
+        while not g.result():
+            g.transform(g.get_no_parents())
+
+        bit_string = ""
+        for out_id in self.get_output_ids():
+            out = self.get_node_by_id(out_id)
+            node = self.get_node_by_id(out.get_parents()[0])
+            bit_string.append(node.get_label())
+        return bit_string
