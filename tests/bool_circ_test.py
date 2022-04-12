@@ -191,15 +191,15 @@ class Bool_CircTest(unittest.TestCase):
         self.assertListEqual(sum1, r1)
         self.assertListEqual(carry, 1)
 
-    def test_get_bool_circ_of_n(self):
-        g = bool_circ.get_bool_circ_of_n(11, 8)
+    def test_register(self):
+        g = bool_circ.register(11, 8)
         
         n0 = 0
         n1 = 0
         n_autre = 0
         for n in g.get_nodes():
-            if n.get_labels() == "0": n0 += 1
-            elif n.get_labels() == "1" : n1 += 1
+            if n.get_label() == "0": n0 += 1
+            elif n.get_label() == "1" : n1 += 1
             else : n_autre += 1
 
             self.assertListEqual(n.get_parent_ids(), [])
@@ -210,34 +210,40 @@ class Bool_CircTest(unittest.TestCase):
         self.assertEquals(n_autre, 0)
 
     def test_trans_copy(self):
-        self.assertTrue(self.B.trans_copy([0, 1]).is_well_formed())
+        self.B.trans_copy([0, 1])
+        self.assertTrue(self.B.is_well_formed())
 
-    def test_trans_op(self):
-        self.assertTrue(self.B.trans_no([0, 1]).is_well_formed())
+    def test_trans_not(self):
+        self.B.trans_not([0, 1])
+        self.assertTrue(self.B.is_well_formed())
 
         self.assertTrue(self.B.get_node_by_id(0).get_label(), '1')
         self.assertTrue(self.B.get_node_by_id(1).get_label(), '0')
 
     def test_trans_and(self):
-        self.assertTrue(self.B.trans_and([0, 1]).is_well_formed())
+        self.B.trans_and([0, 1])
+        self.assertTrue(self.B.is_well_formed())
 
         self.assertTrue(self.B.get_node_by_id(0).get_label(), '0')
         self.assertTrue(self.B.get_node_by_id(1).get_label(), '0')
 
     def test_trans_or(self):
-        self.assertTrue(self.B.trans_or([0, 1]).is_well_formed())
+        self.B.trans_or([0, 1])
+        self.assertTrue(self.B.is_well_formed())
 
         self.assertTrue(self.B.get_node_by_id(0).get_label(), '1')
         self.assertTrue(self.B.get_node_by_id(1).get_label(), '1')
 
     def test_trans_xor(self):
-        self.assertTrue(self.B.trans_xor([0, 1]).is_well_formed())
+        self.B.trans_xor([0, 1])
+        self.assertTrue(self.B.is_well_formed())
 
         self.assertTrue(self.B.get_node_by_id(0).get_label(), '1')
         self.assertTrue(self.B.get_node_by_id(1).get_label(), '1')
 
     def test_trans_neutre(self):
-        self.assertTrue(self.B.trans_neutral([0]).is_well_formed())
+        self.B.trans_neutral([0])
+        self.assertTrue(self.B.is_well_formed())
 
     def test_evaluate(self):
         A0 = bool_circ.adder(0)
