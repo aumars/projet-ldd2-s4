@@ -335,3 +335,48 @@ class bool_circ(open_digraph):
         g.get_node_by_id(g.get_input_ids()[-1]).set_label('0')
         g.set_input_ids(g.get_input_ids()[:-1])
         return g
+
+    @classmethod
+    def register(cls, n, value):
+        """
+        Construct a boolean circuit that represents an instanciated
+        register of a given integer.
+
+        Parameters
+        ----------
+        n: int
+            Size of register.
+
+        value: int
+            Value of register.
+
+        Returns
+        -------
+        bool_circ
+            Instanciated register of an integer.
+
+        Raises
+        ------
+        ValueError
+            If [n] is not positive.
+        ValueError
+            If [value] is not positive.
+        ValueError
+            If [value] cannot be represented in binary with [n] bits.
+        """
+        if n < 0:
+            raise ValueError(f"n = {n} is not positive.")
+        if value < 0:
+            raise ValueError(f"value = {value} is not positive.")
+        if 2 ** n - 1 < value:
+            raise ValueError(f"value = {value} cannot be represented"
+                             "with n = {n} bits.")
+        binary = bin(value)[2:]
+        binary = "0" * (n - len(binary)) + binary
+        g = cls.from_open_digraph(open_digraph.empty())
+        for k in binary:
+            id = g.add_node()
+            g.add_output_node(id)
+            ip = g.add_input_node(id)
+            g.get_node_by_id(ip).set_label(k)
+        return g
