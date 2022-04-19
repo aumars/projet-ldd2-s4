@@ -524,3 +524,162 @@ class bool_circ(open_digraph):
             node = g.get_node_by_id(out.get_parent_ids()[0])
             bit_string += node.get_label()
         return bit_string
+
+    @classmethod
+    def encoder(cls):
+        graph = bool_circ.empty()
+        i0 = graph.add_node()
+        i1 = graph.add_node()
+        i2 = graph.add_node()
+        i3 = graph.add_node()
+
+        o0 = graph.add_node("^")
+        o1 = graph.add_node("^")
+        o2 = graph.add_node("^")
+
+        graph.add_edge(i0, o0)
+        graph.add_edge(i0, o1)
+        graph.add_edge(i1, o0)
+        graph.add_edge(i1, o2)
+        graph.add_edge(i2, o1)
+        graph.add_edge(i2, o2)
+        graph.add_edge(i3, o0)
+        graph.add_edge(i3, o1)
+        graph.add_edge(i3, o2)
+
+        return graph
+
+    @classmethod
+    def decoder(cls):
+        graph = bool_circ.empty()
+        n0 = graph.add_node()
+        n1 = graph.add_node()
+        n2 = graph.add_node()
+        i0 = graph.add_node()
+        i1 = graph.add_node()
+        i2 = graph.add_node()
+        i3 = graph.add_node()
+        o0 = graph.add_node("^")
+        o1 = graph.add_node("^")
+        o2 = graph.add_node("^")
+        graph.add_edge(i0, o0)
+        graph.add_edge(i0, o1)
+        graph.add_edge(i1, o0)
+        graph.add_edge(i1, o2)
+        graph.add_edge(i2, o1)
+        graph.add_edge(i2, o2)
+        graph.add_edge(i3, o0)
+        graph.add_edge(i3, o1)
+        graph.add_edge(i3, o2)
+        graph.add_edge(n0, o0)
+        graph.add_edge(n1, o1)
+        graph.add_edge(n2, o2)
+        m0 = graph.add_node()
+        m1 = graph.add_node()
+        m2 = graph.add_node()
+        graph.add_edge(o0, m0)
+        graph.add_edge(o1, m1)
+        graph.add_edge(o2, m2)
+        and_0 = graph.add_node("&")
+        and_1 = graph.add_node("&")
+        and_2 = graph.add_node("&")
+        and_3 = graph.add_node("&")
+        not_0 = graph.add_node("~")
+        not_1 = graph.add_node("~")
+        not_2 = graph.add_node("~")
+        graph.add_edge(m0, and_0)
+        graph.add_edge(m0, and_1)
+        graph.add_edge(m0, not_2)
+        graph.add_edge(m0, and_2)
+        graph.add_edge(m1, and_0)
+        graph.add_edge(m1, not_1)
+        graph.add_edge(m1, and_2)
+        graph.add_edge(m1, and_3)
+        graph.add_edge(m2, not_0)
+        graph.add_edge(m2, and_1)
+        graph.add_edge(m2, and_2)
+        graph.add_edge(m2, and_3)
+        o0_1 = graph.add_node("^")
+        o1_1 = graph.add_node("^")
+        o2_1 = graph.add_node("^")
+        graph.add_edge(o0_1, i0)
+        graph.add_edge(o1_1, i1)
+        graph.add_edge(o2_1, i2)
+        return graph
+
+    def trans_asso_xor(self, nid):
+        n = self.get_node_by_id(nid)
+
+        if n.get_label() == "^":
+            for cid in n.get_children_ids():
+                child = self.get_node_by_id(cid)
+                
+                if child.get_label() == "^":                
+                    for id in n.get_children_ids():
+                        child.add_parent_id(id)
+                
+                    child.remove_parent_id(nid)
+                    self.remove_node_by_id(nid)
+    
+    def trans_asso_copie(self, nid):
+        n = self.get_node_by_id(nid)
+        
+        if n.get_label() == "":
+            for cid in n.get_children_ids():
+                child = self.get_node_by_id(cid)
+
+                if child.get_label() == "":
+                    for id in child.get_children_ids():
+                        self.add_edge(nid, id)
+
+                    n.remove_child_id(cid)
+                    self.remove_node_by_id(cid)
+
+    def trans_invo_xor(self, nid):
+        n = self.get_node_by_id(nid)
+    
+        if n.get_label() == "^":
+            if len(n.get_children_ids()) %2 == 0:
+                 self.remove_nodes_by_id(n.get_children_ids())
+            
+            else:
+                self.remove_nodes_by_id(n.get_children_ids()[1:])
+
+    def trans_effacement(self, nid):
+        OP = ["^", "&", "~", ""]
+        n = self.get_node_by_id(nid)
+        
+        if n.get_label() in OP:
+            for pid in n.get_parents_ids():
+                copie = self.add_nodes()
+                self.add_edge(copie, pid)
+
+            for cid in n.get_parents_ids():
+                copie = self.add_nodes()
+                self.add_edge(copie, cid)
+
+            self.remove_node_by_id(nid)
+
+    def trans_invo_no(self, nid):
+        n = self.get_node_by_id(nid)
+        has_removed = False
+
+        if n.get_label() == "~":
+            for cid in n.get_children_ids():
+                child = self.get_node_by_id(cid)
+        
+                if child.get_label() == "~":
+                    for pid in n.get_children_ids():
+                        self.add_edge(pid, cid)
+
+                    self.remove_node_by_id(cid)
+            
+            if has_removed:
+                self.remove_node_by_id(nid)
+
+    def trans_no_travers_xor(self, nid):
+        n = self.get_node_by_id(nid)
+        
+        if n.get_label() == "^":
+            pass
+            # for 
