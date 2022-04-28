@@ -52,6 +52,13 @@ class bool_circ(open_digraph):
         return cls(g.get_input_ids(), g.get_output_ids(), g.get_nodes(), not_cyclic)
 
     @classmethod
+    def empty(cls):
+        return cls.from_open_digraph(super().empty())
+
+    def copy(self):
+        return bool_circ.from_open_digraph(super().copy(), not_cyclic=True)
+
+    @classmethod
     def from_formula(cls, *args):
         """
         Construct a binary circuit from a propositional formula.
