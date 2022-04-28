@@ -7,7 +7,7 @@ class bool_circ(open_digraph):
     A boolean circuit. Inherits from open_digraph class.
     """
 
-    def __init__(self, inputs, outputs, nodes):
+    def __init__(self, inputs, outputs, nodes, not_cyclic=False):
         """
         Construct a boolean circuit from given nodes. The nodes must not form a cycle.
 
@@ -19,6 +19,8 @@ class bool_circ(open_digraph):
             The IDs of the output nodes.
         nodes : node iter
             The nodes of the graph.
+        not_cyclic : bool, optional
+            If the given graph is not already cyclic.
 
         Raises
         ------
@@ -27,7 +29,7 @@ class bool_circ(open_digraph):
         """
         super().__init__(inputs, outputs, nodes)
 
-        if self.is_cyclic():
+        if not not_cyclic and self.is_cyclic():
             raise ValueError("The boolean circuit is cyclic.")
 
     @classmethod
