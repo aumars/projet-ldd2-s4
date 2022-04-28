@@ -279,48 +279,56 @@ class bool_circ(open_digraph):
         if n < 0:
             raise ValueError(f"n = {n} must be positive.")
         if n == 0:
-            g = cls.from_open_digraph(open_digraph.empty())
-            x0 = g.add_node()
-            x1 = g.add_node()
-            x2 = g.add_node()
+            g = cls.empty()
+            x0 = g.add_node('')
+            x1 = g.add_node('')
+            x2 = g.add_node('')
             g.add_input_node(x0)
             g.add_input_node(x1)
             g.add_input_node(x2)
-            xor1 = g.add_node()
+            xor1 = g.add_node('^')
             g.add_edge(x0, xor1)
             g.add_edge(x1, xor1)
-            copie1 = g.add_node()
+            copie1 = g.add_node('')
             g.add_edge(xor1, copie1)
-            and1 = g.add_node()
-            and2 = g.add_node()
-            xor2 = g.add_node()
+            and1 = g.add_node('&')
+            and2 = g.add_node('&')
+            xor2 = g.add_node('^')
             g.add_edge(x0, and1)
             g.add_edge(x1, and1)
             g.add_edge(copie1, and2)
             g.add_edge(x2, and2)
-            g.add_edge(copie1, xor1)
-            g.add_edge(x2, xor1)
-            or1 = g.add_node()
+            g.add_edge(copie1, xor2)
+            g.add_edge(x2, xor2)
+            or1 = g.add_node('|')
             g.add_edge(and1, or1)
             g.add_edge(and2, or1)
             g.add_output_node(or1)
             g.add_output_node(xor2)
             return g
         else:
-            adder1 = cls.adder(n - 1)
-            adder2 = cls.adder(n - 1)
+            adder = cls.parallel([cls.adder(n - 1), cls.adder(n - 1)])
+            adder_inputs = adder.get_input_ids()
+            adder_outputs = adder.get_output_ids()
 
-            adder1.separate_indices(adder2)
-            adder1.nodes.update(adder2.get_id_node_map())
-            adder1.set_output_ids(adder1.get_output_ids()
-                                  + adder2.get_output_ids())[1:]
-            adder1.add_edge(adder2.outputs[0],
-                            adder1.inputs[len(adder1.inputs)])
-            adder1.set_input_ids(adder1.get_input_ids()[:n//2]
-                                 + adder2.get_input_ids()[:n//2]
-                                 + adder1.get_input_ids()[n//2:n-1]
-                                 + adder2.get_input_ids()[n//2:])
-            return adder1
+            k = 2 ** (n - 1)
+            adder1_a = adder_inputs[:k]
+            adder1_b = adder_inputs[k:2*k]
+            adder1_c = adder_inputs[2*k]
+            adder1_cprime = adder_outputs[0]
+            adder1_r = adder_outputs[1:2*k]
+
+            adder2_a = adder_inputs[2*k+1:3*k+1]
+            adder2_b = adder_inputs[3*k+1:4*k+1]
+            adder2_c = adder_inputs[4*k+1]
+            adder2_cprime = adder_outputs[2*k]
+            adder2_r = adder_outputs[2*k+1:]
+
+            adder.set_output_ids([adder1_c] + adder1_r + adder2_r)
+            adder.set_input_ids(adder1_a + adder2_a
+                                + adder1_b + adder2_b + [adder2_c])
+            adder.add_edge(adder2_cprime, adder1_c)
+            return adder
 
     @classmethod
     def half_adder(cls, n):
