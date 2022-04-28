@@ -33,7 +33,7 @@ class bool_circ(open_digraph):
             raise ValueError("The boolean circuit is cyclic.")
 
     @classmethod
-    def from_open_digraph(cls, g):
+    def from_open_digraph(cls, g, not_cyclic=False):
         """
         Create a boolean circuit from an open directed graph.
 
@@ -41,13 +41,15 @@ class bool_circ(open_digraph):
         ----------
         g : open_digraph
             A graph.
+        not_cyclic : bool, optional
+            If the given graph is not already cyclic.
 
         Returns
         -------
         bool_circ
             The boolean circuit.
         """
-        return cls(g.get_input_ids(), g.get_output_ids(), g.get_id_node_map())
+        return cls(g.get_input_ids(), g.get_output_ids(), g.get_nodes(), not_cyclic)
 
     @classmethod
     def from_formula(cls, *args):
