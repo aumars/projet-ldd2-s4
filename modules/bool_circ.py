@@ -402,96 +402,129 @@ class bool_circ(open_digraph):
             g.get_node_by_id(ip).set_label(k)
         return g
 
+    def _trans_copy_one(self, id):
+        def trans_copy_one_child(self, child, label):
+            for child_copie_id in child.get_children_ids():
+                new_id = self.add_node(label=label)
+                self.add_edge(new_id, child_copie_id)
+            self.remove_node_by_id(child.get_id())
+
+        node = self.get_node_by_id(id)
+        if len(node.get_parent_ids()) == 0:
+            label = node.get_label()
+            children = node.get_children_ids()
+            if label == '0' or label == '1':
+                remove = False
+                for child_id in children:
+                    child = self.get_node_by_id(child_id)
+                    if child.get_label() == '':
+                        trans_copy_one_child(self, child, label)
+                        remove = True
+                if remove:
+                    self.remove_node_by_id(id)
+
     def trans_copy(self, ids):
         for id in ids:
-            node = self.get_node_by_id(id)
-            if len(node.get_parent_ids()) == 0:
-                label = node.get_label()
-                children = node.get_children_ids()
-                if label == '0' or label == '1':
-                    for child_id in children:
-                        child = self.get_node_by_id(child_id)
-                        for child_copie_id in child.get_children_ids():
-                            new_id = self.add_node(label=label)
-                            self.add_edge(new_id, child_copie_id)
-                        self.remove_node_by_id(child)
+            self._trans_copy_one(id)
+
+    def _trans_not_one(self, id):
+        if id not in self.get_node_ids():
+            return
+        node = self.get_node_by_id(id)
+        if len(node.get_parent_ids()) == 0:
+            label = node.get_label()
+            children = node.get_children_ids()
+            if label == '0' or label == '1':
+                remove = False
+                for child_id in children:
+                    child = self.get_node_by_id(child_id)
+                    child_label = child.get_label()
+                    if child_label == '~':
+                        if child_label == '0':
+                            child.set_label('1')
+                        else:
+                            child.set_label('0')
+                        remove = True
+                if remove:
                     self.remove_node_by_id(id)
 
     def trans_not(self, ids):
         for id in ids:
-            node = self.get_node_by_id(id)
-            if len(node.get_parent_ids()) == 0:
-                label = node.get_label()
+            self._trans_not_one(id)
+
+    def _trans_andor_one(self, id, p, q, op):
+        if id not in self.get_node_ids():
+            return
+        node = self.get_node_by_id(id)
+        if len(node.get_parent_ids()) == 0:
+            label = node.get_label()
+            if label == p:
                 children = node.get_children_ids()
                 for child_id in children:
                     child = self.get_node_by_id(child_id)
-                    if label == '0':
-                        child.set_label('1')
-                    else:
-                        child.set_label('0')
+                    child_label = child.get_label()
+                    if child_label == op:
+                        for p in child.get_parent_ids():
+                            if p != id:
+                                self.remove_parallel_edges((p, child_id))
+                                new_id = self.add_node()
+                                self.add_edge(p, new_id)
+                    child.set_label(label)
+            if label == p or label == q:
                 self.remove_node_by_id(id)
+
+    def _trans_and_one(self, id):
+        self._trans_andor_one(id, '0', '1', '&')
+
+    def _trans_or_one(self, id):
+        self._trans_andor_one(id, '1', '0', '|')
 
     def trans_and(self, ids):
         for id in ids:
-            node = self.get_node_by_id(id)
-            if len(node.get_parent_ids()) == 0:
-                label = node.get_label()
-                if label == '0':
-                    children = node.get_children_ids()
-                    for child_id in children:
-                        child = self.get_node_by_id(child_id)
-                        for p in child.get_parent_ids():
-                            if p != id:
-                                self.remove_parallel_edges((p, child_id))
-                                new_id = self.add_node()
-                                self.add_edge(p, new_id)
-                        child.set_label(label)
-                self.remove_node_by_id(id)
+            self._trans_and_one(id)
 
     def trans_or(self, ids):
         for id in ids:
-            node = self.get_node_by_id(id)
-            if len(node.get_parent_ids()) == 0:
-                label = node.get_label()
-                if label == '1':
-                    children = node.get_children_ids()
-                    for child_id in children:
-                        child = self.get_node_by_id(child_id)
-                        for p in child.get_parent_ids():
-                            if p != id:
-                                self.remove_parallel_edges((p, child_id))
-                                new_id = self.add_node()
-                                self.add_edge(p, new_id)
-                        child.set_label(label)
+            self._trans_or_one(id)
+
+    def _trans_xor_one(self, id):
+        if id not in self.get_node_ids():
+            return
+        node = self.get_node_by_id(id)
+        if len(node.get_parent_ids()) == 0:
+            label = node.get_label()
+            if label == '1':
+                children = node.get_children_ids()
+                for child_id in children:
+                    child = self.get_node_by_id(child_id)
+                    for c in child.get_children_ids():
+                        new_id = self.add_node('~')
+                        self.add_edge(child_id, new_id)
+                        self.add_edge(new_id, c)
+                    if len(child.get_children_ids()) == 0:
+                        new_id = self.add_node('~')
+                        self.add_edge(child_id, new_id)
+                        self.remove_node_by_id(id)
+            if label == '1' or label == '0':
                 self.remove_node_by_id(id)
 
     def trans_xor(self, ids):
         for id in ids:
-            node = self.get_node_by_id(id)
-            if len(node.get_parent_ids()) == 0:
-                label = node.get_label()
-                if label == '1':
-                    children = node.get_children_ids()
-                    for child_id in children:
-                        child = self.get_node_by_id(child_id)
-                        for c in child.get_children_ids():
-                            new_id = self.add_node('~')
-                            self.add_edge(child_id, new_id)
-                            self.add_edge(new_id, c)
-                        if len(child.get_children_ids()) == 0:
-                            new_id = self.add_node('~')
-                            self.add_edge(child_id, new_id)
-                self.remove_node_by_id(id)
+            self._trans_xor_one(id)
+
+    def _trans_neutral_one(self, id):
+        if id not in self.get_node_ids():
+            return
+        node = self.get_node_by_id(id)
+        label = node.get_label()
+        if label == '|' or label == '^':
+            node.set_label('0')
+        elif label == '&':
+            node.set_label('1')
 
     def trans_neutral(self, ids):
         for id in ids:
-            node = self.get_node_by_id(id)
-            if len(node.get_parent_ids()) == 0:
-                label = node.get_label()
-                if label == '|' or label == '^':
-                    node.set_label('0')
-                elif label == '&':
-                    node.set_label('1')
+            self._trans_neutral_one(id)
 
     def transform(self, ids):
         """
@@ -503,12 +536,29 @@ class bool_circ(open_digraph):
         ids: list of int
             List of valid node IDs.
         """
-        self.trans_copy(ids)
-        self.trans_not(ids)
-        self.trans_and(ids)
-        self.trans_or(ids)
-        self.trans_xor(ids)
-        self.trans_neutral(ids)
+        for id in ids:
+            self._trans_copy_one(id)
+            self._trans_not_one(id)
+            self._trans_and_one(id)
+            self._trans_or_one(id)
+            self._trans_xor_one(id)
+            self._trans_neutral_one(id)
+            # print([node.get_id() for nodex in self.get_nodes() if len(node.get_parent_ids()) == 0 and len(node.get_children_ids()) == 0])
+        self.remove_nodes_by_id([node.get_id() for node in self.get_nodes() if len(node.get_parent_ids()) == 0 and len(node.get_children_ids()) == 0])
+
+    def get_no_parents(self):
+        ids = []
+        for node in self.get_nodes():
+            if len(node.get_parent_ids()) == 0 and node.get_id() not in self.get_output_ids() and len(node.get_children_ids()) == 1 and node.get_children_ids()[0] not in self.get_output_ids():
+                ids.append(node.get_id())
+        return ids
+
+    def transform_all(self):
+        self.transform(self.get_no_parents())
+
+    def transform_full(self):
+        while len(self.get_output_ids()) * 2 != len(self.get_id_node_map()):
+            self.transform_all()
 
     def evaluate(self):
         """
@@ -519,24 +569,8 @@ class bool_circ(open_digraph):
         str
             Calculated result of the boolean circuit.
         """
-        def get_no_parents(g):
-            ids = []
-            for node in g.get_nodes():
-                if len(node.get_parents()) == 0:
-                    ids.append(node.get_id())
-            return ids
-
-        def result(g):
-            for out_id in g.get_output_ids():
-                out = g.get_node_by_id(out_id)
-                if len(out.get_parent_ids()) != 1:
-                    return False
-            return True
-
         g = self.copy()
-
-        while not result(g):
-            g.transform(get_no_parents(g))
+        g.transform_full()
 
         bit_string = ""
         for out_id in g.get_output_ids():
