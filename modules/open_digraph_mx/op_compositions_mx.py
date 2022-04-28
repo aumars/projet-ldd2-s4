@@ -16,7 +16,8 @@ class op_compositions_mx:
                 self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
                 self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
 
-    def parallel(self, list_graph):
+    @classmethod
+    def parallel(cls, list_graph):
         """
         Add graphs parallel to itself. This functionality only accepts well-formed graphs.
 
@@ -24,14 +25,14 @@ class op_compositions_mx:
         ----------
         list_graph : open_digraph list
             A list containing graphs to add.
-        
+
         Returns
         ------
         open_digraph
            The graph of the fusion of parallel graphs.
-        """ 
-        graph = self.empty()
-        graph.iparallel([self] + list_graph)
+        """
+        graph = cls.empty()
+        graph.iparallel(list_graph)
         return graph
 
     def icompose(self, g):
