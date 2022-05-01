@@ -336,9 +336,14 @@ class bool_circ(open_digraph):
             adder2_cprime = adder_outputs[2*k]
             adder2_r = adder_outputs[2*k+1:]
 
-            adder.set_output_ids([adder1_c] + adder1_r + adder2_r)
-            adder.set_input_ids(adder1_a + adder2_a
-                                + adder1_b + adder2_b + [adder2_c])
+            a = adder1_a + adder2_a
+            b = adder1_b + adder2_b
+            c = adder2_c
+            cprime = adder1_cprime
+            r = adder1_r + adder2_r
+
+            adder.set_input_ids(a + b + [c])
+            adder.set_output_ids([cprime] + r)
             adder.add_edge(adder2_cprime, adder1_c)
             return adder
 
