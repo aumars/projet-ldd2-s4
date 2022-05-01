@@ -327,7 +327,7 @@ class op_modify_mx:
                     self.remove_parallel_edges((id, parent))
                 for child in n.get_children_ids():
                     self.remove_parallel_edges((id, child))
-                self.next_fd = min(id, self.next_id)
+                # self.next_id = min(id, self.next_id)
                 del self.nodes[id]
                 if id in self.get_input_ids():
                     self.inputs.remove(id)

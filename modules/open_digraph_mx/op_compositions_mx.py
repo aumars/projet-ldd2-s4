@@ -15,6 +15,7 @@ class op_compositions_mx:
                 self.nodes.update(graph.get_id_node_map())
                 self.set_input_ids(self.get_input_ids() + graph.get_input_ids())
                 self.set_output_ids(self.get_output_ids() + graph.get_output_ids())
+                self.next_id = max(self.nodes.keys()) + 1
 
     @classmethod
     def parallel(cls, list_graph):
@@ -66,6 +67,7 @@ class op_compositions_mx:
                 self.add_edge(onode_parent_id, inid)
             self.remove_nodes_by_id(self.get_output_ids())
             self.set_output_ids(g.get_output_ids())
+        self.next_id = max(self.nodes.keys()) + 1
 
     def compose(self, g):
         """
