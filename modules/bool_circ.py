@@ -447,35 +447,47 @@ class bool_circ(open_digraph):
                         for id in self.get_input_ids()])
 
     def _trans_copy_one(self, id):
-        def trans_copy_one_child(self, child, label):
-            for child_copie_id in child.get_children_ids():
-                new_id = self.add_node(label=label)
-                self.add_edge(new_id, child_copie_id)
-            self.remove_node_by_id(child.get_id())
+        """
+        Transform a node according the COPY rule.
 
-        node = self.get_node_by_id(id)
-        if len(node.get_parent_ids()) == 0:
-            label = node.get_label()
-            children = node.get_children_ids()
-            if label == '0' or label == '1':
-                remove = False
-                for child_id in children:
-                    child = self.get_node_by_id(child_id)
-                    if child.get_label() == '':
-                        trans_copy_one_child(self, child, label)
-                        remove = True
-                if remove:
-                    self.remove_node_by_id(id)
-
-    def trans_copy(self, ids):
-        for id in ids:
-            self._trans_copy_one(id)
-
-    def _trans_not_one(self, id):
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        """
         if id not in self.get_node_ids():
             return
         node = self.get_node_by_id(id)
-        if len(node.get_parent_ids()) == 0:
+        if node.indegree() == 0:
+            label = node.get_label()
+            if label == '0' or label == '1':
+                child_id = node.get_children_ids()[0]
+                child = self.get_node_by_id(child_id)
+                if child.get_label() == '':
+                    if child.outdegree() <= 1:
+                        child.set_label(label)
+                    else:
+                        for grandchild_id in child.get_children_ids():
+                            new_id = self.add_node(label=label)
+                            self.add_edge(new_id, grandchild_id)
+                        self.remove_node_by_id(child.get_id())
+                    self.remove_node_by_id(id)
+
+    def _trans_not_one(self, id):
+        """
+        Transform a node according the NOT rule.
+
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        """
+        if id not in self.get_node_ids():
+            return
+        node = self.get_node_by_id(id)
+        if node.indegree() == 0:
             label = node.get_label()
             children = node.get_children_ids()
             if label == '0' or label == '1':
@@ -484,79 +496,117 @@ class bool_circ(open_digraph):
                     child = self.get_node_by_id(child_id)
                     child_label = child.get_label()
                     if child_label == '~':
-                        if child_label == '0':
+                        remove = True
+                        if label == '0':
                             child.set_label('1')
                         else:
                             child.set_label('0')
-                        remove = True
                 if remove:
                     self.remove_node_by_id(id)
 
-    def trans_not(self, ids):
-        for id in ids:
-            self._trans_not_one(id)
-
     def _trans_andor_one(self, id, p, q, op):
+        """
+        Transform a node according the AND or OR rule.
+
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        p: char
+            If the node has label p, the child node replicates the label.
+            The node is also removed.
+            p must be 0 or 1.
+        q: char
+            If the node has label q, the node is only removed.
+        op: char
+            The label of the child node.
+        """
         if id not in self.get_node_ids():
             return
         node = self.get_node_by_id(id)
-        if len(node.get_parent_ids()) == 0:
+        if node.indegree() == 0:
             label = node.get_label()
-            if label == p:
-                children = node.get_children_ids()
-                for child_id in children:
-                    child = self.get_node_by_id(child_id)
-                    child_label = child.get_label()
-                    if child_label == op:
-                        for p in child.get_parent_ids():
-                            if p != id:
-                                self.remove_parallel_edges((p, child_id))
+            if label == '0' or label == '1':
+                remove = False
+                child_id = node.get_children_ids()[0]
+                child = self.get_node_by_id(child_id)
+                if child.get_label() == op:
+                    remove = True
+                    if label == p:
+                        for c in child.get_parent_ids():
+                            if c != id:
+                                self.remove_parallel_edges((c, child_id))
                                 new_id = self.add_node()
-                                self.add_edge(p, new_id)
-                    child.set_label(label)
-            if label == p or label == q:
-                self.remove_node_by_id(id)
+                                self.add_edge(c, new_id)
+                        child.set_label(label)
+                if remove:
+                    self.remove_node_by_id(id)
 
     def _trans_and_one(self, id):
+        """
+        Transform a node according the AND rule.
+
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        """
         self._trans_andor_one(id, '0', '1', '&')
 
     def _trans_or_one(self, id):
+        """
+        Transform a node according the OR rule.
+
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        """
         self._trans_andor_one(id, '1', '0', '|')
 
-    def trans_and(self, ids):
-        for id in ids:
-            self._trans_and_one(id)
-
-    def trans_or(self, ids):
-        for id in ids:
-            self._trans_or_one(id)
-
     def _trans_xor_one(self, id):
+        """
+        Transform a node according the XOR rule.
+
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        """
         if id not in self.get_node_ids():
             return
         node = self.get_node_by_id(id)
-        if len(node.get_parent_ids()) == 0:
+        if node.indegree() == 0:
             label = node.get_label()
-            if label == '1':
-                children = node.get_children_ids()
-                for child_id in children:
-                    child = self.get_node_by_id(child_id)
-                    for c in child.get_children_ids():
+            if label == '0' or label == '1':
+                remove = False
+                child_id = node.get_children_ids()[0]
+                child = self.get_node_by_id(child_id)
+                if child.get_label() == '^':
+                    remove = True
+                    if label == '1':
+                        c_id = child.get_children_ids()[0]
                         new_id = self.add_node('~')
                         self.add_edge(child_id, new_id)
-                        self.add_edge(new_id, c)
-                    if len(child.get_children_ids()) == 0:
-                        new_id = self.add_node('~')
-                        self.add_edge(child_id, new_id)
-                        self.remove_node_by_id(id)
-            if label == '1' or label == '0':
-                self.remove_node_by_id(id)
-
-    def trans_xor(self, ids):
-        for id in ids:
-            self._trans_xor_one(id)
+                        self.add_edge(new_id, c_id)
+                        self.remove_parallel_edges((child.get_id(), c_id))
+                if remove:
+                    self.remove_node_by_id(id)
 
     def _trans_neutral_one(self, id):
+        """
+        Transform a node according the NEUTRAL rule.
+
+        Parameters
+        ----------
+        id: int
+            ID of the node to be transformed. This node must be valued
+            node (has 0 or 1), have no parents, and has only 1 child.
+        """
         if id not in self.get_node_ids():
             return
         node = self.get_node_by_id(id)
@@ -566,7 +616,81 @@ class bool_circ(open_digraph):
         elif label == '&':
             node.set_label('1')
 
+    def trans_copy(self, ids):
+        """
+        Transform nodes according the COPY rule.
+
+        Parameters
+        ----------
+        ids: int list
+            IDs of nodes to be transformed. The nodes must be valued
+            nodes (has 0 or 1), have no parents, and has only 1 child.
+        """
+        for id in ids:
+            self._trans_copy_one(id)
+
+    def trans_not(self, ids):
+        """
+        Transform nodes according the NOT rule.
+
+        Parameters
+        ----------
+        ids: int list
+            IDs of nodes to be transformed. The nodes must be valued
+            nodes (has 0 or 1), have no parents, and has only 1 child.
+        """
+        for id in ids:
+            self._trans_not_one(id)
+
+    def trans_and(self, ids):
+        """
+        Transform nodes according the AND rule.
+
+        Parameters
+        ----------
+        ids: int list
+            IDs of nodes to be transformed. The nodes must be valued
+            nodes (has 0 or 1), have no parents, and has only 1 child.
+        """
+        for id in ids:
+            self._trans_and_one(id)
+
+    def trans_or(self, ids):
+        """
+        Transform nodes according the OR rule.
+
+        Parameters
+        ----------
+        ids: int list
+            IDs of nodes to be transformed. The nodes must be valued
+            nodes (has 0 or 1), have no parents, and has only 1 child.
+        """
+        for id in ids:
+            self._trans_or_one(id)
+
+    def trans_xor(self, ids):
+        """
+        Transform nodes according the XOR rule.
+
+        Parameters
+        ----------
+        ids: int list
+            IDs of nodes to be transformed. The nodes must be valued
+            nodes (has 0 or 1), have no parents, and has only 1 child.
+        """
+        for id in ids:
+            self._trans_xor_one(id)
+
     def trans_neutral(self, ids):
+        """
+        Transform nodes according the NEUTRAL rule.
+
+        Parameters
+        ----------
+        ids: int list
+            IDs of nodes to be transformed. The nodes must be valued
+            nodes (has 0 or 1), have no parents, and has only 1 child.
+        """
         for id in ids:
             self._trans_neutral_one(id)
 
