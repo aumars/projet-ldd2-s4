@@ -113,8 +113,8 @@ class open_digraph(op_compositions_mx,
         """
         N = self.get_node_ids()
         return dict(zip(N, sample(range(len(N)), k=len(N))))
- 
-    def is_well_formed(self):
+
+    def is_well_formed(self, lonely_outputs=False):
         """
         Verifies if the graph is well formed. By definition, a graph is well
         formed if and only if:
@@ -125,6 +125,11 @@ class open_digraph(op_compositions_mx,
           (value)
         - if a j as a child i of multplivity m, then i must have a parent j of
           multiplicity m, and vice-versa
+
+        Parameters
+        ----------
+        lonely_outputs: bool, optional
+            Allow output nodes to have no parents and no children.
 
         Returns
         -------
@@ -139,9 +144,9 @@ class open_digraph(op_compositions_mx,
             i = self.get_node_by_id(input)
             i_children = i.get_children_ids()
 
-            if not (len(i_children) == 1
+            if not (i.outdegree() == 1
                     and i.get_child_multiplicity(i_children[0]) == 1
-                    and i.get_parent_ids() == []):
+                    and i.indegree() == 0):
                 return False
 
         for output in self.get_output_ids():
@@ -151,9 +156,10 @@ class open_digraph(op_compositions_mx,
             o = self.get_node_by_id(output)
             o_parents = o.get_parent_ids()
 
-            if not (len(o_parents) == 1
-                    and o.get_parent_multiplicity(o_parents[0]) == 1
-                    and o.get_children_ids() == []):
+            if not (lonely_outputs
+                    or (o.indegree() == 1
+                        and o.get_parent_multiplicity(o_parents[0]) == 1)
+                    and o.outdegree() == 0):
                 return False
 
         for id, noeud in self.get_id_node_map().items():
