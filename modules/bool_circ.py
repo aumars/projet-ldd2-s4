@@ -266,12 +266,12 @@ class bool_circ(open_digraph):
     @classmethod
     def adder(cls, n):
         """
-        Construct an adder circuit for n-bit registers.
+        Construct an adder circuit for registers of size 2 ** n
 
         Parameters
         ----------
         n: int
-            Number of bits for the registers that the adder circuit
+            Number of 2 ** n bits for the registers that the adder circuit
             is designed for.
 
         Returns
