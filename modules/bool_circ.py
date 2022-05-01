@@ -715,7 +715,8 @@ class bool_circ(open_digraph):
     def transform(self, ids):
         """
         Apply a simplifying transformation to a list of concerned nodes.
-        These nodes must have no parents.
+        These nodes must have no parents, have only 1 child, and is not
+        an output node.
 
         Parameters
         ----------
