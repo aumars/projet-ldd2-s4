@@ -9,7 +9,8 @@ class bool_circ(open_digraph):
 
     def __init__(self, inputs, outputs, nodes, not_cyclic=False):
         """
-        Construct a boolean circuit from given nodes. The nodes must not form a cycle.
+        Construct a boolean circuit from given nodes. The nodes must
+        not form a cycle.
 
         Parameters
         ----------
@@ -49,7 +50,8 @@ class bool_circ(open_digraph):
         bool_circ
             The boolean circuit.
         """
-        return cls(g.get_input_ids(), g.get_output_ids(), g.get_nodes(), not_cyclic)
+        return cls(g.get_input_ids(), g.get_output_ids(), g.get_nodes(),
+                   not_cyclic)
 
     @classmethod
     def empty(cls):
