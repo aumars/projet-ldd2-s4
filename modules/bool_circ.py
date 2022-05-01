@@ -825,7 +825,15 @@ class bool_circ(open_digraph):
 
     @classmethod
     def encoder(cls):
-        graph = bool_circ.empty()
+        """
+        Construct a Hamming encoder.
+
+        Returns
+        -------
+        bool_circ
+            A Hamming encoder.
+        """
+        graph = cls.empty()
         i0 = graph.add_node()
         i1 = graph.add_node()
         i2 = graph.add_node()
@@ -849,7 +857,15 @@ class bool_circ(open_digraph):
 
     @classmethod
     def decoder(cls):
-        graph = bool_circ.empty()
+        """
+        Construct a Hamming decoder.
+
+        Returns
+        -------
+        bool_circ
+            A Hamming decoder.
+        """
+        graph = cls.empty()
         n0 = graph.add_node()
         n1 = graph.add_node()
         n2 = graph.add_node()
