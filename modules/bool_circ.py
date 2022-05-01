@@ -779,6 +779,49 @@ class bool_circ(open_digraph):
         return "".join([g.get_node_by_id(out_id).get_label()
                         for out_id in g.get_output_ids()])
 
+    @classmethod
+    def add(cls, a, b):
+        """
+        Add two positive integers together using an adder circuit.
+        
+        Parameters
+        ----------
+        a: int
+            A positive integer
+        b: int
+            A positive integer
+
+        Returns
+        -------
+        sum: int
+            The calculated sum of a and b, modulo the size of the sum register
+        carry: bool
+            True if the sum register is overflowed, False otherwise.
+        final_bits: int
+            Size of sum register
+
+        Raises
+        ------
+        ValueError
+            If a or b are not positive.
+        """
+        if a < 0 or b < 0:
+            raise ValueError(f"a = {a} and b = {b} must be positive.")
+        a_bits = len(bin(a)[2:])
+        b_bits = len(bin(b)[2:])
+        bits = max(a_bits, b_bits)
+        n = len(bin(bits)[2:])
+        r1 = bool_circ.register(2 ** n, a)
+        r2 = bool_circ.register(2 ** n, b)
+        r = bool_circ.parallel([r1, r2])
+        HA = bool_circ.half_adder(n)
+        g = r.compose(HA)
+        res = g.evaluate()
+
+        sum = int(res[1:], 2)
+        carry = res[0] == 0
+        final_bits = 2 ** n
+        return sum, carry, final_bits
 
     @classmethod
     def encoder(cls):
