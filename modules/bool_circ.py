@@ -410,6 +410,33 @@ class bool_circ(open_digraph):
             g.get_node_by_id(ip).set_label(k)
         return g
 
+    def set_input_bits(self, input_bits):
+        """
+        Set the input bits of the boolean circuit. The number of input
+        bits must be equal to the number of input nodes.
+
+        Parameters
+        ----------
+        input_bits: str
+            Input bits of 0 and 1
+        """
+        inputs = self.get_input_ids()
+        for i, c in enumerate(input_bits):
+            self.get_node_by_id(inputs[i]).set_label(c)
+
+    def get_input_bits(self):
+        """
+        Get the input bits of the boolean circuit. All input nodes
+        must have an input bit instanciated.
+
+        Returns
+        -------
+        str
+            Loaded input bits
+        """
+        return "".join([self.get_node_by_id(id).get_label()
+                        for id in self.get_input_ids()])
+
     def _trans_copy_one(self, id):
         def trans_copy_one_child(self, child, label):
             for child_copie_id in child.get_children_ids():
