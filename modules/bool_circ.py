@@ -752,8 +752,14 @@ class bool_circ(open_digraph):
         self.transform(self.get_no_parents())
 
     def transform_full(self):
-        while len(self.get_output_ids()) * 2 != len(self.get_id_node_map()):
-            self.transform_all()
+        """
+        Continuously apply all transform rules to all valid nodes,
+        until there are no valid nodes left.
+        """
+        no_parents = self.get_no_parents()
+        while len(self.get_no_parents()) > 0:
+            self.transform(no_parents)
+            no_parents = self.get_no_parents()
 
     def evaluate(self):
         """
