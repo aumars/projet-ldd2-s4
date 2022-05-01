@@ -53,9 +53,15 @@ class bool_circ(open_digraph):
 
     @classmethod
     def empty(cls):
+        """
+        Construct an empty binary circuit.
+        """
         return cls.from_open_digraph(super().empty())
 
     def copy(self):
+        """
+        Construct a copy of the current binary circuit.
+        """
         return bool_circ.from_open_digraph(super().copy(), not_cyclic=True)
 
     @classmethod
