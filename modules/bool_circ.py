@@ -694,6 +694,24 @@ class bool_circ(open_digraph):
         for id in ids:
             self._trans_neutral_one(id)
 
+    def get_extinct_nodes(self):
+        """
+        Get extinct nodes. An extinct node is a node that has no children
+        and is not an output node.
+        """
+        return [node.get_id() for node in self.get_nodes()
+                if (node.outdegree() == 0
+                    and node.get_id() not in self.get_output_ids())]
+
+    def clean_up(self):
+        """
+        Remove all extinct nodes.
+        """
+        extinct = self.get_extinct_nodes()
+        while len(extinct) > 0:
+            self.remove_nodes_by_id(extinct)
+            extinct = self.get_extinct_nodes()
+
     def transform(self, ids):
         """
         Apply a simplifying transformation to a list of concerned nodes.
