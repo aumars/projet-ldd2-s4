@@ -749,6 +749,9 @@ class bool_circ(open_digraph):
                     and node.get_id() not in self.get_output_ids())]
 
     def transform_all(self):
+        """
+        Apply all transform rules to all valid nodes.
+        """
         self.transform(self.get_no_parents())
 
     def transform_full(self):
