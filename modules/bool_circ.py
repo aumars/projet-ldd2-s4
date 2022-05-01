@@ -730,8 +730,7 @@ class bool_circ(open_digraph):
             self._trans_or_one(id)
             self._trans_xor_one(id)
             self._trans_neutral_one(id)
-            # print([node.get_id() for nodex in self.get_nodes() if len(node.get_parent_ids()) == 0 and len(node.get_children_ids()) == 0])
-        self.remove_nodes_by_id([node.get_id() for node in self.get_nodes() if len(node.get_parent_ids()) == 0 and len(node.get_children_ids()) == 0])
+        self.clean_up()
 
     def get_no_parents(self):
         ids = []
