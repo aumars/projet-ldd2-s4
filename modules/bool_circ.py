@@ -398,8 +398,8 @@ class bool_circ(open_digraph):
         if value < 0:
             raise ValueError(f"value = {value} is not positive.")
         if 2 ** n - 1 < value:
-            raise ValueError(f"value = {value} cannot be represented"
-                             "with n = {n} bits.")
+            raise ValueError(f"value = {value} cannot be represented "
+                             f"with n = {n} bits.")
         binary = bin(value)[2:]
         binary = "0" * (n - len(binary)) + binary
         g = cls.from_open_digraph(open_digraph.empty())
