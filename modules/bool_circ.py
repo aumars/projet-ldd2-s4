@@ -341,12 +341,12 @@ class bool_circ(open_digraph):
     @classmethod
     def half_adder(cls, n):
         """
-        Construct an half-adder circuit for n-bit registers.
+        Construct an half-adder circuit for registers of size 2 ** n
 
         Parameters
         ----------
         n: int
-            Number of bits for the registers that the adder circuit
+            Number of 2 ** n bits for the registers that the half-adder circuit
             is designed for.
 
         Returns
