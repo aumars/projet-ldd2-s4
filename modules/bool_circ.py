@@ -733,11 +733,20 @@ class bool_circ(open_digraph):
         self.clean_up()
 
     def get_no_parents(self):
-        ids = []
-        for node in self.get_nodes():
-            if len(node.get_parent_ids()) == 0 and node.get_id() not in self.get_output_ids() and len(node.get_children_ids()) == 1 and node.get_children_ids()[0] not in self.get_output_ids():
-                ids.append(node.get_id())
-        return ids
+        """
+        Return a list of IDs of nodes that have no parents, have only
+        1 child and are not output nodes.
+
+        Return
+        ------
+        int list
+            List of IDs of nodes that have no parents, have only
+            1 child and are not output nodes.
+        """
+        return [node.get_id() for node in self.get_nodes()
+                if (node.indegree() == 0
+                    and node.outdegree() == 1
+                    and node.get_id() not in self.get_output_ids())]
 
     def transform_all(self):
         self.transform(self.get_no_parents())
