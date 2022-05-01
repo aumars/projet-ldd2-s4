@@ -167,14 +167,6 @@ class bool_circ(open_digraph):
         if self.is_cyclic():
             return False
 
-        LEGAL = ['0',
-                 '1',
-                 '',   # Copie
-                 '~',  # NOT
-                 '&',  # AND
-                 '|',  # OR
-                 '^'   # OU EXCLUSIF
-                 ]
         for node in self.get_nodes():
             if node.get_id() not in self.get_input_ids() and node.get_id() not in self.get_output_ids():
                 label = node.get_label()
@@ -182,12 +174,12 @@ class bool_circ(open_digraph):
                 COND_COPY = label == '' and node.indegree() != 1
                 COND_AND_OR = (label == '&' or label == '|' or label == '^') and node.outdegree() != 1
                 COND_NOT = label == '~' and (node.indegree() != 1 or node.outdegree() != 1)
-                COND_ILLEGAL = label not in LEGAL
-            
+                COND_ILLEGAL = label not in bool_circ.ALL_SYMBOLS
+
                 if COND_ILLEGAL or COND_COPY or COND_AND_OR or COND_NOT:
                     return False
 
-        return True
+        return super().is_well_formed(lonely_outputs=True)
 
     @classmethod
     def from_binary(cls, bit_string):
@@ -259,16 +251,14 @@ class bool_circ(open_digraph):
         bool_circ
             A random bool_circ graph.
         """
-        UNAIRE = ['', '~']
-        BINAIRE = ['&', '|', '^']
         if n <= 0:
             raise ValueError(f"n = {n} doit être strictement positif.")
         g = open_digraph.random(n, 1, inputs=n, outputs=n, form="DAG")
         for id, n in g.get_id_node_map().items():
             if n.indegree() == 1 and n.outdegree() == 1:
-                n.set_label(choice(UNAIRE))
+                n.set_label(choice(bool_circ.UNARY))
             elif n.indegree() > 1 and n.outdegree() == 0:
-                n.set_label(choice(BINAIRE))
+                n.set_label(choice(bool_circ.BINARY))
             elif n.indegree() > 1 and n.outdegree() > 1:
                 uop = n
                 ucp_id = g.add_node()
