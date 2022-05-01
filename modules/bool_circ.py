@@ -7,6 +7,20 @@ class bool_circ(open_digraph):
     A boolean circuit. Inherits from open_digraph class.
     """
 
+    ZERO = '0'
+    ONE = '1'
+    COPY = ''
+    NOT = '~'
+    AND = '&'
+    OR = '|'
+    XOR = '^'
+
+    VALUES = [ZERO, ONE]
+    UNARY = [COPY, NOT]
+    BINARY = [AND, OR, XOR]
+
+    ALL_SYMBOLS = VALUES + UNARY + BINARY
+
     def __init__(self, inputs, outputs, nodes, not_cyclic=False):
         """
         Construct a boolean circuit from given nodes. The nodes must
