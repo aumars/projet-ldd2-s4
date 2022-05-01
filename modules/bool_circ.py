@@ -776,12 +776,9 @@ class bool_circ(open_digraph):
         g = self.copy()
         g.transform_full()
 
-        bit_string = ""
-        for out_id in g.get_output_ids():
-            out = g.get_node_by_id(out_id)
-            node = g.get_node_by_id(out.get_parent_ids()[0])
-            bit_string += node.get_label()
-        return bit_string
+        return "".join([g.get_node_by_id(out_id).get_label()
+                        for out_id in g.get_output_ids()])
+
 
     @classmethod
     def encoder(cls):
