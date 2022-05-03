@@ -922,6 +922,14 @@ class bool_circ(open_digraph):
         return graph
 
     def trans_asso_xor(self, nid):
+        """
+        Apply the xor associativity rule on a node.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the rules is applied.
+        """
         n = self.get_node_by_id(nid)
 
         if n.get_label() == "^":
@@ -936,6 +944,14 @@ class bool_circ(open_digraph):
                     self.remove_node_by_id(nid)
     
     def trans_asso_copie(self, nid):
+        """
+        Apply the copy associativity rule on a node.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the rules is applied.
+        """
         n = self.get_node_by_id(nid)
         
         if n.get_label() == "":
@@ -950,6 +966,14 @@ class bool_circ(open_digraph):
                     self.remove_node_by_id(cid)
 
     def trans_invo_xor(self, nid):
+        """
+        Apply the xor involution rule on a node.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the rules is applied.
+        """
         n = self.get_node_by_id(nid)
     
         if n.get_label() == "^":
@@ -960,6 +984,14 @@ class bool_circ(open_digraph):
                 self.remove_nodes_by_id(n.get_children_ids()[1:])
 
     def trans_effacement(self, nid):
+        """
+        Remove an operator.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the operation is applied.
+        """
         OP = ["^", "&", "~", ""]
         n = self.get_node_by_id(nid)
         
@@ -975,6 +1007,14 @@ class bool_circ(open_digraph):
             self.remove_node_by_id(nid)
 
     def trans_invo_no(self, nid):
+        """
+        Apply the no involution rule on a node.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the rules is applied.
+        """
         n = self.get_node_by_id(nid)
         has_removed = False
 
@@ -992,8 +1032,83 @@ class bool_circ(open_digraph):
                 self.remove_node_by_id(nid)
 
     def trans_no_travers_xor(self, nid):
+        """
+        Apply the no operator through an xor node.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the transformation is applied.
+        """
         n = self.get_node_by_id(nid)
-        
+        has_changed = False
+
         if n.get_label() == "^":
-            pass
-            # for 
+            for pid in n.get_parent_ids():
+                parent = self.get_node_by_id(pid)
+
+                if parent.get_label() == "~":
+                    for ancestor_pid in parent.get_parent_ids():
+                        self.add_edge(ancestor_pid, nid)
+                    
+                    self.remove_node_by_id(parent)
+                    has_changed = True
+
+            if has_changed:
+                new_node_no = self.add_node("~")
+                child_id = n.get_children_ids()[0]
+                self.add_edge(nid, new_node_no)
+                self.add_edge(new_node_no, child_id)
+                self.remove_edge(child_id, nid)
+    
+    def trans_no_travers_copie(self, nid):
+        """
+        Apply the no operator through an copy node.
+
+        Parameters
+        ----------
+        nid: int
+            The node id where the transformation is applied.
+        """
+        n = self.get_node_by_id(nid)
+
+        if n.get_label() == "":
+            parent = n.get_parent_ids()
+            
+            if parent.get_label() == "~":
+                parent_ancestor = parent.get_parent_ids()
+                self.add_edge(parent_ancestor, nid)
+                self.remove_node_by_id(parent)
+
+                for child in n.get_children_ids:
+                    new_no_node = self.add_node("~")
+                    self.add_edge(nid, new_no_node)
+                    self.add_edge(new_no_node, child)
+                    self.remove_edge(nid, child)
+
+    def rewrite(self, ids):
+        """
+        Apply the rewrite rules to a list of nodes.
+
+        Parameters
+        ----------
+        ids: list of int
+            The nodes ids.
+        """
+        for id in ids:
+            self.trans_asso_copie(id)
+            self.trans_asso_xor(id)
+            self.trans_invo_xor(id)
+            self.trans_invo_no(id)
+            self.trans_effacement(id)
+            self.trans_no_travers_xor(id)
+            self.trans_no_travers_copie(id)
+
+        self.clean_up()
+
+    def apply_all_rules(self):
+        """
+        Apply all rewrite rules and transformation in the graph.
+        """
+        self.transform_all()
+        self.rewrite(self.get_node_ids())
