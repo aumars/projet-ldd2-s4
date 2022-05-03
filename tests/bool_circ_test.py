@@ -334,6 +334,39 @@ class Bool_CircTest(unittest.TestCase):
         A0.set_input_bits("11")
         self.assertEqual("10", A0.evaluate())
 
+    @unittest.skip
+    def test_hamming_bool_circ(self):
+        ENC = bool_circ.encoder()
+        DEC = bool_circ.decoder()
+        replace_bit = lambda n, enc_eval: "1" if enc_eval[n] == "0" else "0" 
+
+        b0 = "0000"
+        ENC.set_input_bits(b0)
+        DEC.set_input_bits(ENC.evaluate())
+        self.assertEqual(b0, DEC.evaluate())
+
+        b1 = "1111"
+        ENC.set_input_bits(b1)
+        DEC.set_input_bits(ENC.evaluate())
+        self.assertEqual(b1, DEC.evaluate())
+
+        b1 = "1001"
+        ENC.set_input_bits(b1)
+        DEC.set_input_bits(ENC.evaluate())
+        self.assertEqual(b1, DEC.evaluate())
+
+        b2 = "1001"
+        ENC.set_input_bits(b2)
+        enc_eval = ENC.evaluate()
+        DEC.set_input_bits(enc_eval[:-1]+replace_bit(-1, enc_eval))
+        self.assertEqual(b2, DEC.evaluate())
+
+        b3 = "1010"
+        ENC.set_input_bits(b2)
+        enc_eval = ENC.evaluate()
+        DEC.set_input_bits(enc_eval[:-2]+replace_bit(-2, enc_eval)+replace_bit(-1, enc_eval))
+        self.assertNotEqual(b3, DEC.evaluate())
+
     @given(st.integers(min_value=0, max_value=10),
            st.integers(min_value=0, max_value=10))
     def test_add(self, a, b):
