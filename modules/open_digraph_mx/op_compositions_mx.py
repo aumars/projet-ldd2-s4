@@ -67,7 +67,7 @@ class op_compositions_mx:
                 self.add_edge(onode_parent_id, inid)
             self.remove_nodes_by_id(self.get_output_ids())
             self.set_output_ids(g.get_output_ids())
-        self.next_id = max(self.nodes.keys()) + 1
+        self.next_id = (max (self.nodes.keys()) if self.nodes.keys() else 0) + 1
 
     def compose(self, g):
         """
