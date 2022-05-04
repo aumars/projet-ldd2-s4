@@ -328,13 +328,13 @@ class bool_circ(open_digraph):
             adder1_b = adder_inputs[k:2*k]
             adder1_c = adder_inputs[2*k]
             adder1_cprime = adder_outputs[0]
-            adder1_r = adder_outputs[1:2*k]
+            adder1_r = adder_outputs[1:k+1]
 
             adder2_a = adder_inputs[2*k+1:3*k+1]
             adder2_b = adder_inputs[3*k+1:4*k+1]
             adder2_c = adder_inputs[4*k+1]
-            adder2_cprime = adder_outputs[2*k]
-            adder2_r = adder_outputs[2*k+1:]
+            adder2_cprime = adder_outputs[k+1]
+            adder2_r = adder_outputs[k+2:]
 
             a = adder1_a + adder2_a
             b = adder1_b + adder2_b
