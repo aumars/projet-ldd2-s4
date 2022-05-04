@@ -367,8 +367,8 @@ class Bool_CircTest(unittest.TestCase):
         DEC.set_input_bits(enc_eval[:-2]+replace_bit(-2, enc_eval)+replace_bit(-1, enc_eval))
         self.assertNotEqual(b3, DEC.evaluate())
 
-    @given(st.integers(min_value=0, max_value=10),
-           st.integers(min_value=0, max_value=10))
+    @given(st.integers(min_value=0, max_value=100),
+           st.integers(min_value=0, max_value=100))
     def test_add(self, a, b):
         c = a + b
         res, overflow, bits = bool_circ.add(a, b)
