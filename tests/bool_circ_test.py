@@ -3,7 +3,7 @@ from modules.bool_circ import bool_circ
 import unittest
 import sys
 import os
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, assume
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root)  # allows us to fetch files from the project root
 
@@ -334,38 +334,42 @@ class Bool_CircTest(unittest.TestCase):
         A0.set_input_bits("11")
         self.assertEqual("10", A0.evaluate())
 
-    @unittest.skip
-    def test_hamming_bool_circ(self):
+    @given(st.text(alphabet=['0', '1'], min_size=4, max_size=4))
+    def test_hamming_no_error(self, bit_string):
         ENC = bool_circ.encoder()
         DEC = bool_circ.decoder()
-        replace_bit = lambda n, enc_eval: "1" if enc_eval[n] == "0" else "0" 
 
-        b0 = "0000"
-        ENC.set_input_bits(b0)
+        ENC.set_input_bits(bit_string)
         DEC.set_input_bits(ENC.evaluate())
-        self.assertEqual(b0, DEC.evaluate())
+        self.assertEqual(bit_string, DEC.evaluate())
 
-        b1 = "1111"
-        ENC.set_input_bits(b1)
-        DEC.set_input_bits(ENC.evaluate())
-        self.assertEqual(b1, DEC.evaluate())
+    @given(st.text(alphabet=['0', '1'], min_size=4, max_size=4),
+           st.integers(min_value=0, max_value=6))
+    def test_hamming_one_error(self, bit_string, err):
+        ENC = bool_circ.encoder()
+        DEC = bool_circ.decoder()
 
-        b1 = "1001"
-        ENC.set_input_bits(b1)
-        DEC.set_input_bits(ENC.evaluate())
-        self.assertEqual(b1, DEC.evaluate())
-
-        b2 = "1001"
-        ENC.set_input_bits(b2)
+        ENC.set_input_bits(bit_string)
         enc_eval = ENC.evaluate()
-        DEC.set_input_bits(enc_eval[:-1]+replace_bit(-1, enc_eval))
-        self.assertEqual(b2, DEC.evaluate())
+        error_string = (enc_eval[:err]
+                        + ("0" if enc_eval[err] == '1' else "0")
+                        + enc_eval[err+1:])
+        DEC.set_input_bits(error_string)
+        self.assertEqual(bit_string, DEC.evaluate())
 
-        b3 = "1010"
-        ENC.set_input_bits(b2)
-        enc_eval = ENC.evaluate()
-        DEC.set_input_bits(enc_eval[:-2]+replace_bit(-2, enc_eval)+replace_bit(-1, enc_eval))
-        self.assertNotEqual(b3, DEC.evaluate())
+    def test_hamming_two_errors(self):
+        ENC = bool_circ.encoder()
+        DEC = bool_circ.decoder()
+
+        bit_string = "1111"
+        enc_eval = "1111111"
+        error_string = "1101101"
+
+        ENC.set_input_bits(bit_string)
+        DEC.set_input_bits(error_string)
+
+        self.assertEqual(enc_eval, ENC.evaluate())
+        self.assertNotEqual(bit_string, DEC.evaluate())
 
     @given(st.integers(min_value=0, max_value=100),
            st.integers(min_value=0, max_value=100))
