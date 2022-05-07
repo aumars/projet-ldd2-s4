@@ -118,7 +118,7 @@ class UtilsTest(unittest.TestCase):
         T1_KARNAUGH = [[1, 1, 0, 1], [0, 0, 0, 1], [1, 1, 1, 1], [0, 0, 1, 1]]
         self.assertListEqual(M1, T1_KARNAUGH)
 
-    @unittest.skip
+    @unittest.skip("bit_string_to_formula utility function is not implemented.")
     def test_bit_string_to_formula_open_digraph(self):
         self.assertRaises(ValueError, K_map, "1234")
         self.assertEqual("(x0&x2)",  bit_string_to_formula("1100"))
