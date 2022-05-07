@@ -231,3 +231,28 @@ class open_digraph(op_compositions_mx,
         if self.min_id() <= g.max_id():
             m = max(abs(g.max_id() - self.min_id()), abs(self.max_id() - g.min_id()))
             self.shift_indices(m + 1)
+
+    def get_connected_components(self):
+        """
+        Separated the connected components of the graphs.
+
+        Returns
+        ------
+        open_digraph list
+           A list containing the separated graphs.
+        """ 
+        n_comp, connected_comp = self.connected_components()
+        connected_comp = self.reverse_dict(connected_comp)
+        list_comps = []
+
+        for i in range(n_comp):
+            nodes_ids = connected_comp[i]
+            
+            nodes = self.get_nodes_by_ids(nodes_ids)
+            inputs = set(self.get_input_ids()).intersection(nodes_ids)
+            outputs = set(self.get_output_ids()).intersection(nodes_ids)
+            
+            graph = open_digraph(list(inputs), list(outputs), nodes)
+            list_comps.append(graph)
+
+        return list_comps
