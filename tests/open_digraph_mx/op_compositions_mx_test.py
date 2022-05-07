@@ -1,4 +1,5 @@
 from tests.strategy import random_well_formed_open_digraph_strategy
+from modules.open_digraph import open_digraph
 import unittest
 import sys
 import os
@@ -21,18 +22,15 @@ class op_compositions_mx_test(unittest.TestCase):
         self.assertEqual(len(graph.get_output_ids()), outputs1 + outputs2)
         self.assertEqual(len(graph.get_id_node_map()), nodes1 + nodes2)
 
-    @given(random_well_formed_open_digraph_strategy(), st.lists(random_well_formed_open_digraph_strategy()))
-    def test_parallel_open_digraph(self, graph, l):
-        inputs1 = len(graph.get_input_ids())
-        outputs1 = len(graph.get_output_ids())
-        nodes1 = len(graph.get_id_node_map())
-        inputs2 = sum([len(g.get_input_ids()) for g in l])
-        outputs2 = sum([len(g.get_output_ids()) for g in l])
-        nodes2 = sum([len(g.get_id_node_map()) for g in l])
-        new = graph.parallel(l)
-        self.assertEqual(len(new.get_input_ids()), inputs1 + inputs2)
-        self.assertEqual(len(new.get_output_ids()), outputs1 + outputs2)
-        self.assertEqual(len(new.get_id_node_map()), nodes1 + nodes2)
+    @given(st.lists(random_well_formed_open_digraph_strategy()))
+    def test_parallel_open_digraph(self, l):
+        inputs = sum([len(g.get_input_ids()) for g in l])
+        outputs = sum([len(g.get_output_ids()) for g in l])
+        nodes = sum([len(g.get_id_node_map()) for g in l])
+        new = open_digraph.parallel(l)
+        self.assertEqual(len(new.get_input_ids()), inputs)
+        self.assertEqual(len(new.get_output_ids()), outputs)
+        self.assertEqual(len(new.get_id_node_map()), nodes)
 
     @given(random_well_formed_open_digraph_strategy(), random_well_formed_open_digraph_strategy())
     def test_icompose_open_digraph(self, graph, g):
