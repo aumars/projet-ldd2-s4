@@ -69,7 +69,7 @@ class op_modify_mx_test(unittest.TestCase):
         N, O, I = set(graph.get_id_node_map()), set(graph.get_output_ids()), set(graph.get_input_ids())
         if P.issubset(N) and C.issubset(N) and P.intersection(O) == set() and C.intersection(I) == set():
             node_num = len(graph.get_nodes())
-            id = graph.add_node(parents, children)
+            id = graph.add_node(parents=parents, children=children)
             node = graph.get_node_by_id(id)
             self.assertEqual(len(graph.get_nodes()), node_num + 1)
             self.assertIn(id, graph.get_node_ids())
